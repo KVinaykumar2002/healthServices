@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import { useReducedMotion } from "framer-motion";
 import { Link } from "wouter";
+import { prefersReducedMotion } from "@/lib/gsap";
+import { Reveal } from "@/lib/motion";
 
 interface PartnerLogo {
   name: string;
@@ -80,7 +81,7 @@ function LogoGroup({
 }
 
 export function HospitalPartners() {
-  const reduce = useReducedMotion();
+  const reduce = prefersReducedMotion();
 
   return (
     <section className="hospital-partners" aria-labelledby="partners-heading">
@@ -88,10 +89,10 @@ export function HospitalPartners() {
         <h2 id="partners-heading" className="sr-only">
           Our Partners
         </h2>
-        <p className="partners-lead">
+        <Reveal as="p" className="partners-lead" direction="left" distance={48}>
           BHSK works with leading hospitals, experienced doctors, nurses, diagnostic centers, and
           others to improve health outcomes for patients and reliability for our partners.
-        </p>
+        </Reveal>
       </div>
 
       <div

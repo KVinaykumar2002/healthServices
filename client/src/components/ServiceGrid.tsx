@@ -1,7 +1,6 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
-import { easeOut } from "@/lib/motion";
+import { GsapStagger, Reveal, RevealText } from "@/lib/motion";
 
 export interface ServiceItem {
   name: string;
@@ -17,45 +16,22 @@ export interface ServiceGridProps {
   className?: string;
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 22, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { duration: 1, ease: easeOut },
-  },
-};
-
-/** Adapted from 21st.dev Service Grid (ravikatiyar162) — image + title grid with stagger. */
+/** Image + title grid with GSAP scroll stagger (left → right). */
 export function ServiceGrid({ title, subtitle, services, className }: ServiceGridProps) {
-  const reduce = useReducedMotion();
-
   return (
     <section className={cn("service-grid-section", className)}>
       <div className="container">
-        <div className="section-heading">
+        <Reveal className="section-heading" direction="left" distance={64}>
           <div className="eyebrow">OUR SERVICES</div>
-          <h2>{title}</h2>
+          <h2>
+            <RevealText scroll>{title}</RevealText>
+          </h2>
           {subtitle ? <p>{subtitle}</p> : null}
-        </div>
+        </Reveal>
 
-        <motion.div
-          className="service-image-grid"
-          variants={reduce ? undefined : containerVariants}
-          initial={reduce ? false : "hidden"}
-          whileInView={reduce ? undefined : "visible"}
-          viewport={{ once: true, amount: 0.12 }}
-        >
+        <GsapStagger className="service-image-grid" direction="left" distance={48} stagger={0.08}>
           {services.map((service) => (
-            <motion.div key={service.slug} variants={reduce ? undefined : itemVariants}>
+            <div key={service.slug}>
               <Link href={`/${service.slug}`} className="service-tile">
                 <div className="service-tile-media">
                   <img src={service.imageUrl} alt={service.name} loading="lazy" />
@@ -63,9 +39,9 @@ export function ServiceGrid({ title, subtitle, services, className }: ServiceGri
                 </div>
                 <span>{service.name}</span>
               </Link>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </GsapStagger>
       </div>
     </section>
   );

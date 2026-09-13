@@ -8,6 +8,7 @@ import {
   useReducedMotion,
   useScroll,
 } from "framer-motion";
+import { GsapStagger } from "@/lib/motion";
 
 export type TrustStat = {
   value: string;
@@ -132,14 +133,21 @@ export const HealthcareTrustStats = ({
       aria-label="Healthcare company facts"
     >
       <div className="healthcare-trust-stats__container container">
-        <ul className="healthcare-trust-stats__list">
+        <GsapStagger
+          as="ul"
+          className="healthcare-trust-stats__list"
+          childSelector=":scope > li"
+          direction="left"
+          distance={40}
+          stagger={0.1}
+        >
           {stats.map((stat) => (
             <li className="healthcare-trust-stats__item" key={stat.label}>
               <AnimatedStatValue value={stat.value} direction={direction} />
               <span className="healthcare-trust-stats__label">{stat.label}</span>
             </li>
           ))}
-        </ul>
+        </GsapStagger>
       </div>
     </section>
   );

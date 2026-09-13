@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { LabTestsTile } from "@/components/LabTestsTile";
+import { Reveal } from "@/lib/motion";
 
 const services = [
   "Vitamin D",
@@ -19,12 +20,12 @@ export function LabTestsSection() {
     <section className="lab-section" aria-labelledby="lab-tests-title">
       <div className="lab-container">
         <div className="lab-layout">
-          <div className="lab-tile-slot">
+          <Reveal className="lab-tile-slot" direction="left" distance={80}>
             <LabTestsTile />
-          </div>
+          </Reveal>
 
           <div className="lab-content-layout">
-            <article className="lab-copy-card">
+            <Reveal as="article" className="lab-copy-card" direction="left" delay={0.08}>
               <div className="lab-copy-inner">
                 <h2 id="lab-tests-title">Lab Tests At Home</h2>
                 <div className="lab-copy-bottom">
@@ -37,9 +38,9 @@ export function LabTestsSection() {
                   </button>
                 </div>
               </div>
-            </article>
+            </Reveal>
 
-            <div className="lab-services-card">
+            <Reveal className="lab-services-card" direction="right" delay={0.14} distance={64}>
               <video
                 className="lab-video"
                 src="https://res.cloudinary.com/dbubjszto/video/upload/frhstagingweb/lab_test_video_3d7345496a.mp4"
@@ -78,7 +79,7 @@ export function LabTestsSection() {
                   <ChevronRight size={13} strokeWidth={1.7} aria-hidden="true" />
                 </button>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </div>

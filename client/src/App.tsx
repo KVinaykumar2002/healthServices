@@ -279,7 +279,7 @@ function Proof() {
   return (
     <section className="proof section">
       <div className="container proof-grid">
-        <Reveal>
+        <Reveal direction="left" distance={80}>
           <div className="proof-photo">
             <img
               src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
@@ -287,7 +287,7 @@ function Proof() {
             />
           </div>
         </Reveal>
-        <Reveal delay={0.1} className="proof-copy">
+        <Reveal delay={0.12} className="proof-copy" direction="left" distance={56}>
           <div className="eyebrow">WHY BHSK</div>
           <h2>Nursing that meets people where they are.</h2>
           <p>
@@ -317,7 +317,7 @@ function Proof() {
 function CtaBand() {
   return (
     <section className="cta-band">
-      <Reveal className="container cta-inner">
+      <Reveal className="container cta-inner" direction="left" distance={64}>
         <div>
           <div className="eyebrow">NEED NURSING SUPPORT?</div>
           <h2>Tell us what care you need.</h2>
@@ -372,33 +372,16 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
     <main>
       <section className="inner-hero">
         <div className="container inner-hero-inner">
-          <motion.div
-            className="eyebrow"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: easeOut }}
-          >
+          <Reveal className="eyebrow" direction="left" distance={40}>
             BHSK NURSING SERVICES
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, duration: 1, ease: easeOut }}
-          >
+          </Reveal>
+          <Reveal as="h1" direction="left" distance={56} delay={0.06}>
             {title}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 1, ease: easeOut }}
-          >
+          </Reveal>
+          <Reveal as="p" direction="left" distance={40} delay={0.12}>
             {description}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 1, ease: easeOut }}
-          >
+          </Reveal>
+          <Reveal direction="left" distance={36} delay={0.2}>
             {type === "contact-us" ? (
               <a href={`mailto:${CONTACT_EMAIL}`} className="btn btn-primary">
                 Email us <ArrowRight size={16} />
@@ -408,7 +391,7 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
                 Talk to our team <ArrowRight size={16} />
               </Link>
             )}
-          </motion.div>
+          </Reveal>
         </div>
       </section>
       {type === "contact-us" ? (
@@ -430,7 +413,7 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
   return (
     <section className="section">
       <div className="container content-grid">
-        <Reveal>
+        <Reveal direction="left" distance={56}>
           <div className="eyebrow">CARE, DELIVERED WELL</div>
           <h2>{service ? service.name : "Healthcare that starts with listening"}</h2>
           <p>
@@ -455,7 +438,7 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
             </div>
           </div>
         </Reveal>
-        <Reveal delay={0.12} className="content-panel">
+        <Reveal delay={0.12} className="content-panel" direction="right" distance={48}>
           <h3>How it works</h3>
           <div className="step">
             <b>01</b>
@@ -488,7 +471,7 @@ function ContactContent() {
   return (
     <section className="section">
       <div className="container contact-grid">
-        <Reveal>
+        <Reveal direction="left" distance={56}>
           <div className="eyebrow">CONTACT BHSK</div>
           <h2>Let’s talk about the right nursing support.</h2>
           <p>
@@ -525,7 +508,7 @@ function ContactContent() {
             </div>
           </div>
         </Reveal>
-        <Reveal delay={0.1}>
+        <Reveal delay={0.1} direction="right" distance={48}>
           <form
             className="contact-form"
             onSubmit={(e) => {
@@ -613,6 +596,14 @@ function ScrollToTop() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   }, [location, reduce]);
+
+  useEffect(() => {
+    // Refresh scroll triggers after route/layout changes
+    const id = window.setTimeout(() => {
+      void import("@/lib/gsap").then(({ ScrollTrigger }) => ScrollTrigger.refresh());
+    }, 120);
+    return () => window.clearTimeout(id);
+  }, [location]);
 
   return null;
 }

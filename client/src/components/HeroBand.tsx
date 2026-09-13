@@ -1,8 +1,8 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import { Phone, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { easeOut } from "@/lib/motion";
+import { gsap, gsapEase, prefersReducedMotion, useGSAP } from "@/lib/gsap";
+import { Parallax, RevealText } from "@/lib/motion";
 
 const careOptions = [
   "Hospital Nursing",
@@ -49,10 +49,13 @@ const CONTACT_PHONE = { display: "31599965", href: "tel:+97431599965" } as const
 
 export function HeroBand() {
   const [, setLocation] = useLocation();
-  const reduce = useReducedMotion();
+  const reduce = prefersReducedMotion();
   const [selectedCare, setSelectedCare] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [slide, setSlide] = useState(0);
+  const rootRef = useRef<HTMLElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const slideRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (reduce) return;
@@ -61,6 +64,58 @@ export function HeroBand() {
     }, 5200);
     return () => window.clearInterval(id);
   }, [reduce, slide]);
+
+  useGSAP(
+    () => {
+      if (!rootRef.current || prefersReducedMotion()) return;
+
+      const content = contentRef.current;
+      if (content) {
+        const items = content.querySelectorAll("[data-hero-animate]");
+        gsap.fromTo(
+          items,
+          { opacity: 0, x: -64 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            stagger: 0.12,
+            ease: gsapEase,
+            delay: 0.1,
+          },
+        );
+      }
+
+      const stats = rootRef.current.querySelectorAll(".home-hero__stat");
+      if (stats.length) {
+        gsap.fromTo(
+          stats,
+          { opacity: 0, x: -40 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.85,
+            stagger: 0.1,
+            delay: 0.55,
+            ease: gsapEase,
+          },
+        );
+      }
+    },
+    { scope: rootRef },
+  );
+
+  useGSAP(
+    () => {
+      if (!slideRef.current || prefersReducedMotion()) return;
+      gsap.fromTo(
+        slideRef.current,
+        { opacity: 0, scale: 1.06, x: 40 },
+        { opacity: 1, scale: 1, x: 0, duration: 1.1, ease: gsapEase },
+      );
+    },
+    { dependencies: [slide] },
+  );
 
   function goTo(index: number) {
     setSlide((index + heroSlides.length) % heroSlides.length);
@@ -77,54 +132,29 @@ export function HeroBand() {
   const active = heroSlides[slide];
 
   return (
-    <section className="home-hero" aria-labelledby="home-hero-title">
+    <section ref={rootRef} className="home-hero" aria-labelledby="home-hero-title">
       <div className="home-hero__container">
-        <div className="home-hero__content">
-          <motion.p
-            className="home-hero__brand"
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: easeOut }}
-          >
+        <div className="home-hero__content" ref={contentRef}>
+          <p className="home-hero__brand" data-hero-animate>
             BHSK Nursing Services
-          </motion.p>
-          <motion.p
-            className="home-hero__eyebrow"
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, duration: 0.7, ease: easeOut }}
-          >
+          </p>
+          <p className="home-hero__eyebrow" data-hero-animate>
             Professional nursing care · Hospitals, clinics &amp; home
-          </motion.p>
-          <motion.h1
-            id="home-hero-title"
-            initial={reduce ? false : { opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.85, ease: easeOut }}
-          >
-            Quality Medical Care in the{" "}
+          </p>
+          <h1 id="home-hero-title" data-hero-animate>
+            <RevealText>Quality Medical Care in the</RevealText>{" "}
             <span className="home-hero__accent">
               <span>Comfort of Your Home</span>
               <svg viewBox="0 0 240 12" aria-hidden="true" preserveAspectRatio="none">
                 <path d="M4 8.5C60 3.5 150 3 236 6.5" />
               </svg>
             </span>
-          </motion.h1>
-          <motion.p
-            className="home-hero__description"
-            initial={reduce ? false : { opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.16, duration: 0.8, ease: easeOut }}
-          >
+          </h1>
+          <p className="home-hero__description" data-hero-animate>
             Doctors, nurses, physiotherapists and trained attendants — compassionate, expert care
             delivered where you need it.
-          </motion.p>
-          <motion.div
-            className="home-hero__actions"
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.22, duration: 0.8, ease: easeOut }}
-          >
+          </p>
+          <div className="home-hero__actions" data-hero-animate>
             <form className="home-hero__booking" onSubmit={handleSubmit}>
               <label className="home-hero__select-wrap">
                 <span className="sr-only">Choose a service</span>
@@ -150,7 +180,7 @@ export function HeroBand() {
               <Phone size={15} strokeWidth={2.5} aria-hidden="true" />
               <span>{CONTACT_PHONE.display}</span>
             </a>
-          </motion.div>
+          </div>
           <p className={`home-hero__feedback${submitted ? " is-visible" : ""}`} role="status">
             {selectedCare
               ? `We’ll help arrange ${selectedCare.toLowerCase()} for you.`
@@ -160,37 +190,24 @@ export function HeroBand() {
 
         <div className="home-hero__media">
           <div className="home-hero__image-wrap" aria-live="polite">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={active.src}
-                className="home-hero__slide"
-                initial={reduce ? false : { opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={reduce ? undefined : { opacity: 0 }}
-                transition={{ duration: 0.85, ease: easeOut }}
-              >
+            <div ref={slideRef} className="home-hero__slide" key={active.src}>
+              <Parallax speed={56} className="home-hero__parallax">
                 <picture>
                   {"mobileSrc" in active && active.mobileSrc ? (
                     <source media="(max-width: 991px)" srcSet={active.mobileSrc} />
                   ) : null}
                   <img src={active.src} alt={active.alt} />
                 </picture>
-              </motion.div>
-            </AnimatePresence>
+              </Parallax>
+            </div>
           </div>
 
           <ul className="home-hero__stats" aria-label="BHSK impact">
-            {trustStats.map((stat, index) => (
-              <motion.li
-                className={`home-hero__stat ${stat.position}`}
-                key={stat.label}
-                initial={reduce ? false : { opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 + index * 0.1, duration: 0.7, ease: easeOut }}
-              >
+            {trustStats.map((stat) => (
+              <li className={`home-hero__stat ${stat.position}`} key={stat.label}>
                 <strong>{stat.value}</strong>
                 <span>{stat.label}</span>
-              </motion.li>
+              </li>
             ))}
           </ul>
 

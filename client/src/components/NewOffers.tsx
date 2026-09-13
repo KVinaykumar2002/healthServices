@@ -1,5 +1,6 @@
 import { IndianRupee } from "lucide-react";
 import { Link } from "wouter";
+import { GsapStagger, Parallax, Reveal, RevealText } from "@/lib/motion";
 
 type Offer = {
   id: string;
@@ -45,14 +46,14 @@ export function NewOffers() {
   return (
     <section className="offers-section" aria-labelledby="new-offers-heading">
       <div className="offers-inner">
-        <header className="offers-header">
+        <Reveal as="header" className="offers-header" direction="left">
           <p className="offers-eyebrow">Limited-time savings</p>
           <h2 id="new-offers-heading" className="offers-title">
-            New Offers
+            <RevealText scroll>New Offers</RevealText>
           </h2>
-        </header>
+        </Reveal>
 
-        <div className="offers-grid">
+        <GsapStagger className="offers-grid" direction="left" distance={60} stagger={0.12}>
           {offers.map((offer) => (
             <article key={offer.id} className="offer-card">
               <div className="offer-card-body">
@@ -73,11 +74,13 @@ export function NewOffers() {
                 <p className="offer-terms">*T&amp;C Apply</p>
               </div>
               <figure className="offer-figure" aria-hidden="true">
-                <img src={offer.image} alt={offer.alt} loading="lazy" />
+                <Parallax speed={36}>
+                  <img src={offer.image} alt={offer.alt} loading="lazy" />
+                </Parallax>
               </figure>
             </article>
           ))}
-        </div>
+        </GsapStagger>
       </div>
     </section>
   );
