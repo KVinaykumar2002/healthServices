@@ -1,48 +1,117 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link, Route, Switch, useLocation } from "wouter";
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  Clock3,
-  Facebook,
-  HeartPulse,
-  Instagram,
-  Linkedin,
-  Mail,
-  Menu,
-  Phone,
-  ShieldCheck,
-  Star,
-  Stethoscope,
-  UserRound,
-  X,
-} from "lucide-react";
-import {
-  Reveal,
-  Stagger,
-  StaggerItem,
-  easeOut,
-  pageTransition,
-} from "@/lib/motion";
+import { ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { Reveal, easeOut, pageTransition } from "@/lib/motion";
+import { HeroBand } from "@/components/HeroBand";
+import { CareServicesMenu } from "@/components/CareServicesMenu";
+import { HealthcareTrustStats } from "@/components/HealthcareTrustStats";
+import { ServiceGrid } from "@/components/ServiceGrid";
+
+const CONTACT_EMAIL = "Info@bhsknursingservices.com";
+const CONTACT_PHONES = [
+  { display: "31599965", href: "tel:+97431599965" },
+  { display: "55348635", href: "tel:+97455348635" },
+] as const;
+const OFFICE_ADDRESS = {
+  lines: [
+    "Building No. 212, Street 310, Zone 45",
+    "Office No. 551, Floor 01",
+    "Old Airport, Doha, Qatar",
+  ],
+} as const;
 
 const services = [
-  { slug: "trained-attendants", name: "Trained Attendants", icon: UserRound, text: "Compassionate day-to-day support for patients and families." },
-  { slug: "nursing", name: "Nursing Care", icon: HeartPulse, text: "Certified nurses for skilled care, recovery and chronic needs." },
-  { slug: "physiotherapy", name: "Physiotherapy", icon: Stethoscope, text: "Personalised rehabilitation plans delivered at home." },
-  { slug: "medical-equipment", name: "Medical Equipment", icon: ShieldCheck, text: "Reliable equipment rentals with doorstep delivery." },
-  { slug: "critical-care", name: "Critical Care", icon: HeartPulse, text: "Hospital-grade ICU support for complex care at home." },
-  { slug: "mother-baby-care", name: "Mother & Baby Care", icon: UserRound, text: "Gentle, expert support for new mothers and newborns." },
-  { slug: "elder-care", name: "Elder Care", icon: HeartPulse, text: "Respectful companionship and health support for seniors." },
-  { slug: "doctor-consultation", name: "Doctor Consultation", icon: Stethoscope, text: "Experienced doctors who come to your doorstep." },
-];
-
-const articles = [
-  ["Elder Care", "Different Types of Elder Care Services", "Practical guidance to help your loved ones live with comfort and confidence."],
-  ["Physiotherapy", "How physiotherapy at home supports faster recovery", "Simple ways a consistent plan can bring mobility back into everyday life."],
-  ["Critical Care", "When hospital-level care comes home", "What families should know about building a safe, supportive care environment."],
+  {
+    slug: "hospitals",
+    name: "Nursing Services for Hospitals",
+    text: "Skilled nursing support that integrates with hospital wards and clinical teams.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "medical-centres",
+    name: "Nursing Services for Medical Centres",
+    text: "Reliable clinic and outpatient nursing for busy medical centres.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "schools-nurseries",
+    name: "Nursing Services for Schools / Nurseries",
+    text: "On-site school and nursery nurses for first aid, wellness and parent peace of mind.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "camp-construction",
+    name: "Nursing Services for Camp or Construction Site",
+    text: "Occupational health nursing for remote camps and active construction sites.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "maternity-newborn",
+    name: "Maternity and Newborn Care",
+    text: "Gentle, expert support for mothers and newborns through the early weeks.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "elderly-care",
+    name: "Elderly Care",
+    text: "Respectful companionship and clinical support that helps seniors stay comfortable.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "baby-care",
+    name: "Baby Care",
+    text: "Attentive infant care from trained nurses who understand every stage of early life.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "palliative-care",
+    name: "Palliative Care",
+    text: "Compassionate symptom relief and dignity-focused support for serious illness.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "chronic-care",
+    name: "Chronic Patient Care",
+    text: "Ongoing nursing plans for long-term conditions, monitoring and daily management.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "post-operative",
+    name: "Post-operative Care",
+    text: "Safe recovery support after surgery — wound care, medication and mobility.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "physiotherapy",
+    name: "Physiotherapy",
+    text: "Personalised rehabilitation to restore strength, movement and independence.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80",
+  },
 ] as const;
+
+function BrandMark({ className = "" }: { className?: string }) {
+  return (
+    <Link href="/" className={`brand ${className}`}>
+      <img src="/image.png" alt="BHSK Nursing Services" className="brand-logo" />
+      <span>
+        <b>BHSK</b>
+        <small>NURSING SERVICES</small>
+      </span>
+    </Link>
+  );
+}
 
 function Header() {
   const [open, setOpen] = useState(false);
@@ -57,20 +126,20 @@ function Header() {
     <header className="site-header">
       <div className="topbar">
         <div className="container topbar-inner">
-          <span>India’s trusted home healthcare provider</span>
+          <span>Professional nursing care · Hospitals, clinics &amp; home</span>
           <span className="topbar-right">
-            <Clock3 size={13} /> Available 8am–8pm, Monday to Sunday
+            <a href={CONTACT_PHONES[0].href}>
+              <Phone size={13} /> {CONTACT_PHONES[0].display}
+            </a>
+            <span aria-hidden="true"> · </span>
+            <a href={`mailto:${CONTACT_EMAIL}`}>
+              <Mail size={13} /> {CONTACT_EMAIL}
+            </a>
           </span>
         </div>
       </div>
       <nav className="nav container">
-        <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
-          <span>
-            <b>PORTEA</b>
-            <small>HEAL AT HOME</small>
-          </span>
-        </Link>
+        <BrandMark />
         <button
           className="mobile-menu"
           onClick={() => setOpen(!open)}
@@ -84,25 +153,21 @@ function Header() {
             <span>
               Our Services <ChevronDown size={14} />
             </span>
-            <div className="dropdown-menu">
-              {services.slice(0, 6).map((s) => (
-                <Link key={s.slug} href={`/${s.slug}`}>
-                  {s.name}
-                </Link>
-              ))}
+            <div className="dropdown-menu dropdown-menu--care">
+              <CareServicesMenu variant="dropdown" />
             </div>
           </div>
           <Link className={location === "/about-us" ? "active" : ""} href="/about-us">
             About Us
           </Link>
-          <Link className={location === "/blogs" || location.startsWith("/blog/") ? "active" : ""} href="/blogs">
-            Blogs
+          <Link className={location === "/contact-us" ? "active" : ""} href="/contact-us">
+            Contact
           </Link>
-          <a href="tel:18001212323" className="phone">
-            <Phone size={15} /> 1800 121 2323
+          <a href={CONTACT_PHONES[0].href} className="phone">
+            <Phone size={15} /> {CONTACT_PHONES[0].display}
           </a>
           <Link href="/contact-us" className="btn btn-primary small">
-            Book Now
+            Book Care
           </Link>
         </div>
       </nav>
@@ -113,32 +178,24 @@ function Header() {
             initial={reduce ? false : { opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={reduce ? undefined : { opacity: 0, height: 0 }}
-            transition={{ duration: 0.28, ease: easeOut }}
+            transition={{ duration: 0.15, ease: easeOut }}
           >
             <div className="mobile-drawer-inner">
-              {services.slice(0, 6).map((s, i) => (
-                <motion.div
-                  key={s.slug}
-                  initial={reduce ? false : { opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.04 * i, duration: 0.28, ease: easeOut }}
-                >
-                  <Link href={`/${s.slug}`} onClick={() => setOpen(false)}>
-                    {s.name}
-                  </Link>
-                </motion.div>
-              ))}
+              <CareServicesMenu variant="drawer" onNavigate={() => setOpen(false)} />
               <Link href="/about-us" onClick={() => setOpen(false)}>
                 About Us
               </Link>
-              <Link href="/blogs" onClick={() => setOpen(false)}>
-                Blogs
+              <Link href="/contact-us" onClick={() => setOpen(false)}>
+                Contact
               </Link>
-              <a href="tel:18001212323" className="phone">
-                <Phone size={15} /> 1800 121 2323
+              <a href={CONTACT_PHONES[0].href} className="phone">
+                <Phone size={15} /> {CONTACT_PHONES[0].display} / {CONTACT_PHONES[1].display}
+              </a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="phone">
+                <Mail size={15} /> {CONTACT_EMAIL}
               </a>
               <Link href="/contact-us" className="btn btn-primary small" onClick={() => setOpen(false)}>
-                Book Now
+                Book Care
               </Link>
             </div>
           </motion.div>
@@ -153,197 +210,49 @@ function Footer() {
     <footer>
       <div className="container footer-grid">
         <div>
-          <Link href="/" className="brand footer-brand">
-            <span className="brand-mark">P</span>
-            <span>
-              <b>PORTEA</b>
-              <small>HEAL AT HOME</small>
-            </span>
-          </Link>
-          <p className="muted">Quality medical care, brought to the comfort of your home.</p>
-          <div className="socials">
-            <Facebook size={17} />
-            <Instagram size={17} />
-            <Linkedin size={17} />
-          </div>
+          <BrandMark className="footer-brand" />
+          <p className="muted">
+            Trusted nursing professionals for hospitals, medical centres, schools, worksites and home care.
+          </p>
         </div>
         <div>
           <h4>Company</h4>
           <Link href="/about-us">About us</Link>
-          <Link href="/careers">Careers</Link>
+          <Link href="/services">Services</Link>
           <Link href="/contact-us">Contact us</Link>
-          <Link href="/partner-with-us">Partner with us</Link>
         </div>
         <div>
-          <h4>Popular services</h4>
-          <Link href="/nursing">Nursing at home</Link>
+          <h4>Care areas</h4>
+          <Link href="/elderly-care">Elderly care</Link>
+          <Link href="/maternity-newborn">Maternity &amp; newborn</Link>
           <Link href="/physiotherapy">Physiotherapy</Link>
-          <Link href="/doctor-consultation">Doctor consultations</Link>
-          <Link href="/medical-equipment">Medical equipment</Link>
+          <Link href="/palliative-care">Palliative care</Link>
         </div>
         <div>
           <h4>Get in touch</h4>
-          <a href="tel:18001212323">
-            <Phone size={15} /> 1800 121 2323
+          <a href={CONTACT_PHONES[0].href}>
+            <Phone size={15} /> {CONTACT_PHONES[0].display}
           </a>
-          <a href="mailto:bookings@portea.com">
-            <Mail size={15} /> bookings@portea.com
+          <a href={CONTACT_PHONES[1].href}>
+            <Phone size={15} /> {CONTACT_PHONES[1].display}
           </a>
-          <p className="muted small-text">Mon–Sun · 8am–8pm</p>
+          <a href={`mailto:${CONTACT_EMAIL}`}>
+            <Mail size={15} /> {CONTACT_EMAIL}
+          </a>
+          <p className="muted small-text">
+            {OFFICE_ADDRESS.lines[0]}
+            <br />
+            {OFFICE_ADDRESS.lines[1]}
+            <br />
+            {OFFICE_ADDRESS.lines[2]}
+          </p>
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© 2026 Portea Medical. All rights reserved.</span>
-        <span>Privacy policy &nbsp; Terms of use</span>
+        <span>© {new Date().getFullYear()} BHSK Nursing Services. All rights reserved.</span>
+        <span>Privacy · Terms</span>
       </div>
     </footer>
-  );
-}
-
-function BookingCard() {
-  return (
-    <motion.div
-      className="booking-card"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25, duration: 0.5, ease: easeOut }}
-      whileHover={{ y: -2, boxShadow: "0 16px 36px #102f2d18" }}
-    >
-      <div>
-        <label>What care do you need?</label>
-        <select defaultValue="">
-          <option value="" disabled>
-            Select a service
-          </option>
-          {services.map((s) => (
-            <option key={s.slug}>{s.name}</option>
-          ))}
-        </select>
-      </div>
-      <Link href="/contact-us" className="btn btn-primary">
-        Book Now <ArrowRight size={16} />
-      </Link>
-    </motion.div>
-  );
-}
-
-function Hero() {
-  const reduce = useReducedMotion();
-  return (
-    <section className="hero">
-      <div className="container hero-inner">
-        <div className="hero-copy">
-          <motion.div
-            className="eyebrow"
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: easeOut }}
-          >
-            INDIA’S HOME HEALTHCARE PIONEERS · SINCE 2013
-          </motion.div>
-          <motion.h1
-            initial={reduce ? false : { opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08, duration: 0.55, ease: easeOut }}
-          >
-            Quality medical care in the <em>comfort of your home</em>
-          </motion.h1>
-          <motion.p
-            initial={reduce ? false : { opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.16, duration: 0.5, ease: easeOut }}
-          >
-            Doctors, nurses, physiotherapists and trained attendants — compassionate, expert care delivered to your
-            doorstep.
-          </motion.p>
-          <BookingCard />
-          <motion.div
-            className="trust-row"
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.5, ease: easeOut }}
-          >
-            <div>
-              <b>20 Lakh+</b>
-              <span>patients served</span>
-            </div>
-            <div>
-              <b>135</b>
-              <span>cities across India</span>
-            </div>
-            <div>
-              <b>100+</b>
-              <span>hospital partners</span>
-            </div>
-          </motion.div>
-        </div>
-        <motion.div
-          className="hero-image"
-          initial={reduce ? false : { opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.12, duration: 0.7, ease: easeOut }}
-        >
-          <div className="image-wash" />
-          <img
-            src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
-            alt="Home healthcare professional"
-          />
-          <motion.div
-            className="hero-badge badge-one"
-            initial={reduce ? false : { opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.45, duration: 0.5, ease: easeOut }}
-          >
-            <b>20 Lakh+</b>
-            <span>patients served</span>
-          </motion.div>
-          <motion.div
-            className="hero-badge badge-two"
-            initial={reduce ? false : { opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.58, duration: 0.5, ease: easeOut }}
-          >
-            <b>100+</b>
-            <span>hospital partners</span>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function Services() {
-  return (
-    <section className="section services-section">
-      <div className="container">
-        <Reveal className="section-heading">
-          <div className="eyebrow">WHAT WE DO</div>
-          <h2>Medical services offered at home</h2>
-          <p>Portea Medical offers a variety of healthcare services in the comfort of our patient’s homes.</p>
-        </Reveal>
-        <Stagger className="service-grid">
-          {services.map((s) => (
-            <StaggerItem key={s.slug}>
-              <Link href={`/${s.slug}`} className="service-card">
-                <div className="service-icon">
-                  <s.icon size={22} />
-                </div>
-                <div>
-                  <h3>{s.name}</h3>
-                  <p>{s.text}</p>
-                </div>
-                <ArrowRight size={19} className="card-arrow" />
-              </Link>
-            </StaggerItem>
-          ))}
-        </Stagger>
-        <Reveal className="center" delay={0.15}>
-          <Link href="/services" className="text-link">
-            View all services <ArrowRight size={16} />
-          </Link>
-        </Reveal>
-      </div>
-    </section>
   );
 }
 
@@ -354,99 +263,33 @@ function Proof() {
         <Reveal>
           <div className="proof-photo">
             <img
-              src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=85"
-              alt="Care team supporting a patient"
+              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
+              alt="Nurse providing patient care"
             />
-            <motion.div
-              className="photo-note"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.25, duration: 0.45, ease: easeOut }}
-            >
-              <Star fill="currentColor" size={15} /> Rated 4.8 by families
-            </motion.div>
           </div>
         </Reveal>
         <Reveal delay={0.1} className="proof-copy">
-          <div className="eyebrow">WHY PORTEA</div>
-          <h2>Care that feels personal, because it is.</h2>
+          <div className="eyebrow">WHY BHSK</div>
+          <h2>Nursing that meets people where they are.</h2>
           <p>
-            From the first conversation to every follow-up, our care teams work around your family’s needs. We bring
-            clinical excellence, warmth and accountability to every home visit.
+            From hospital wards to school clinics and home recovery, our nurses bring clinical skill, calm presence and
+            clear communication to every assignment.
           </p>
           <div className="check-list">
             <div>
-              <Check /> Background-verified professionals
+              <Check /> Background-verified nurses
             </div>
             <div>
-              <Check /> Personalised care plans
+              <Check /> Flexible staffing for facilities &amp; families
             </div>
             <div>
-              <Check /> Dedicated care coordinators
+              <Check /> Continuity of care you can rely on
             </div>
           </div>
           <Link href="/about-us" className="btn btn-outline">
-            Know more <ArrowRight size={16} />
+            About BHSK <ArrowRight size={16} />
           </Link>
         </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function Testimonial() {
-  return (
-    <section className="quote-section">
-      <Reveal className="container quote-inner">
-        <div className="eyebrow">FAMILIES SPEAK</div>
-        <div className="quote-mark">“</div>
-        <blockquote>
-          The inputs shared were very useful in helping me manage by diabetes better. The explanation was excellent and
-          the care team was patient, reassuring and thorough.
-        </blockquote>
-        <div className="quote-author">
-          <div className="avatar">RS</div>
-          <div>
-            <b>Ramesh S.</b>
-            <span>Family member · Bengaluru</span>
-          </div>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function Articles() {
-  return (
-    <section className="section articles">
-      <div className="container">
-        <Reveal className="section-heading split">
-          <div>
-            <div className="eyebrow">FROM THE JOURNAL</div>
-            <h2>Small steps. Better health.</h2>
-          </div>
-          <Link href="/blogs" className="text-link">
-            Read all stories <ArrowRight size={16} />
-          </Link>
-        </Reveal>
-        <Stagger className="article-grid">
-          {articles.map((a, i) => (
-            <StaggerItem key={a[1]}>
-              <Link href={`/blog/${i + 1}`} className="article-card">
-                <div className={`article-img image-${i}`} />
-                <div className="article-body">
-                  <span>{a[0]}</span>
-                  <h3>{a[1]}</h3>
-                  <p>{a[2]}</p>
-                  <b>
-                    Read more <ArrowRight size={15} />
-                  </b>
-                </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </Stagger>
       </div>
     </section>
   );
@@ -457,13 +300,13 @@ function CtaBand() {
     <section className="cta-band">
       <Reveal className="container cta-inner">
         <div>
-          <div className="eyebrow">NEED CARE AT HOME?</div>
-          <h2>Let’s make care feel closer.</h2>
-          <p>Speak to our care team and find the right support for your family.</p>
+          <div className="eyebrow">NEED NURSING SUPPORT?</div>
+          <h2>Tell us what care you need.</h2>
+          <p>Email our team and we’ll help match the right nursing service.</p>
         </div>
-        <Link href="/contact-us" className="btn btn-light">
-          Book an appointment <ArrowRight size={17} />
-        </Link>
+        <a href={`mailto:${CONTACT_EMAIL}`} className="btn btn-light">
+          {CONTACT_EMAIL} <ArrowRight size={17} />
+        </a>
       </Reveal>
     </section>
   );
@@ -472,11 +315,22 @@ function CtaBand() {
 function Home() {
   return (
     <main>
-      <Hero />
-      <Services />
+      <HeroBand
+        brand="BHSK Nursing Services"
+        established="Care you can trust"
+        description="Professional nursing for hospitals, medical centres, schools, camps and home — maternity, elderly, palliative, chronic and post-operative care."
+        backgroundImage="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1600&q=85"
+        backgroundAlt="Nursing professionals in a clinical setting"
+        ctaLabel="Explore services"
+        ctaHref="/services"
+      />
+      <ServiceGrid
+        title="Nursing services built around real needs"
+        subtitle="From facility staffing to specialised home care — choose the support that fits."
+        services={[...services]}
+      />
+      <HealthcareTrustStats />
       <Proof />
-      <Testimonial />
-      <Articles />
       <CtaBand />
     </main>
   );
@@ -487,22 +341,18 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
   const title =
     service?.name ||
     ({
-      "about-us": "About Portea",
+      "about-us": "About BHSK Nursing Services",
       "contact-us": "We’re here to help",
-      careers: "Build a career that cares",
-      blogs: "The Portea journal",
-      services: "Care designed around you",
+      services: "Our nursing services",
     }[type] ||
-      "Portea Medical");
+      "BHSK Nursing Services");
   const description =
     service?.text ||
     (type === "about-us"
-      ? "India’s home healthcare pioneers. Quality medical care, brought to the comfort of your home."
-      : type === "careers"
-        ? "Join a team that is changing the way India experiences healthcare."
-        : type === "blogs"
-          ? "Thoughtful advice, expert perspectives and stories from the world of home healthcare."
-          : "Tell us what you need and our care team will get back to you shortly.");
+      ? "BHSK delivers professional nursing across hospitals, clinics, schools, worksites and homes."
+      : type === "services"
+        ? "Browse our full range of nursing and care services."
+        : "Share what you need and our team will get back to you shortly.");
 
   return (
     <main>
@@ -512,40 +362,52 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
             className="eyebrow"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: easeOut }}
+            transition={{ duration: 0.15, ease: easeOut }}
           >
-            PORTEA MEDICAL
+            BHSK NURSING SERVICES
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, duration: 0.5, ease: easeOut }}
+            transition={{ delay: 0.06, duration: 1, ease: easeOut }}
           >
             {title}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.45, ease: easeOut }}
+            transition={{ delay: 0.12, duration: 1, ease: easeOut }}
           >
             {description}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.45, ease: easeOut }}
+            transition={{ delay: 0.2, duration: 1, ease: easeOut }}
           >
             {type === "contact-us" ? (
-              <BookingCard />
+              <a href={`mailto:${CONTACT_EMAIL}`} className="btn btn-primary">
+                Email us <ArrowRight size={16} />
+              </a>
             ) : (
               <Link href="/contact-us" className="btn btn-primary">
-                Talk to our care team <ArrowRight size={16} />
+                Talk to our team <ArrowRight size={16} />
               </Link>
             )}
           </motion.div>
         </div>
       </section>
-      {type === "blogs" ? <BlogListing /> : type === "contact-us" ? <ContactContent /> : <GeneralContent service={service} />}
+      {type === "contact-us" ? (
+        <ContactContent />
+      ) : type === "services" ? (
+        <ServiceGrid
+          title="All services"
+          subtitle="Select a service to learn more."
+          services={[...services]}
+        />
+      ) : (
+        <GeneralContent service={service} />
+      )}
     </main>
   );
 }
@@ -555,25 +417,27 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
     <section className="section">
       <div className="container content-grid">
         <Reveal>
-          <div className="eyebrow">CARE, ON YOUR TERMS</div>
-          <h2>{service ? `Trusted ${service.name.toLowerCase()} at home` : "Healthcare that starts with listening"}</h2>
+          <div className="eyebrow">CARE, DELIVERED WELL</div>
+          <h2>{service ? service.name : "Healthcare that starts with listening"}</h2>
           <p>
-            We believe the best care is care that fits into real life. Our experienced professionals work with you, your
-            doctor and your family to create a plan that feels clear, practical and reassuring.
+            {service
+              ? service.text
+              : "We believe the best care fits real life. Our nurses work with facilities, families and clinicians to create clear, practical plans."}
           </p>
-          <p>
-            With trained teams, thoughtful coordination and reliable follow-through, Portea brings the confidence of
-            clinical care to your living room.
-          </p>
+          {service ? (
+            <div className="content-service-image">
+              <img src={service.imageUrl} alt={service.name} />
+            </div>
+          ) : null}
           <div className="check-list">
             <div>
               <Check /> Verified professionals
             </div>
             <div>
-              <Check /> Flexible visit plans
+              <Check /> Flexible coverage plans
             </div>
             <div>
-              <Check /> Support when you need it
+              <Check /> Responsive coordination
             </div>
           </div>
         </Reveal>
@@ -583,52 +447,24 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
             <b>01</b>
             <span>
               <strong>Tell us what you need</strong>
-              <small>Call or book an appointment online.</small>
+              <small>Email us or use the contact form.</small>
             </span>
           </div>
           <div className="step">
             <b>02</b>
             <span>
-              <strong>Meet your care team</strong>
-              <small>We match you with the right professional.</small>
+              <strong>Meet your care match</strong>
+              <small>We align the right nursing skill set.</small>
             </span>
           </div>
           <div className="step">
             <b>03</b>
             <span>
-              <strong>Feel supported at home</strong>
-              <small>Care plans that evolve with you.</small>
+              <strong>Receive dependable support</strong>
+              <small>Care that stays consistent over time.</small>
             </span>
           </div>
         </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function BlogListing() {
-  return (
-    <section className="section">
-      <div className="container">
-        <Stagger className="blog-list">
-          {[...articles, ...articles].map((a, i) => (
-            <StaggerItem key={i}>
-              <Link href={`/blog/${i + 1}`} className="blog-row">
-                <div className={`article-img image-${i % 3}`} />
-                <div>
-                  <span>
-                    {a[0]} · September 2026
-                  </span>
-                  <h3>{a[1]}</h3>
-                  <p>{a[2]}</p>
-                  <b>
-                    Read story <ArrowRight size={15} />
-                  </b>
-                </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </Stagger>
       </div>
     </section>
   );
@@ -639,36 +475,67 @@ function ContactContent() {
     <section className="section">
       <div className="container contact-grid">
         <Reveal>
-          <div className="eyebrow">CONTACT PORTEA</div>
-          <h2>Let’s talk about the right care for you.</h2>
+          <div className="eyebrow">CONTACT BHSK</div>
+          <h2>Let’s talk about the right nursing support.</h2>
           <p>
-            Our care coordinators are available to answer questions, understand your needs and help you take the next
+            Whether you need facility staffing or specialised home care, our team is ready to help you take the next
             step.
           </p>
           <div className="contact-detail">
+            <MapPin />
+            <div>
+              <b>Office address</b>
+              {OFFICE_ADDRESS.lines.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </div>
+          </div>
+          <div className="contact-detail">
             <Phone />
             <div>
-              <b>1800 121 2323</b>
-              <span>Call us 8am–8pm</span>
+              <b>Contact</b>
+              <span>
+                <a href={CONTACT_PHONES[0].href}>{CONTACT_PHONES[0].display}</a>
+                {" / "}
+                <a href={CONTACT_PHONES[1].href}>{CONTACT_PHONES[1].display}</a>
+              </span>
             </div>
           </div>
           <div className="contact-detail">
             <Mail />
             <div>
-              <b>bookings@portea.com</b>
+              <b>
+                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+              </b>
               <span>We reply within one business day</span>
             </div>
           </div>
         </Reveal>
         <Reveal delay={0.1}>
-          <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
-            <h3>Request a callback</h3>
-            <input placeholder="Your name" />
-            <input placeholder="Phone number" />
-            <input placeholder="City" />
-            <textarea placeholder="Tell us how we can help" rows={4} />
+          <form
+            className="contact-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              window.location.href = `mailto:${CONTACT_EMAIL}`;
+            }}
+          >
+            <h3>Send an enquiry</h3>
+            <input placeholder="Your name" name="name" required />
+            <input placeholder="Phone number" name="phone" />
+            <input placeholder="Organisation / city" name="org" />
+            <select name="service" defaultValue="">
+              <option value="" disabled>
+                Select a service
+              </option>
+              {services.map((s) => (
+                <option key={s.slug} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <textarea placeholder="Tell us how we can help" rows={4} name="message" />
             <button className="btn btn-primary" type="submit">
-              Submit request <ArrowRight size={16} />
+              Email {CONTACT_EMAIL} <ArrowRight size={16} />
             </button>
           </form>
         </Reveal>
@@ -679,121 +546,6 @@ function ContactContent() {
 
 function SlugPage({ slug }: { slug: string }) {
   return <InnerPage type={slug} slug={services.some((s) => s.slug === slug) ? slug : undefined} />;
-}
-
-function CityServicePage({ service, city }: { service: string; city: string }) {
-  const serviceName =
-    services.find((s) => s.slug === service)?.name ||
-    service
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-  const cityName = city
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-
-  return (
-    <main>
-      <section className="inner-hero">
-        <div className="container inner-hero-inner">
-          <motion.div
-            className="eyebrow"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: easeOut }}
-          >
-            PORTEA MEDICAL · {cityName.toUpperCase()}
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, duration: 0.5, ease: easeOut }}
-          >
-            {serviceName} at home in {cityName}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.45, ease: easeOut }}
-          >
-            Trusted, compassionate healthcare from trained professionals, delivered to your doorstep in {cityName}.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.45, ease: easeOut }}
-          >
-            <Link href="/contact-us" className="btn btn-primary">
-              Book a visit <ArrowRight size={16} />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-      <GeneralContent service={services.find((s) => s.slug === service)} />
-    </main>
-  );
-}
-
-function BlogDetail({ id }: { id: string }) {
-  const article = articles[(Number(id) - 1) % articles.length];
-  return (
-    <main>
-      <section className="inner-hero">
-        <div className="container inner-hero-inner">
-          <motion.div
-            className="eyebrow"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: easeOut }}
-          >
-            {article[0].toUpperCase()} · PORTEA JOURNAL
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, duration: 0.5, ease: easeOut }}
-          >
-            {article[1]}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.45, ease: easeOut }}
-          >
-            {article[2]}
-          </motion.p>
-        </div>
-      </section>
-      <section className="section">
-        <div className="container content-grid">
-          <Reveal>
-            <p>
-              Good healthcare begins with information you can trust. In this guide, our care teams share practical ideas
-              that help families make confident decisions, one small step at a time.
-            </p>
-            <p>
-              Every person and every home is different. That is why the right plan is one that brings together clinical
-              expertise, clear communication and the routines that matter most to you.
-            </p>
-            <h2>Care that fits real life</h2>
-            <p>
-              Our professionals meet families where they are, listen carefully and follow through. If you have questions
-              about home healthcare, our coordinators are here to help.
-            </p>
-          </Reveal>
-          <Reveal delay={0.1} className="content-panel">
-            <div className="eyebrow">NEED SUPPORT?</div>
-            <h3>Talk to our care team</h3>
-            <p className="muted">Get clear answers and find the right service for your family.</p>
-            <Link href="/contact-us" className="btn btn-primary">
-              Contact us <ArrowRight size={16} />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-    </main>
-  );
 }
 
 function App() {
@@ -809,43 +561,24 @@ function App() {
           initial={pageTransition.initial}
           animate={pageTransition.animate}
           exit={pageTransition.exit}
-          transition={{ duration: 0.38, ease: easeOut }}
+          transition={{ duration: 1, ease: easeOut }}
         >
           <Switch location={location}>
             <Route path="/" component={Home} />
-            <Route path="/blogs">
-              <InnerPage type="blogs" />
-            </Route>
-            <Route path="/blog/:id">{(params) => <BlogDetail id={params.id} />}</Route>
             <Route path="/about-us">
               <InnerPage type="about-us" />
             </Route>
             <Route path="/contact-us">
               <InnerPage type="contact-us" />
             </Route>
-            <Route path="/careers">
-              <InnerPage type="careers" />
-            </Route>
             <Route path="/services">
               <InnerPage type="services" />
-            </Route>
-            <Route path="/partner-with-us">
-              <InnerPage type="partner-with-us" />
-            </Route>
-            <Route path="/faqs">
-              <InnerPage type="faqs" />
-            </Route>
-            <Route path="/testimonials">
-              <InnerPage type="testimonials" />
             </Route>
             {services.map((s) => (
               <Route key={s.slug} path={`/${s.slug}`}>
                 <InnerPage type={s.slug} slug={s.slug} />
               </Route>
             ))}
-            <Route path="/:service/:city">
-              {(params) => <CityServicePage service={params.service} city={params.city} />}
-            </Route>
             <Route path="/:slug">{(params) => <SlugPage slug={params.slug} />}</Route>
             <Route>
               <InnerPage type="about-us" />
