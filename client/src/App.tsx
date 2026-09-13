@@ -125,20 +125,36 @@ function Header() {
     setOpen(false);
   }, [location]);
 
+  const marqueeItems = (
+    <>
+      <span>Professional nursing care · Hospitals, clinics &amp; home</span>
+      <span className="topbar-sep" aria-hidden="true">
+        ·
+      </span>
+      <a href={CONTACT_PHONES[0].href}>
+        <Phone size={13} /> {CONTACT_PHONES[0].display}
+      </a>
+      <span className="topbar-sep" aria-hidden="true">
+        ·
+      </span>
+      <a href={`mailto:${CONTACT_EMAIL}`}>
+        <Mail size={13} /> {CONTACT_EMAIL}
+      </a>
+    </>
+  );
+
   return (
     <header className="site-header">
-      <div className="topbar">
-        <div className="container topbar-inner">
-          <span>Professional nursing care · Hospitals, clinics &amp; home</span>
-          <span className="topbar-right">
-            <a href={CONTACT_PHONES[0].href}>
-              <Phone size={13} /> {CONTACT_PHONES[0].display}
-            </a>
-            <span aria-hidden="true"> · </span>
-            <a href={`mailto:${CONTACT_EMAIL}`}>
-              <Mail size={13} /> {CONTACT_EMAIL}
-            </a>
-          </span>
+      <div className="topbar" aria-label="Site announcements">
+        <div className={`topbar-marquee${reduce ? " is-static" : ""}`}>
+          <div className="topbar-marquee-track">
+            <div className="topbar-marquee-group">{marqueeItems}</div>
+            {!reduce && (
+              <div className="topbar-marquee-group" aria-hidden="true">
+                {marqueeItems}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <nav className="nav container">

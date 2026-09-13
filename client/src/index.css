@@ -103,27 +103,54 @@ button, select, input, textarea {
 /* ── Top bar + header ─────────────────────────────────────── */
 .topbar {
   background: var(--color-surface-base);
-  color: color-mix(in srgb, var(--color-text-secondary) 78%, var(--color-surface-strong));
+  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-surface-strong));
   font-size: var(--font-size-xs);
   letter-spacing: 0.04em;
   line-height: var(--font-line-height-base);
+  overflow: hidden;
 }
 
-.topbar-inner {
+.topbar-marquee {
   height: calc(var(--space-8) * 3.4);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
 
-.topbar-right {
+.topbar-marquee-track {
   display: flex;
+  width: max-content;
   align-items: center;
-  gap: var(--space-4);
-  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-surface-strong));
+  animation: topbar-marquee 32s linear infinite;
 }
 
-.topbar-right a {
+.topbar-marquee:hover .topbar-marquee-track {
+  animation-play-state: paused;
+}
+
+.topbar-marquee.is-static {
+  justify-content: center;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.topbar-marquee.is-static .topbar-marquee-track {
+  animation: none;
+  width: auto;
+}
+
+.topbar-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: calc(var(--space-8) * 2.4);
+  padding-inline: calc(var(--space-8) * 2.4);
+  white-space: nowrap;
+}
+
+.topbar-marquee-group a {
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
@@ -132,10 +159,19 @@ button, select, input, textarea {
   border-radius: var(--radius-xs);
 }
 
-.topbar-right a:hover { color: var(--color-text-secondary); }
-.topbar-right a:focus-visible {
+.topbar-marquee-group a:hover { color: var(--color-text-secondary); }
+.topbar-marquee-group a:focus-visible {
   outline: 2px solid var(--color-surface-strong);
   outline-offset: 2px;
+}
+
+.topbar-sep {
+  opacity: 0.55;
+}
+
+@keyframes topbar-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .site-header {
@@ -2139,7 +2175,7 @@ footer {
 
 @media (max-width: 850px) {
   .container { width: min(100% - 32px, 620px); }
-  .topbar-right { display: none; }
+  .topbar-marquee { mask-image: none; -webkit-mask-image: none; }
   .nav { height: calc(var(--space-8) * 6.8); }
   .mobile-menu { display: block; }
   .nav-links { display: none; }
@@ -2246,7 +2282,11 @@ footer {
   .partners-cta svg,
   .nav-links > a,
   .dropdown-menu,
-  .topbar-right,
+  .topbar-marquee-track {
+    animation: none !important;
+  }
+
+  .topbar-marquee-group a,
   .phone {
     transition: none !important;
   }
