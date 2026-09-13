@@ -119,12 +119,25 @@ function BrandMark({ className = "" }: { className?: string }) {
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [location] = useLocation();
   const reduce = useReducedMotion();
 
   useEffect(() => {
     setOpen(false);
+    setServicesOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    if (!servicesOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setServicesOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [servicesOpen]);
+
+  const closeServices = () => setServicesOpen(false);
 
   const marqueeItems = (
     <>
@@ -169,12 +182,22 @@ function Header() {
           {open ? <X /> : <Menu />}
         </button>
         <div className="nav-links">
-          <div className="nav-dropdown">
-            <span>
+          <div
+            className={`nav-dropdown${servicesOpen ? " is-open" : ""}`}
+            onMouseEnter={() => setServicesOpen(true)}
+            onMouseLeave={closeServices}
+          >
+            <button
+              type="button"
+              className="nav-dropdown-trigger"
+              aria-expanded={servicesOpen}
+              aria-haspopup="true"
+              onClick={() => setServicesOpen((v) => !v)}
+            >
               Our Services <ChevronDown size={14} />
-            </span>
-            <div className="dropdown-menu dropdown-menu--care">
-              <CareServicesMenu variant="dropdown" />
+            </button>
+            <div className="dropdown-menu dropdown-menu--care" role="menu">
+              <CareServicesMenu variant="dropdown" onNavigate={closeServices} />
             </div>
           </div>
           <Link className={location === "/about-us" ? "active" : ""} href="/about-us">
