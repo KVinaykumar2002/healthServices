@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { useReducedMotion } from "framer-motion";
 import { Link } from "wouter";
 
 interface PartnerLogo {
@@ -53,29 +54,57 @@ const partnerLogos: PartnerLogo[] = [
   },
 ];
 
+function LogoGroup({
+  logos,
+  hidden = false,
+}: {
+  logos: PartnerLogo[];
+  hidden?: boolean;
+}) {
+  return (
+    <div className="logo-marquee-group" aria-hidden={hidden || undefined}>
+      {logos.map((partner) => (
+        <div className="logo-link" aria-label={hidden ? undefined : partner.name} key={partner.name}>
+          <img
+            src={partner.src}
+            alt={hidden ? "" : `${partner.name} logo`}
+            width={partner.width}
+            height={partner.height}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function HospitalPartners() {
+  const reduce = useReducedMotion();
+
   return (
     <section className="hospital-partners" aria-labelledby="partners-heading">
       <div className="partners-container container">
-        <p className="partners-eyebrow">Trusted by leading hospitals</p>
-        <h2 id="partners-heading">Our Partners</h2>
+        <h2 id="partners-heading" className="sr-only">
+          Our Partners
+        </h2>
         <p className="partners-lead">
           BHSK works with leading hospitals, experienced doctors, nurses, diagnostic centers, and
           others to improve health outcomes for patients and reliability for our partners.
         </p>
-        <div className="logo-wall" aria-label="Our hospital partners">
-          {partnerLogos.map((partner) => (
-            <div className="logo-link" aria-label={partner.name} key={partner.name}>
-              <img
-                src={partner.src}
-                alt={`${partner.name} logo`}
-                width={partner.width}
-                height={partner.height}
-                loading="lazy"
-              />
-            </div>
-          ))}
+      </div>
+
+      <div
+        className={`logo-marquee${reduce ? " is-static" : ""}`}
+        aria-label="Our hospital partners"
+      >
+        <div className="logo-marquee-track">
+          <LogoGroup logos={partnerLogos} />
+          {!reduce && <LogoGroup logos={partnerLogos} hidden />}
         </div>
+      </div>
+
+      <div className="partners-container container">
         <Link className="partners-cta" href="/contact-us">
           <span>Partner with us</span>
           <ArrowRight aria-hidden="true" size={15} strokeWidth={2.2} />

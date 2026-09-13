@@ -272,21 +272,53 @@ button, select, input, textarea {
 }
 
 .partners-lead {
-  margin: calc(var(--space-8) * 1.6) 0 0;
-  max-width: 42rem;
+  margin: 0;
+  max-width: 48rem;
   font-size: var(--font-size-base);
   line-height: 1.65;
   color: var(--color-text-tertiary);
 }
 
-.logo-wall {
+.logo-marquee {
   margin-top: calc(var(--space-8) * 4.8);
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: calc(var(--space-8) * 2.4) calc(var(--space-8) * 3.2);
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.logo-marquee-track {
+  display: flex;
+  width: max-content;
   align-items: center;
-  justify-items: center;
+  animation: logo-marquee 40s linear infinite;
+}
+
+.logo-marquee:hover .logo-marquee-track {
+  animation-play-state: paused;
+}
+
+.logo-marquee.is-static {
+  display: flex;
+  justify-content: center;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.logo-marquee.is-static .logo-marquee-track {
+  animation: none;
+  width: auto;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.logo-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: calc(var(--space-8) * 4.8);
+  padding-inline: calc(var(--space-8) * 2.4);
 }
 
 .logo-link {
@@ -294,8 +326,9 @@ button, select, input, textarea {
   align-items: center;
   justify-content: center;
   min-height: 72px;
+  min-width: 140px;
   padding: calc(var(--space-8) * 0.8);
-  opacity: 0.85;
+  opacity: 0.9;
   transition:
     opacity var(--motion-duration-instant) var(--motion-ease),
     transform var(--motion-duration-instant) var(--motion-ease);
@@ -308,11 +341,15 @@ button, select, input, textarea {
 
 .logo-link img {
   width: auto;
-  max-width: 140px;
+  max-width: 150px;
   height: auto;
-  max-height: 64px;
+  max-height: 68px;
   object-fit: contain;
-  filter: grayscale(0.15);
+}
+
+@keyframes logo-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .partners-cta {
@@ -1792,39 +1829,44 @@ footer {
   overflow: hidden;
   min-height: 320px;
   color: var(--color-text-primary);
-  background: color-mix(in srgb, var(--color-text-primary) 4%, var(--color-text-secondary));
+  background: #f7f5f2;
 }
 
 .lab-video {
   position: absolute;
-  top: 0;
-  right: -8%;
-  bottom: 0;
-  width: 58%;
-  height: 100%;
+  top: 50%;
+  right: -4%;
+  z-index: 0;
+  width: min(72%, 340px);
+  height: 118%;
+  transform: translateY(-50%);
   object-fit: cover;
-  opacity: 0.55;
+  object-position: center;
+  opacity: 1;
   pointer-events: none;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 100%);
+  filter: drop-shadow(0 12px 28px rgba(13, 34, 34, 0.12));
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 100%);
 }
 
 .video-tint {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
   background:
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--color-text-primary) 4%, var(--color-text-secondary)) 0%,
-      color-mix(in srgb, var(--color-text-primary) 4%, var(--color-text-secondary)) 42%,
-      transparent 100%
+      #f7f5f2 0%,
+      #f7f5f2 34%,
+      color-mix(in srgb, #f7f5f2 55%, transparent) 52%,
+      transparent 72%
     );
 }
 
 .services-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   height: 100%;
   min-height: 320px;
@@ -1832,7 +1874,7 @@ footer {
   justify-content: space-between;
   gap: calc(var(--space-8) * 2);
   padding: calc(var(--space-8) * 2.8);
-  max-width: 78%;
+  max-width: 58%;
 }
 
 .popular-pill {
@@ -2156,7 +2198,7 @@ footer {
   .lab-content-layout { min-height: 460px; }
   .lab-tile-slot > article { min-height: 460px; }
   .lab-copy-inner { padding: calc(var(--space-8) * 4.8); }
-  .services-content { padding: calc(var(--space-8) * 4); max-width: 72%; }
+  .services-content { padding: calc(var(--space-8) * 4); max-width: 54%; }
   .offers-section { padding: var(--space-96) calc(var(--space-8) * 4.8); }
   .offers-grid { grid-template-columns: repeat(3, 1fr); gap: calc(var(--space-8) * 2.4); }
 }
@@ -2278,6 +2320,7 @@ footer {
   .offer-figure img,
   .offer-cta,
   .logo-link,
+  .logo-marquee-track,
   .partners-cta,
   .partners-cta svg,
   .nav-links > a,
