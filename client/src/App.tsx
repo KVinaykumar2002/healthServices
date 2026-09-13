@@ -10,6 +10,7 @@ import { HospitalPartners } from "@/components/HospitalPartners";
 import { LabTestsSection } from "@/components/LabTestsSection";
 import { NewOffers } from "@/components/NewOffers";
 import { ServiceGrid } from "@/components/ServiceGrid";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 const CONTACT_EMAIL = "Info@bhsknursingservices.com";
 const CONTACT_PHONES = [
@@ -584,6 +585,7 @@ function App() {
         </motion.div>
       </AnimatePresence>
       <Footer />
+      <WhatsAppFloat />
       <ScrollToTop />
     </>
   );
