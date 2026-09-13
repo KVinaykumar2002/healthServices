@@ -6,6 +6,9 @@ import { Reveal, easeOut, pageTransition } from "@/lib/motion";
 import { HeroBand } from "@/components/HeroBand";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
 import { HealthcareTrustStats } from "@/components/HealthcareTrustStats";
+import { HospitalPartners } from "@/components/HospitalPartners";
+import { LabTestsSection } from "@/components/LabTestsSection";
+import { NewOffers } from "@/components/NewOffers";
 import { ServiceGrid } from "@/components/ServiceGrid";
 
 const CONTACT_EMAIL = "Info@bhsknursingservices.com";
@@ -315,21 +318,16 @@ function CtaBand() {
 function Home() {
   return (
     <main>
-      <HeroBand
-        brand="BHSK Nursing Services"
-        established="Care you can trust"
-        description="Professional nursing for hospitals, medical centres, schools, camps and home — maternity, elderly, palliative, chronic and post-operative care."
-        backgroundImage="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1600&q=85"
-        backgroundAlt="Nursing professionals in a clinical setting"
-        ctaLabel="Explore services"
-        ctaHref="/services"
-      />
+      <HeroBand />
       <ServiceGrid
         title="Nursing services built around real needs"
         subtitle="From facility staffing to specialised home care — choose the support that fits."
         services={[...services]}
       />
+      <NewOffers />
+      <LabTestsSection />
       <HealthcareTrustStats />
+      <HospitalPartners />
       <Proof />
       <CtaBand />
     </main>
