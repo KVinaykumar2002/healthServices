@@ -3,12 +3,13 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link, Route, Switch, useLocation } from "wouter";
 import { ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
-import { HeroBand } from "@/components/HeroBand";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
 import { HealthcareTrustStats } from "@/components/HealthcareTrustStats";
+import { HeroBand } from "@/components/HeroBand";
 import { HospitalPartners } from "@/components/HospitalPartners";
 import { LabTestsSection } from "@/components/LabTestsSection";
 import { NewOffers } from "@/components/NewOffers";
+import { QatarHealthcareHero } from "@/components/QatarHealthcareHero";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
@@ -359,6 +360,7 @@ function Home() {
   return (
     <main>
       <HeroBand />
+      <QatarHealthcareHero />
       <ServiceGrid
         title="Nursing services built around real needs"
         subtitle="From facility staffing to specialised home care — choose the support that fits."
