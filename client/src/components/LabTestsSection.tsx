@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { LabTestsTile } from "@/components/LabTestsTile";
 import { Reveal } from "@/lib/motion";
 
@@ -13,8 +14,15 @@ const services = [
 ];
 
 export function LabTestsSection() {
-  const [started, setStarted] = useState(false);
+  const [, setLocation] = useLocation();
   const [showAll, setShowAll] = useState(false);
+
+  function goToLabEnquiry(testName?: string) {
+    const params = new URLSearchParams({
+      service: testName ? `Lab Tests At Home — ${testName}` : "Lab Tests At Home",
+    });
+    setLocation(`/contact-us?${params.toString()}`);
+  }
 
   return (
     <section className="lab-section" aria-labelledby="lab-tests-title">
@@ -33,8 +41,8 @@ export function LabTestsSection() {
                     For timely diagnosis and effective treatment, get professional sample collection
                     with quick reporting done at home
                   </p>
-                  <button className="primary-button" type="button" onClick={() => setStarted(true)}>
-                    <span>{started ? "You’re on the list" : "Get Started"}</span>
+                  <button className="primary-button" type="button" onClick={() => goToLabEnquiry()}>
+                    <span>Get Started</span>
                   </button>
                 </div>
               </div>
@@ -62,7 +70,7 @@ export function LabTestsSection() {
                       <button
                         type="button"
                         className="service-link"
-                        onClick={() => setShowAll(true)}
+                        onClick={() => goToLabEnquiry(service)}
                       >
                         <span>{service}</span>
                       </button>

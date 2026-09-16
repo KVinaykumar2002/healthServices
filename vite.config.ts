@@ -202,7 +202,76 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+function vitePluginApiRoutes(): Plugin {
+  return {
+    name: "bhsk-api-routes",
+    configureServer(server: ViteDevServer) {
+      server.middlewares.use(async (req, res, next) => {
+        const url = req.url?.split("?")[0] ?? "";
+
+        if (url === "/api/health" && req.method === "GET") {
+          res.setHeader("Content-Type", "application/json");
+          res.end(
+            JSON.stringify({
+              ok: true,
+              service: "bhsk-nursing",
+              time: new Date().toISOString(),
+            }),
+          );
+          return;
+        }
+
+        if (url === "/api/enquiries" && req.method === "POST") {
+          try {
+            const chunks: Buffer[] = [];
+            for await (const chunk of req) {
+              chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+            }
+            const raw = Buffer.concat(chunks).toString("utf8");
+            const body = raw ? JSON.parse(raw) : {};
+
+            const { createEnquiry, parseEnquiryBody } = await import("./server/enquiries");
+            const parsed = parseEnquiryBody(body);
+            if (!parsed.success) {
+              res.statusCode = 400;
+              res.setHeader("Content-Type", "application/json");
+              res.end(
+                JSON.stringify({
+                  ok: false,
+                  error: "Invalid enquiry",
+                  details: parsed.error.flatten(),
+                }),
+              );
+              return;
+            }
+
+            const record = await createEnquiry(parsed.data);
+            res.statusCode = 201;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: true, id: record.id }));
+          } catch (error) {
+            console.error("[enquiry] vite api failed", error);
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: false, error: "Unable to save enquiry" }));
+          }
+          return;
+        }
+
+        next();
+      });
+    },
+  };
+}
+
+const plugins = [
+  react(),
+  tailwindcss(),
+  vitePluginManusRuntime(),
+  vitePluginManusDebugCollector(),
+  vitePluginStorageProxy(),
+  vitePluginApiRoutes(),
+];
 
 export default defineConfig({
   plugins,

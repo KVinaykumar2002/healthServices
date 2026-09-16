@@ -1,34 +1,40 @@
-import type { MouseEvent } from "react";
+import { Link } from "wouter";
 import { ArrowUpRight, ShieldCheck, Star, Timer } from "lucide-react";
 
 const services = [
   {
     title: "Doctor at home",
+    href: "/contact-us?service=Doctor%20at%20home",
     image:
       "https://res.cloudinary.com/dbubjszto/image/upload/frhstagingweb/Doctor_at_home_qatar_1_cd4c23236f.webp",
   },
   {
     title: "Pediatrician at home",
+    href: "/contact-us?service=Pediatrician%20at%20home",
     image:
       "https://res.cloudinary.com/dbubjszto/image/upload/frhstagingweb/Pediatrician_At_Home_1_75551d9ace.webp",
   },
   {
     title: "Physiotherapy at home",
+    href: "/physiotherapy",
     image:
       "https://res.cloudinary.com/dbubjszto/image/upload/frhstagingweb/Physiotherapy_at_Home_c58d2b8cb8.webp",
   },
   {
     title: "Lab tests at home",
+    href: "/contact-us?service=Lab%20Tests%20At%20Home",
     image:
       "https://res.cloudinary.com/dbubjszto/image/upload/frhstagingweb/Lab_Tests_at_Home_f0b42d4e95.webp",
   },
   {
     title: "Nursing at home",
+    href: "/elderly-care",
     image:
       "https://res.cloudinary.com/dbubjszto/image/upload/frhstagingweb/Nursing_at_Home_db476b44ad.webp",
   },
   {
     title: "Health checkups at home",
+    href: "/contact-us?service=Health%20checkups%20at%20home",
     image:
       "https://res.cloudinary.com/dbubjszto/image/upload/frhstagingweb/Health_Checkups_cae1da6ace.webp",
   },
@@ -53,10 +59,6 @@ const trustItems = [
 ] as const;
 
 export function QatarHealthcareHero() {
-  const keepEmpty = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-  };
-
   return (
     <section className="min-h-screen w-full bg-[#f7f4f1] px-5 py-6 text-[#1e1e1e] sm:px-8 sm:py-10 lg:px-14 lg:py-14">
       <div
@@ -84,10 +86,9 @@ export function QatarHealthcareHero() {
             aria-label="Home healthcare services"
           >
             {services.map((service) => (
-              <a
+              <Link
                 key={service.title}
-                href=""
-                onClick={keepEmpty}
+                href={service.href}
                 className="group relative flex h-[132px] items-end overflow-hidden rounded-[11px] bg-[#f4e6e6] p-5 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#663535] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f4f1]"
               >
                 <span className="relative z-10 max-w-[135px] text-[15px] capitalize leading-[18px] text-[#1e1e1e]">
@@ -104,7 +105,7 @@ export function QatarHealthcareHero() {
                   className="absolute right-4 top-4 z-10 h-4 w-4 text-[#8f7272] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   aria-hidden="true"
                 />
-              </a>
+              </Link>
             ))}
           </div>
         </div>

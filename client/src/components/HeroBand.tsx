@@ -136,7 +136,7 @@ export function HeroBand() {
       <div className="home-hero__container">
         <div className="home-hero__content" ref={contentRef}>
           <p className="home-hero__brand" data-hero-animate>
-            BHSK Nursing Services
+            BHSK for Health Services
           </p>
           <p className="home-hero__eyebrow" data-hero-animate>
             Professional nursing care · Hospitals, clinics &amp; home

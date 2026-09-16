@@ -105,6 +105,9 @@ temp/
 *.sqlite
 *.sqlite3
 
+# Local enquiry store
+data/enquiries.json
+
 # Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/
 

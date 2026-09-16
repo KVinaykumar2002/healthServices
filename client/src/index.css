@@ -379,7 +379,7 @@ button, select, input, textarea {
 }
 
 .nav {
-  height: calc(var(--space-8) * 7.8);
+  height: calc(var(--space-8) * 9.4);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -402,26 +402,27 @@ button, select, input, textarea {
 }
 
 .brand-logo {
-  width: calc(var(--space-8) * 5.2);
-  height: calc(var(--space-8) * 5.2);
+  width: calc(var(--space-8) * 7.4);
+  height: calc(var(--space-8) * 7.4);
   object-fit: contain;
 }
 
 .brand b {
   display: block;
-  font-size: var(--font-size-4xl);
-  line-height: 20px;
+  font-size: 22px;
+  line-height: 24px;
   font-weight: 700;
   color: var(--color-surface-strong);
 }
 
 .brand small {
   display: block;
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.16em;
+  font-size: 11px;
+  letter-spacing: 0.04em;
   color: var(--color-text-primary);
-  line-height: 14px;
+  line-height: 16px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .nav-links {
@@ -1616,6 +1617,11 @@ button, select, input, textarea {
 
 .contact-form textarea { resize: vertical; min-height: 96px; }
 .contact-form button { justify-self: start; }
+.contact-form button:disabled { opacity: 0.7; cursor: wait; }
+.form-feedback { margin: 4px 0 0; font-size: 13px; line-height: 1.45; }
+.form-feedback.is-success { color: #0d7a72; }
+.form-feedback.is-error { color: #b42318; }
+.form-feedback a { color: inherit; text-decoration: underline; }
 
 /* ── Footer ───────────────────────────────────────────────── */
 footer {
@@ -2421,7 +2427,7 @@ footer {
 @media (max-width: 850px) {
   .container { width: min(100% - 32px, 620px); }
   .topbar-marquee { mask-image: none; -webkit-mask-image: none; }
-  .nav { height: calc(var(--space-8) * 6.8); }
+  .nav { height: calc(var(--space-8) * 8.4); }
   .mobile-menu { display: block; }
   .nav-links { display: none; }
   .mobile-drawer { display: block; }
@@ -2512,10 +2518,11 @@ footer {
 @media (max-width: 480px) {
   .service-image-grid { grid-template-columns: 1fr; }
   .brand-logo {
-    width: calc(var(--space-8) * 4.2);
-    height: calc(var(--space-8) * 4.2);
+    width: calc(var(--space-8) * 6.2);
+    height: calc(var(--space-8) * 6.2);
   }
-  .brand b { font-size: var(--font-size-4xl); }
+  .brand b { font-size: 18px; line-height: 20px; }
+  .brand small { font-size: 10px; letter-spacing: 0.06em; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-grid > div:first-child { grid-column: auto; }
   .contact-form button { width: 100%; }

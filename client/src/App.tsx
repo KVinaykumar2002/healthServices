@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Link, Route, Switch, useLocation } from "wouter";
+import { Link, Route, Switch, useLocation, useSearchParams } from "wouter";
 import { ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
+import { submitEnquiry } from "@/lib/api";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
 import { HealthcareTrustStats } from "@/components/HealthcareTrustStats";
 import { HeroBand } from "@/components/HeroBand";
@@ -109,10 +110,10 @@ const services = [
 function BrandMark({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`brand ${className}`}>
-      <img src="/image.png" alt="BHSK Nursing Services" className="brand-logo" />
+      <img src="/image.png" alt="BHSK for Health Services" className="brand-logo" />
       <span>
         <b>BHSK</b>
-        <small>NURSING SERVICES</small>
+        <small>FOR HEALTH SERVICES</small>
       </span>
     </Link>
   );
@@ -293,7 +294,7 @@ function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} BHSK Nursing Services. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} BHSK for Health Services. All rights reserved.</span>
         <span>Privacy · Terms</span>
       </div>
     </footer>
@@ -381,11 +382,11 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
   const title =
     service?.name ||
     ({
-      "about-us": "About BHSK Nursing Services",
+      "about-us": "About BHSK for Health Services",
       "contact-us": "We’re here to help",
       services: "Our nursing services",
     }[type] ||
-      "BHSK Nursing Services");
+      "BHSK for Health Services");
   const description =
     service?.text ||
     (type === "about-us"
@@ -399,7 +400,7 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
       <section className="inner-hero">
         <div className="container inner-hero-inner">
           <Reveal className="eyebrow" direction="left" distance={40}>
-            BHSK NURSING SERVICES
+            BHSK FOR HEALTH SERVICES
           </Reveal>
           <Reveal as="h1" direction="left" distance={56} delay={0.06}>
             {title}
@@ -494,6 +495,47 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
 }
 
 function ContactContent() {
+  const [searchParams] = useSearchParams();
+  const preselectedService = searchParams.get("service") ?? "";
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [org, setOrg] = useState("");
+  const [service, setService] = useState(preselectedService);
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (preselectedService) setService(preselectedService);
+  }, [preselectedService]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("loading");
+    setError("");
+
+    try {
+      await submitEnquiry({
+        name,
+        phone,
+        org,
+        service,
+        message,
+        source: "contact",
+      });
+      setStatus("success");
+      setName("");
+      setPhone("");
+      setOrg("");
+      setService("");
+      setMessage("");
+    } catch (err) {
+      setStatus("error");
+      setError(err instanceof Error ? err.message : "Unable to submit enquiry");
+    }
+  }
+
   return (
     <section className="section">
       <div className="container contact-grid">
@@ -535,18 +577,28 @@ function ContactContent() {
           </div>
         </Reveal>
         <Reveal delay={0.1} direction="right" distance={48}>
-          <form
-            className="contact-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              window.location.href = `mailto:${CONTACT_EMAIL}`;
-            }}
-          >
+          <form className="contact-form" onSubmit={handleSubmit}>
             <h3>Send an enquiry</h3>
-            <input placeholder="Your name" name="name" required />
-            <input placeholder="Phone number" name="phone" />
-            <input placeholder="Organisation / city" name="org" />
-            <select name="service" defaultValue="">
+            <input
+              placeholder="Your name"
+              name="name"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              placeholder="Phone number"
+              name="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <input
+              placeholder="Organisation / city"
+              name="org"
+              value={org}
+              onChange={(e) => setOrg(e.target.value)}
+            />
+            <select name="service" value={service} onChange={(e) => setService(e.target.value)} required>
               <option value="" disabled>
                 Select a service
               </option>
@@ -555,11 +607,34 @@ function ContactContent() {
                   {s.name}
                 </option>
               ))}
+              <option value="Lab Tests At Home">Lab Tests At Home</option>
+              {service &&
+              !services.some((s) => s.name === service) &&
+              service !== "Lab Tests At Home" ? (
+                <option value={service}>{service}</option>
+              ) : null}
             </select>
-            <textarea placeholder="Tell us how we can help" rows={4} name="message" />
-            <button className="btn btn-primary" type="submit">
-              Email {CONTACT_EMAIL} <ArrowRight size={16} />
+            <textarea
+              placeholder="Tell us how we can help"
+              rows={4}
+              name="message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <button className="btn btn-primary" type="submit" disabled={status === "loading"}>
+              {status === "loading" ? "Sending…" : "Submit enquiry"} <ArrowRight size={16} />
             </button>
+            {status === "success" ? (
+              <p className="form-feedback is-success" role="status">
+                Thank you — we received your enquiry and will get back to you shortly.
+              </p>
+            ) : null}
+            {status === "error" ? (
+              <p className="form-feedback is-error" role="alert">
+                {error}. You can also email us at{" "}
+                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              </p>
+            ) : null}
           </form>
         </Reveal>
       </div>
