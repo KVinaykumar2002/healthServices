@@ -14,7 +14,7 @@ import { QatarHealthcareHero } from "@/components/QatarHealthcareHero";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
-const CONTACT_EMAIL = "Info@bhsknursingservices.com";
+const CONTACT_EMAIL = "Info@bhskforhealthservices.com";
 const CONTACT_PHONES = [
   { display: "31599965", href: "tel:+97431599965" },
   { display: "55348635", href: "tel:+97455348635" },
