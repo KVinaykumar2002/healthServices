@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { GsapStagger, Reveal } from "@/lib/motion";
+import { servicePath } from "@/lib/site";
 
 export interface ServiceItem {
   name: string;
@@ -30,7 +31,7 @@ export function ServiceGrid({ title, subtitle, services, className }: ServiceGri
         <GsapStagger className="service-image-grid" direction="left" distance={48} stagger={0.08}>
           {services.map((service) => (
             <div key={service.slug}>
-              <Link href={`/${service.slug}`} className="service-tile service-tile--detailed">
+              <Link href={servicePath(service.slug)} className="service-tile service-tile--detailed">
                 <div className="service-tile-media">
                   <img src={service.imageUrl} alt={service.name} loading="lazy" />
                   <div className="service-tile-wash" />

@@ -3,104 +3,30 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Building2, Home as HomeIcon, ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Link, Route, Switch, useLocation } from "wouter";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
-import { submitEnquiry } from "@/lib/api";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
 import { HeroBand } from "@/components/HeroBand";
 import { ServiceGrid } from "@/components/ServiceGrid";
+import { ServicesPage } from "@/components/ServicesPage";
+import { HomeNursingPage } from "@/components/ServiceDetailPage";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
-
-const CONTACT_EMAIL = "Info@bhskforhealthservices.com";
-const CONTACT_PHONES = [
-  { display: "31599965", href: "tel:+97431599965" },
-  { display: "55348635", href: "tel:+97455348635" },
-] as const;
-const OFFICE_ADDRESS = {
-  lines: [
-    "Building No. 212, Street 310, Zone 45",
-    "Office No. 551, Floor 01",
-    "Old Airport, Doha, Qatar",
-  ],
-} as const;
-
-const services = [
-  {
-    slug: "hospitals",
-    name: "Nursing Services for Hospitals",
-    text: "Skilled nursing support that integrates with hospital wards and clinical teams.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "medical-centres",
-    name: "Nursing Services for Medical Centres",
-    text: "Reliable clinic and outpatient nursing for busy medical centres.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "schools-nurseries",
-    name: "Nursing Services for Schools / Nurseries",
-    text: "On-site school and nursery nurses for first aid, wellness and parent peace of mind.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "camp-construction",
-    name: "Nursing Services for Camp or Construction Site",
-    text: "Occupational health nursing for remote camps and active construction sites.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "maternity-newborn",
-    name: "Maternity and Newborn Care",
-    text: "Gentle, expert support for mothers and newborns through the early weeks.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "elderly-care",
-    name: "Elderly Care",
-    text: "Respectful companionship and clinical support that helps seniors stay comfortable.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "baby-care",
-    name: "Baby Care",
-    text: "Attentive infant care from trained nurses who understand every stage of early life.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "palliative-care",
-    name: "Palliative Care",
-    text: "Compassionate symptom relief and dignity-focused support for serious illness.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "chronic-care",
-    name: "Chronic Patient Care",
-    text: "Ongoing nursing plans for long-term conditions, monitoring and daily management.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "post-operative",
-    name: "Post-operative Care",
-    text: "Safe recovery support after surgery — wound care, medication and mobility.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "physiotherapy",
-    name: "Physiotherapy",
-    text: "Personalised rehabilitation to restore strength, movement and independence.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80",
-  },
-] as const;
+import { HowItWorks } from "@/components/HowItWorks";
+import { FaqSection } from "@/components/FaqSection";
+import { ContactActions } from "@/components/ContactActions";
+import { Seo } from "@/components/Seo";
+import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
+import { requestNurseHref } from "@/lib/servicePages";
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONES,
+  OFFICE_ADDRESS,
+  HOME_CARE_BLURB,
+  HEALTHCARE_STAFFING_BLURB,
+  REQUEST_NURSE_PATH,
+  REQUEST_STAFF_PATH,
+  facilityServices,
+  homeCareServices,
+  services,
+} from "@/lib/site";
 
 function BrandMark({ className = "" }: { className?: string }) {
   return (
@@ -138,7 +64,7 @@ function Header() {
 
   const marqueeItems = (
     <>
-      <span>Professional nursing care · Hospitals, clinics &amp; home</span>
+      <span>Professional nursing care · Hospitals, clinics &amp; home · Qatar</span>
       <span className="topbar-sep" aria-hidden="true">
         ·
       </span>
@@ -197,6 +123,9 @@ function Header() {
               <CareServicesMenu variant="dropdown" onNavigate={closeServices} />
             </div>
           </div>
+          <Link className={location === "/healthcare-staffing" ? "active" : ""} href="/healthcare-staffing">
+            Staffing
+          </Link>
           <Link className={location === "/about-us" ? "active" : ""} href="/about-us">
             About Us
           </Link>
@@ -206,8 +135,8 @@ function Header() {
           <a href={CONTACT_PHONES[0].href} className="phone">
             <Phone size={15} /> {CONTACT_PHONES[0].display}
           </a>
-          <Link href="/contact-us" className="btn btn-primary small">
-            Book Care
+          <Link href="/request-a-nurse" className="btn btn-primary small">
+            Request a Nurse
           </Link>
         </div>
       </nav>
@@ -222,6 +151,9 @@ function Header() {
           >
             <div className="mobile-drawer-inner">
               <CareServicesMenu variant="drawer" onNavigate={() => setOpen(false)} />
+              <Link href="/healthcare-staffing" onClick={() => setOpen(false)}>
+                Healthcare Staffing
+              </Link>
               <Link href="/about-us" onClick={() => setOpen(false)}>
                 About Us
               </Link>
@@ -234,8 +166,15 @@ function Header() {
               <a href={`mailto:${CONTACT_EMAIL}`} className="phone">
                 <Mail size={15} /> {CONTACT_EMAIL}
               </a>
-              <Link href="/contact-us" className="btn btn-primary small" onClick={() => setOpen(false)}>
-                Book Care
+              <Link href="/request-a-nurse" className="btn btn-primary small" onClick={() => setOpen(false)}>
+                Request a Nurse
+              </Link>
+              <Link
+                href="/request-healthcare-staff"
+                className="btn btn-outline small"
+                onClick={() => setOpen(false)}
+              >
+                Request Staff
               </Link>
             </div>
           </motion.div>
@@ -252,21 +191,21 @@ function Footer() {
         <div>
           <BrandMark className="footer-brand" />
           <p className="muted">
-            Trusted nursing professionals for hospitals, medical centres, schools, worksites and home care.
+            Professional nursing for hospitals, medical centres, schools, worksites and home care in Qatar.
           </p>
         </div>
         <div>
           <h4>Company</h4>
           <Link href="/about-us">About us</Link>
           <Link href="/services">Services</Link>
+          <Link href="/services#healthcare-staffing">Healthcare staffing</Link>
           <Link href="/contact-us">Contact us</Link>
         </div>
         <div>
-          <h4>Care areas</h4>
-          <Link href="/elderly-care">Elderly care</Link>
-          <Link href="/maternity-newborn">Maternity &amp; newborn</Link>
-          <Link href="/physiotherapy">Physiotherapy</Link>
-          <Link href="/palliative-care">Palliative care</Link>
+          <h4>Request care</h4>
+          <Link href={REQUEST_NURSE_PATH}>Request a Nurse</Link>
+          <Link href={REQUEST_STAFF_PATH}>Request Staff</Link>
+          <Link href="/book-consultation">Book a Consultation</Link>
         </div>
         <div>
           <h4>Get in touch</h4>
@@ -290,42 +229,92 @@ function Footer() {
       </div>
       <div className="container footer-bottom">
         <span>© {new Date().getFullYear()} BHSK Nursing Services. All rights reserved.</span>
-        <span>Privacy · Terms</span>
+        <span>Doha, Qatar</span>
       </div>
     </footer>
   );
 }
 
-function Proof() {
+function TwoJourneyBand() {
   return (
-    <section className="proof section">
+    <section className="journey-band section" aria-labelledby="journey-heading">
+      <div className="container">
+        <Reveal className="journey-intro" direction="left" distance={48}>
+          <div className="eyebrow">WHO IS THIS FOR?</div>
+          <h2 id="journey-heading">Choose home care or healthcare staffing</h2>
+          <p>
+            Individuals and families request home nursing. Businesses and facilities request healthcare staffing. Each
+            path has its own short description and lead form.
+          </p>
+        </Reveal>
+        <div className="journey-paths">
+          <Reveal className="journey-path" direction="left" distance={40} delay={0.06}>
+            <HomeIcon className="journey-path__icon" aria-hidden="true" strokeWidth={1.6} />
+            <h3>Home care for individuals</h3>
+            <p>{HOME_CARE_BLURB}</p>
+            <div className="journey-path__actions">
+              <Link href={REQUEST_NURSE_PATH} className="btn btn-primary">
+                Request a Nurse <ArrowRight size={16} />
+              </Link>
+              <Link href="/services#home-care" className="btn btn-outline">
+                View home care services
+              </Link>
+            </div>
+          </Reveal>
+          <Reveal className="journey-path" direction="left" distance={40} delay={0.12}>
+            <Building2 className="journey-path__icon" aria-hidden="true" strokeWidth={1.6} />
+            <h3>Healthcare staffing for business</h3>
+            <p>{HEALTHCARE_STAFFING_BLURB}</p>
+            <div className="journey-path__actions">
+              <Link href={REQUEST_STAFF_PATH} className="btn btn-primary">
+                Request Staff <ArrowRight size={16} />
+              </Link>
+              <Link href="/services#healthcare-staffing" className="btn btn-outline">
+                View staffing services
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyBhsk() {
+  return (
+    <section className="proof section" aria-labelledby="why-heading">
       <div className="container proof-grid">
         <Reveal direction="left" distance={80}>
           <div className="proof-photo">
             <img
-              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
-              alt="Nurse providing patient care"
+              src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=900&q=85"
+              alt="Nursing care in a clinical environment"
             />
           </div>
         </Reveal>
         <Reveal delay={0.12} className="proof-copy" direction="left" distance={56}>
           <div className="eyebrow">WHY BHSK</div>
-          <h2>Nursing that meets people where they are.</h2>
+          <h2 id="why-heading">Nursing support based in Qatar</h2>
           <p>
-            From hospital wards to school clinics and home recovery, our nurses bring clinical skill, calm presence and
-            clear communication to every assignment.
+            BHSK Nursing Services operates from Doha and focuses on professional nursing for facilities and home care.
+            We match enquiries to available staff after assessment — we do not publish unverified licence numbers,
+            partner counts or response-time promises on this site.
           </p>
           <div className="check-list">
             <div>
-              <Check /> Background-verified nurses
+              <Check /> Home care and facility staffing paths
             </div>
             <div>
-              <Check /> Flexible staffing for facilities &amp; families
+              <Check /> Enquiry, assessment, matching, then confirmation
             </div>
             <div>
-              <Check /> Continuity of care you can rely on
+              <Check /> Local coordination from our Old Airport office
             </div>
           </div>
+          <p className="proof-note">
+            Licence and screening details are shared by the BHSK team when relevant to an assignment. Approved wording
+            will be published here once confirmed.
+          </p>
           <Link href="/about-us" className="btn btn-outline">
             About BHSK <ArrowRight size={16} />
           </Link>
@@ -335,59 +324,22 @@ function Proof() {
   );
 }
 
-function CtaBand() {
+function TrustNote() {
   return (
-    <section className="cta-band">
-      <Reveal className="container cta-inner" direction="left" distance={64}>
-        <div>
-          <div className="eyebrow">NEED NURSING SUPPORT?</div>
-          <h2>Tell us what care you need.</h2>
-          <p>Email our team and we’ll help match the right nursing service.</p>
-        </div>
-        <a href={`mailto:${CONTACT_EMAIL}`} className="btn btn-light">
-          {CONTACT_EMAIL} <ArrowRight size={17} />
-        </a>
-      </Reveal>
-    </section>
-  );
-}
-
-function TwoJourneyBand() {
-  return (
-    <section className="journey-band section" aria-labelledby="journey-heading">
-      <div className="container">
-        <Reveal className="journey-intro" direction="left" distance={48}>
-          <div className="eyebrow">HOW CAN WE HELP?</div>
-          <h2 id="journey-heading">Two clear paths to nursing support</h2>
+    <section className="trust-note section" aria-labelledby="trust-heading">
+      <div className="container trust-note__inner">
+        <Reveal direction="left" distance={40}>
+          <div className="eyebrow">TEAM &amp; REVIEWS</div>
+          <h2 id="trust-heading">Only approved photos and feedback</h2>
           <p>
-            Tell us whether you need nurses for a facility or specialised care at home — we assess each enquiry for
-            fit and availability.
+            We do not display stock testimonials, unapproved reviewer quotes, or partner logos without prior written
+            consent. Genuine BHSK team photos and client reviews will be added here once permission is confirmed for
+            use in Qatar.
           </p>
+          <Link href="/contact-us" className="btn btn-outline">
+            Contact the team <ArrowRight size={16} />
+          </Link>
         </Reveal>
-        <div className="journey-paths">
-          <Reveal className="journey-path" direction="left" distance={40} delay={0.06}>
-            <Building2 className="journey-path__icon" aria-hidden="true" strokeWidth={1.6} />
-            <h3>Facility &amp; employer staffing</h3>
-            <p>
-              Hospitals, medical centres, schools, nurseries, and camp or construction sites that need reliable nursing
-              cover.
-            </p>
-            <Link href="/contact-us?type=employer" className="btn btn-primary">
-              Request staffing <ArrowRight size={16} />
-            </Link>
-          </Reveal>
-          <Reveal className="journey-path" direction="left" distance={40} delay={0.12}>
-            <HomeIcon className="journey-path__icon" aria-hidden="true" strokeWidth={1.6} />
-            <h3>Home care for families</h3>
-            <p>
-              Maternity and newborn, elderly, baby care, palliative, chronic, post-operative nursing, and physiotherapy
-              at home.
-            </p>
-            <Link href="/contact-us?type=patient" className="btn btn-outline">
-              Request home care <ArrowRight size={16} />
-            </Link>
-          </Reveal>
-        </div>
       </div>
     </section>
   );
@@ -399,86 +351,220 @@ function Home() {
       <HeroBand />
       <TwoJourneyBand />
       <ServiceGrid
-        title="Nursing services built around real needs"
-        subtitle="From facility staffing to specialised home care — choose the support that fits."
+        title="Nursing services from BHSK"
+        subtitle="Real services we coordinate in Qatar — each card links to a full page with a short description."
         services={[...services]}
       />
-      <Proof />
-      <CtaBand />
+      <WhyBhsk />
+      <HowItWorks />
+      <TrustNote />
+      <FaqSection />
+      <ContactActions />
     </main>
   );
 }
 
-function InnerPage({ type, slug }: { type: string; slug?: string }) {
+function StaffingHubPage() {
+  return (
+    <main>
+      <Seo
+        title="Healthcare Staffing Services in Qatar | BHSK"
+        description="Find healthcare staffing support for hospitals, medical centres, schools and workplaces in Qatar. Contact BHSK to discuss roles, shifts and availability."
+        path="/healthcare-staffing"
+      />
+      <section className="inner-hero">
+        <div className="container inner-hero-inner">
+          <Reveal direction="left" distance={32}>
+            <SiteBreadcrumb
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Services", href: "/services" },
+                { label: "Healthcare Staffing" },
+              ]}
+            />
+          </Reveal>
+          <Reveal className="eyebrow" direction="left" distance={40} delay={0.04}>
+            FOR EMPLOYERS &amp; FACILITIES
+          </Reveal>
+          <Reveal as="h1" direction="left" distance={56} delay={0.08}>
+            Healthcare Staffing Services
+          </Reveal>
+          <Reveal as="p" direction="left" distance={40} delay={0.12}>
+            {HEALTHCARE_STAFFING_BLURB}
+          </Reveal>
+          <Reveal direction="left" distance={36} delay={0.18}>
+            <Link href={REQUEST_STAFF_PATH} className="btn btn-primary">
+              Request Staff <ArrowRight size={16} />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+      <ServiceGrid
+        title="Facility nursing staffing in Qatar"
+        subtitle="Hospitals, medical centres, schools and worksites we support."
+        services={[...facilityServices]}
+      />
+      <section className="section">
+        <div className="container services-hub__staffing-note">
+          <p>
+            Licensed nurse staffing details are confirmed with BHSK after we review your roles, shifts and licensing
+            requirements. Employers should use{" "}
+            <Link href={REQUEST_STAFF_PATH}>Request Staff</Link> — not the patient home-care form.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function InnerPage({
+  type,
+  slug,
+  leadDefault,
+}: {
+  type: string;
+  slug?: string;
+  leadDefault?: "employer" | "patient" | "";
+}) {
   const service = services.find((s) => s.slug === slug);
   const title =
     service?.name ||
     ({
       "about-us": "About BHSK Nursing Services",
       "contact-us": "We’re here to help",
-      services: "Our nursing services",
+      "request-a-nurse": "Request a Nurse",
+      "request-healthcare-staff": "Request Staff",
+      "book-consultation": "Book a consultation",
     }[type] ||
       "BHSK Nursing Services");
   const description =
     service?.text ||
     (type === "about-us"
-      ? "BHSK delivers professional nursing across hospitals, clinics, schools, worksites and homes."
-      : type === "services"
-        ? "Browse our full range of nursing and care services."
-        : "Share what you need and our team will get back to you shortly.");
+      ? "BHSK delivers professional nursing across hospitals, clinics, schools, worksites and homes in Qatar."
+      : type === "request-a-nurse"
+        ? "Tell us about the home care you need. Our team will assess fit and availability before confirming service."
+        : type === "request-healthcare-staff"
+          ? "Tell us about your facility staffing need. Placement depends on assessment and current availability."
+          : type === "book-consultation"
+            ? "Share your questions and preferred contact details. We will follow up to discuss next steps."
+            : "Share what you need and our team will get back to you shortly.");
+
+  const isLead =
+    type === "contact-us" ||
+    type === "request-a-nurse" ||
+    type === "request-healthcare-staff" ||
+    type === "book-consultation";
+
+  const crumbs = service
+    ? [
+        { label: "Home", href: "/" },
+        { label: "Services", href: "/services" },
+        { label: service.name },
+      ]
+    : type === "request-a-nurse" || type === "request-healthcare-staff"
+      ? [
+          { label: "Home", href: "/" },
+          { label: "Services", href: "/services" },
+          { label: title },
+        ]
+      : [{ label: "Home", href: "/" }, { label: title }];
 
   return (
     <main>
+      {service ? (
+        <Seo
+          title={`${service.name} | BHSK`}
+          description={service.text}
+          path={`/${service.slug}`}
+        />
+      ) : type === "request-a-nurse" ? (
+        <Seo
+          title="Request a Nurse | BHSK"
+          description="Request home nursing support in Qatar. BHSK assesses fit and availability before confirming service."
+          path={REQUEST_NURSE_PATH}
+        />
+      ) : type === "request-healthcare-staff" ? (
+        <Seo
+          title="Request Staff | BHSK"
+          description="Request healthcare staffing for hospitals, medical centres, schools and workplaces in Qatar."
+          path={REQUEST_STAFF_PATH}
+        />
+      ) : null}
       <section className="inner-hero">
         <div className="container inner-hero-inner">
-          <Reveal className="eyebrow" direction="left" distance={40}>
+          <Reveal direction="left" distance={32}>
+            <SiteBreadcrumb items={crumbs} />
+          </Reveal>
+          <Reveal className="eyebrow" direction="left" distance={40} delay={0.04}>
             BHSK NURSING SERVICES
           </Reveal>
-          <Reveal as="h1" direction="left" distance={56} delay={0.06}>
+          <Reveal as="h1" direction="left" distance={56} delay={0.08}>
             {title}
           </Reveal>
           <Reveal as="p" direction="left" distance={40} delay={0.12}>
             {description}
           </Reveal>
-          <Reveal direction="left" distance={36} delay={0.2}>
-            {type === "contact-us" ? (
-              <a href={`mailto:${CONTACT_EMAIL}`} className="btn btn-primary">
-                Email us <ArrowRight size={16} />
-              </a>
-            ) : (
-              <Link href="/contact-us" className="btn btn-primary">
-                Talk to our team <ArrowRight size={16} />
-              </Link>
-            )}
-          </Reveal>
+          {!isLead && (
+            <Reveal direction="left" distance={36} delay={0.2}>
+              {service ? (
+                <Link
+                  href={service.category === "facility" ? REQUEST_STAFF_PATH : REQUEST_NURSE_PATH}
+                  className="btn btn-primary"
+                >
+                  {service.category === "facility" ? "Request Staff" : "Request a Nurse"}{" "}
+                  <ArrowRight size={16} />
+                </Link>
+              ) : (
+                <Link href="/contact-us" className="btn btn-primary">
+                  Talk to our team <ArrowRight size={16} />
+                </Link>
+              )}
+            </Reveal>
+          )}
         </div>
       </section>
-      {type === "contact-us" ? (
-        <ContactContent />
-      ) : type === "services" ? (
-        <ServiceGrid
-          title="All services"
-          subtitle="Select a service to learn more."
-          services={[...services]}
+      {isLead ? (
+        <ContactContent
+          defaultType={
+            leadDefault ??
+            (type === "request-a-nurse"
+              ? "patient"
+              : type === "request-healthcare-staff"
+                ? "employer"
+                : "")
+          }
+          lockType={type === "request-a-nurse" || type === "request-healthcare-staff"}
         />
       ) : (
-        <GeneralContent service={service} />
+        <GeneralContent service={service} type={type} />
       )}
     </main>
   );
 }
 
-function GeneralContent({ service }: { service?: (typeof services)[number] }) {
+function GeneralContent({
+  service,
+  type,
+}: {
+  service?: (typeof services)[number];
+  type?: string;
+}) {
   return (
     <section className="section">
       <div className="container content-grid">
         <Reveal direction="left" distance={56}>
-          <div className="eyebrow">CARE, DELIVERED WELL</div>
-          <h2>{service ? service.name : "Healthcare that starts with listening"}</h2>
+          <div className="eyebrow">CARE IN QATAR</div>
+          <h2>
+            {service
+              ? service.name
+              : type === "about-us"
+                ? "About BHSK Nursing Services"
+                : "Healthcare that starts with listening"}
+          </h2>
           <p>
             {service
               ? service.text
-              : "We believe the best care fits real life. Our nurses work with facilities, families and clinicians to create clear, practical plans."}
+              : "BHSK Nursing Services is based in Doha. We coordinate nursing for facilities and specialised home care for families. Claims about licences, partners or volumes appear on this site only when approved by BHSK."}
           </p>
           {service ? (
             <div className="content-service-image">
@@ -487,37 +573,57 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
           ) : null}
           <div className="check-list">
             <div>
-              <Check /> Verified professionals
+              <Check /> Clear home care and staffing paths
             </div>
             <div>
-              <Check /> Flexible coverage plans
+              <Check /> Assessment before confirmation
             </div>
             <div>
-              <Check /> Responsive coordination
+              <Check /> Local team coordination in Qatar
             </div>
           </div>
+          <Link
+            href={
+              service?.category === "facility"
+                ? REQUEST_STAFF_PATH
+                : service
+                  ? requestNurseHref(service.name)
+                  : REQUEST_NURSE_PATH
+            }
+            className="btn btn-primary"
+            style={{ marginTop: 24 }}
+          >
+            {service?.category === "facility" ? "Request Staff" : "Request a Nurse"} <ArrowRight size={16} />
+          </Link>
         </Reveal>
         <Reveal delay={0.12} className="content-panel" direction="right" distance={48}>
           <h3>How it works</h3>
           <div className="step">
             <b>01</b>
             <span>
-              <strong>Tell us what you need</strong>
-              <small>Email us or use the contact form.</small>
+              <strong>Enquiry</strong>
+              <small>Send a request for home care or staffing.</small>
             </span>
           </div>
           <div className="step">
             <b>02</b>
             <span>
-              <strong>Meet your care match</strong>
-              <small>We align the right nursing skill set.</small>
+              <strong>Assessment</strong>
+              <small>We review clinical fit and availability.</small>
             </span>
           </div>
           <div className="step">
             <b>03</b>
             <span>
-              <strong>Receive dependable support</strong>
-              <small>Care that stays consistent over time.</small>
+              <strong>Matching</strong>
+              <small>We align the right nursing skill set.</small>
+            </span>
+          </div>
+          <div className="step">
+            <b>04</b>
+            <span>
+              <strong>Confirmation</strong>
+              <small>Service starts after we confirm with you.</small>
             </span>
           </div>
         </Reveal>
@@ -532,8 +638,7 @@ function useContactQuery() {
     const search = typeof window !== "undefined" ? window.location.search : "";
     const params = new URLSearchParams(search);
     const typeParam = params.get("type");
-    const type =
-      typeParam === "employer" || typeParam === "patient" ? typeParam : "";
+    const type = typeParam === "employer" || typeParam === "patient" ? typeParam : "";
     return {
       service: params.get("service") ?? "",
       type,
@@ -542,15 +647,15 @@ function useContactQuery() {
   }, [location]);
 }
 
-function ContactContent() {
+function ContactContent({
+  defaultType = "",
+  lockType = false,
+}: {
+  defaultType?: "employer" | "patient" | "";
+  lockType?: boolean;
+}) {
   const query = useContactQuery();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [org, setOrg] = useState("");
-  const [message, setMessage] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState("");
-  const [enquiryType, setEnquiryType] = useState(query.type);
+  const [enquiryType, setEnquiryType] = useState(query.type || defaultType);
   const [selectedService, setSelectedService] = useState(() => {
     if (!query.service) return "";
     const byName = services.find((s) => s.name === query.service);
@@ -560,66 +665,73 @@ function ContactContent() {
         s.name.toLowerCase().includes(query.service.toLowerCase()) ||
         query.service.toLowerCase().includes(s.name.toLowerCase().split(" ")[0] ?? ""),
     );
-    // Match hero care option labels to service names
-    const heroMap: Record<string, string> = {
-      "Hospital Nursing": "Nursing Services for Hospitals",
-      "Medical Centre Nursing": "Nursing Services for Medical Centres",
-      "School / Nursery Nursing": "Nursing Services for Schools / Nurseries",
-      "Camp / Construction Nursing": "Nursing Services for Camp or Construction Site",
-      "Maternity & Newborn Care": "Maternity and Newborn Care",
-      "Elderly Care": "Elderly Care",
-      "Baby Care": "Baby Care",
-      "Palliative Care": "Palliative Care",
-      "Chronic Patient Care": "Chronic Patient Care",
-      "Post-operative Care": "Post-operative Care",
-      Physiotherapy: "Physiotherapy",
-    };
-    return heroMap[query.service] ?? byPartial?.name ?? "";
+    return byPartial?.name ?? "";
   });
 
   useEffect(() => {
     if (query.type) setEnquiryType(query.type);
-  }, [query.type]);
+    else if (defaultType) setEnquiryType(defaultType);
+  }, [query.type, defaultType]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (!query.service) return;
+    const byName = services.find((s) => s.name === query.service);
+    if (byName) {
+      setSelectedService(byName.name);
+      return;
+    }
+    const byPartial = services.find(
+      (s) =>
+        s.name.toLowerCase().includes(query.service.toLowerCase()) ||
+        query.service.toLowerCase().includes(s.name.toLowerCase().split(" ")[0] ?? ""),
+    );
+    if (byPartial) setSelectedService(byPartial.name);
+  }, [query.service]);
+
+  const serviceOptions =
+    enquiryType === "employer"
+      ? facilityServices
+      : enquiryType === "patient"
+        ? homeCareServices
+        : services;
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("loading");
-    setError("");
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const name = String(data.get("name") ?? "").trim();
+    const phone = String(data.get("phone") ?? "").trim();
+    const org = String(data.get("org") ?? "").trim();
+    const type = String(data.get("enquiryType") ?? "").trim();
+    const service = String(data.get("service") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
 
     const typeLabel =
-      enquiryType === "employer"
+      type === "employer"
         ? "Employer / facility staffing"
-        : enquiryType === "patient"
+        : type === "patient"
           ? "Patient / family home care"
-          : enquiryType || "Not specified";
+          : type || "Not specified";
 
-    const composedMessage = [
-      `Enquiry type: ${typeLabel}`,
-      message.trim() || "—",
-      "",
-      "Note: This enquiry requires assessment and availability confirmation by the BHSK team.",
-    ].join("\n");
+    const subject = encodeURIComponent(
+      `BHSK enquiry — ${typeLabel}${service ? ` — ${service}` : ""}`,
+    );
+    const body = encodeURIComponent(
+      [
+        `Name: ${name || "—"}`,
+        `Phone: ${phone || "—"}`,
+        `Organisation / city: ${org || "—"}`,
+        `Enquiry type: ${typeLabel}`,
+        `Service: ${service || "—"}`,
+        "",
+        "Message:",
+        message || "—",
+        "",
+        "Note: This enquiry requires assessment and availability confirmation by the BHSK team. It is not a confirmed booking.",
+      ].join("\n"),
+    );
 
-    try {
-      await submitEnquiry({
-        name,
-        phone,
-        org,
-        service: selectedService,
-        message: composedMessage,
-        source: "contact",
-      });
-      setStatus("success");
-      setName("");
-      setPhone("");
-      setOrg("");
-      setMessage("");
-      setSelectedService("");
-      setEnquiryType("");
-    } catch (err) {
-      setStatus("error");
-      setError(err instanceof Error ? err.message : "Unable to submit enquiry");
-    }
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   }
 
   return (
@@ -627,10 +739,10 @@ function ContactContent() {
       <div className="container contact-grid">
         <Reveal direction="left" distance={56}>
           <div className="eyebrow">CONTACT BHSK</div>
-          <h2>Let’s talk about the right nursing support.</h2>
+          <h2>Send a lead to our Qatar team</h2>
           <p>
-            Whether you need facility staffing or specialised home care, our team is ready to help you take the next
-            step.
+            Complete the form for home care or facility staffing. We reply to assess fit — placement is confirmed only
+            after review.
           </p>
           <div className="contact-detail">
             <MapPin />
@@ -658,43 +770,33 @@ function ContactContent() {
               <b>
                 <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
               </b>
-              <span>We reply within one business day</span>
+              <span>We aim to reply within one business day</span>
             </div>
           </div>
         </Reveal>
         <Reveal delay={0.1} direction="right" distance={48}>
           <form className="contact-form" onSubmit={handleSubmit}>
-            <h3>Send an enquiry</h3>
-            <input
-              placeholder="Your name"
-              name="name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              placeholder="Phone number"
-              name="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            <input
-              placeholder="Organisation / city"
-              name="org"
-              value={org}
-              onChange={(e) => setOrg(e.target.value)}
-            />
+            <h3>Lead form</h3>
+            <input placeholder="Your name" name="name" required autoComplete="name" />
+            <input placeholder="Phone number" name="phone" required autoComplete="tel" />
+            <input placeholder="Organisation / city" name="org" autoComplete="organization" />
+            {lockType ? <input type="hidden" name="enquiryType" value={enquiryType} /> : null}
             <select
-              name="enquiryType"
+              name={lockType ? undefined : "enquiryType"}
               required
               value={enquiryType}
-              onChange={(e) => setEnquiryType(e.target.value)}
+              disabled={lockType && Boolean(enquiryType)}
+              aria-readonly={lockType || undefined}
+              onChange={(e) => {
+                setEnquiryType(e.target.value as "employer" | "patient" | "");
+                setSelectedService("");
+              }}
             >
               <option value="" disabled>
                 Enquiry type
               </option>
-              <option value="patient">Patient / family home care</option>
-              <option value="employer">Employer / facility staffing</option>
+              <option value="patient">Patient / family home care (Request a Nurse)</option>
+              <option value="employer">Employer / facility staffing (Request Staff)</option>
             </select>
             <select
               name="service"
@@ -702,37 +804,20 @@ function ContactContent() {
               onChange={(e) => setSelectedService(e.target.value)}
             >
               <option value="">Select a service (optional)</option>
-              {services.map((s) => (
+              {serviceOptions.map((s) => (
                 <option key={s.slug} value={s.name}>
                   {s.name}
                 </option>
               ))}
             </select>
-            <textarea
-              placeholder="Tell us how we can help"
-              rows={4}
-              name="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
+            <textarea placeholder="Tell us how we can help" rows={4} name="message" />
             <p className="contact-form__note">
-              Submitting an enquiry starts a conversation. Placement depends on clinical fit, licensing and current
-              availability — our team will confirm after review.
+              Submitting starts a conversation with BHSK. Placement depends on clinical fit and availability — our team
+              confirms after review.
             </p>
-            <button className="btn btn-primary" type="submit" disabled={status === "loading"}>
-              {status === "loading" ? "Sending…" : "Submit enquiry"} <ArrowRight size={16} />
+            <button className="btn btn-primary" type="submit">
+              Submit enquiry <ArrowRight size={16} />
             </button>
-            {status === "success" ? (
-              <p className="form-feedback is-success" role="status">
-                Thank you — we received your enquiry and will get back to you shortly.
-              </p>
-            ) : null}
-            {status === "error" ? (
-              <p className="form-feedback is-error" role="alert">
-                {error}. You can also email us at{" "}
-                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-              </p>
-            ) : null}
           </form>
         </Reveal>
       </div>
@@ -768,13 +853,39 @@ function App() {
               <InnerPage type="contact-us" />
             </Route>
             <Route path="/services">
-              <InnerPage type="services" />
+              <ServicesPage />
             </Route>
-            {services.map((s) => (
-              <Route key={s.slug} path={`/${s.slug}`}>
-                <InnerPage type={s.slug} slug={s.slug} />
-              </Route>
-            ))}
+            <Route path="/services/home-nursing">
+              <HomeNursingPage />
+            </Route>
+            <Route path="/services/home-nursing/">
+              <HomeNursingPage />
+            </Route>
+            <Route path="/healthcare-staffing">
+              <StaffingHubPage />
+            </Route>
+            <Route path="/request-a-nurse">
+              <InnerPage type="request-a-nurse" leadDefault="patient" />
+            </Route>
+            <Route path="/request-a-nurse/">
+              <InnerPage type="request-a-nurse" leadDefault="patient" />
+            </Route>
+            <Route path="/request-healthcare-staff">
+              <InnerPage type="request-healthcare-staff" leadDefault="employer" />
+            </Route>
+            <Route path="/book-consultation">
+              <InnerPage type="book-consultation" />
+            </Route>
+            {services
+              .filter((s) => s.slug !== "home-nursing")
+              .map((s) => (
+                <Route key={s.slug} path={`/${s.slug}`}>
+                  <InnerPage type={s.slug} slug={s.slug} />
+                </Route>
+              ))}
+            <Route path="/home-nursing">
+              <HomeNursingPage />
+            </Route>
             <Route path="/:slug">{(params) => <SlugPage slug={params.slug} />}</Route>
             <Route>
               <InnerPage type="about-us" />
@@ -794,11 +905,20 @@ function ScrollToTop() {
   const reduce = useReducedMotion();
 
   useEffect(() => {
+    const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
+    if (hash) {
+      const id = window.setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({
+          behavior: reduce ? "auto" : "smooth",
+          block: "start",
+        });
+      }, 80);
+      return () => window.clearTimeout(id);
+    }
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   }, [location, reduce]);
 
   useEffect(() => {
-    // Refresh scroll triggers after route/layout changes
     const id = window.setTimeout(() => {
       void import("@/lib/gsap").then(({ ScrollTrigger }) => ScrollTrigger.refresh());
     }, 120);

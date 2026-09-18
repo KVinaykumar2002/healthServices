@@ -1,10 +1,9 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, ChevronLeft, ChevronRight, Phone } from "lucide-react";
 import { gsap, gsapEase, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { Parallax } from "@/lib/motion";
-import { CONTACT_PHONES } from "@/lib/site";
-import { useState, useEffect } from "react";
+import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
 
 const heroSlides = [
   {
@@ -99,10 +98,10 @@ export function HeroBand() {
             team will confirm fit and availability.
           </p>
           <div className="home-hero__cta-row" data-hero-animate>
-            <Link href="/request-a-nurse" className="btn btn-primary">
+            <Link href={REQUEST_NURSE_PATH} className="btn btn-primary">
               Request a Nurse <ArrowRight size={16} />
             </Link>
-            <Link href="/request-healthcare-staff" className="btn btn-outline">
+            <Link href={REQUEST_STAFF_PATH} className="btn btn-outline">
               Request Staff <ArrowRight size={16} />
             </Link>
             <a className="home-hero__call" href={phone.href} aria-label={`Call BHSK at ${phone.display}`}>

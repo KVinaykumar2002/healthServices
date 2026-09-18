@@ -1,5 +1,4 @@
-const WHATSAPP_NUMBER = "97431599965";
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+const WHATSAPP_URL = "https://wa.me/97431599965";
 
 function WhatsAppGlyph() {
   return (
