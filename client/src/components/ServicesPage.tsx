@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { ArrowRight, Building2, Home as HomeIcon } from "lucide-react";
+import { Building2, Home as HomeIcon } from "lucide-react";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Reveal, RevealText, GsapStagger } from "@/lib/motion";
 import { Seo, servicesPageJsonLd } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
@@ -78,9 +79,11 @@ export function ServicesPage() {
               <RevealText scroll>Home Care Services</RevealText>
             </h2>
             <p>{HOME_CARE_BLURB}</p>
-            <Link href={REQUEST_NURSE_PATH} className="btn btn-primary services-hub__cta">
-              Request a Nurse <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton
+              href={REQUEST_NURSE_PATH}
+              label="Request a Nurse"
+              className="services-hub__cta"
+            />
           </Reveal>
           <ServiceTiles items={homeCareServices} />
         </div>
@@ -101,9 +104,11 @@ export function ServicesPage() {
               <RevealText scroll>Healthcare Staffing Services</RevealText>
             </h2>
             <p>{HEALTHCARE_STAFFING_BLURB}</p>
-            <Link href={REQUEST_STAFF_PATH} className="btn btn-primary services-hub__cta">
-              Request Staff <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton
+              href={REQUEST_STAFF_PATH}
+              label="Request Staff"
+              className="services-hub__cta"
+            />
           </Reveal>
           <ServiceTiles items={facilityServices} />
           <Reveal className="services-hub__staffing-note" direction="left" distance={40} delay={0.08}>

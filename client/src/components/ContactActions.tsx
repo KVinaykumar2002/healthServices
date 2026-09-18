@@ -1,5 +1,6 @@
-import { ArrowRight, MessageCircle, Phone } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Link } from "wouter";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Reveal } from "@/lib/motion";
 import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH, WHATSAPP } from "@/lib/site";
 
@@ -17,9 +18,7 @@ export function ContactActions() {
         </Reveal>
         <div className="contact-actions__grid">
           <Reveal className="contact-actions__item" direction="left" distance={32} delay={0.04}>
-            <a href={phone.href} className="btn btn-primary contact-actions__btn">
-              <Phone size={16} /> Call Now
-            </a>
+            <AntiMetalButton href={phone.href} label="Call Now" className="contact-actions__btn w-full" />
             <p>Speak with our team on {phone.display}</p>
           </Reveal>
           <Reveal className="contact-actions__item" direction="left" distance={32} delay={0.08}>
@@ -34,15 +33,19 @@ export function ContactActions() {
             <p>Message us on WhatsApp for a quick enquiry</p>
           </Reveal>
           <Reveal className="contact-actions__item" direction="left" distance={32} delay={0.12}>
-            <Link href={REQUEST_NURSE_PATH} className="btn btn-primary contact-actions__btn">
-              Request a Nurse <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton
+              href={REQUEST_NURSE_PATH}
+              label="Request a Nurse"
+              className="contact-actions__btn w-full"
+            />
             <p>Home care form for individuals and families</p>
           </Reveal>
           <Reveal className="contact-actions__item" direction="left" distance={32} delay={0.16}>
-            <Link href="/book-consultation" className="btn btn-outline contact-actions__btn">
-              Book a Consultation <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton
+              href="/book-consultation"
+              label="Book a Consultation"
+              className="contact-actions__btn w-full"
+            />
             <p>Share your needs and we will follow up</p>
           </Reveal>
         </div>

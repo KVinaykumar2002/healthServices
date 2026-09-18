@@ -1,4 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { Reveal } from "@/lib/motion";
@@ -58,9 +59,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
             </Reveal>
           ))}
           <Reveal className="svc-page__hero-actions" direction="left" distance={36} delay={0.22}>
-            <Link href={ctaHref} className="btn btn-primary">
-              {page.heroCtaLabel} <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton href={ctaHref} label={page.heroCtaLabel} />
             <a href={phone.href} className="btn btn-outline">
               <Phone size={16} /> {phone.display}
             </a>
@@ -153,9 +152,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
           </ol>
           <Reveal className="svc-page__process-note" direction="left" distance={32} delay={0.2}>
             <p>{page.process.whoContacts}</p>
-            <Link href={ctaHref} className="btn btn-primary">
-              {page.heroCtaLabel} <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton href={ctaHref} label={page.heroCtaLabel} />
           </Reveal>
         </div>
       </section>
@@ -228,9 +225,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
             </Reveal>
           </ul>
           <Reveal className="svc-page__related-cta" direction="left" distance={32} delay={0.12}>
-            <Link href={ctaHref} className="btn btn-primary">
-              Request a Nurse <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton href={ctaHref} label="Request a Nurse" />
           </Reveal>
         </div>
       </section>

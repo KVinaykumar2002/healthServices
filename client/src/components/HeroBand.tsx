@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
-import { ArrowRight, ChevronLeft, ChevronRight, Phone } from "lucide-react";
+import { ChevronLeft, ChevronRight, Phone } from "lucide-react";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { gsap, gsapEase, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { Parallax } from "@/lib/motion";
 import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
@@ -98,12 +98,16 @@ export function HeroBand() {
             team will confirm fit and availability.
           </p>
           <div className="home-hero__cta-row" data-hero-animate>
-            <Link href={REQUEST_NURSE_PATH} className="btn btn-primary">
-              Request a Nurse <ArrowRight size={16} />
-            </Link>
-            <Link href={REQUEST_STAFF_PATH} className="btn btn-outline">
-              Request Staff <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton
+              href={REQUEST_NURSE_PATH}
+              label="Request a Nurse"
+              className="w-full shrink-0 sm:w-auto sm:min-w-[11.5rem]"
+            />
+            <AntiMetalButton
+              href={REQUEST_STAFF_PATH}
+              label="Request Staff"
+              className="w-full shrink-0 sm:w-auto sm:min-w-[10.5rem]"
+            />
             <a className="home-hero__call" href={phone.href} aria-label={`Call BHSK at ${phone.display}`}>
               <Phone size={15} strokeWidth={2.5} aria-hidden="true" />
               <span>{phone.display}</span>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Building2, Home as HomeIcon, ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { Building2, Home as HomeIcon, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Link, Route, Switch, useLocation } from "wouter";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
@@ -14,6 +14,8 @@ import { FaqSection } from "@/components/FaqSection";
 import { ContactActions } from "@/components/ContactActions";
 import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
+import { Cta69 } from "@/components/ui/cta69";
 import { requestNurseHref } from "@/lib/servicePages";
 import {
   CONTACT_EMAIL,
@@ -135,9 +137,7 @@ function Header() {
           <a href={CONTACT_PHONES[0].href} className="phone">
             <Phone size={15} /> {CONTACT_PHONES[0].display}
           </a>
-          <Link href="/request-a-nurse" className="btn btn-primary small">
-            Request a Nurse
-          </Link>
+          <AntiMetalButton href="/request-a-nurse" label="Request a Nurse" size="sm" />
         </div>
       </nav>
       <AnimatePresence>
@@ -166,16 +166,20 @@ function Header() {
               <a href={`mailto:${CONTACT_EMAIL}`} className="phone">
                 <Mail size={15} /> {CONTACT_EMAIL}
               </a>
-              <Link href="/request-a-nurse" className="btn btn-primary small" onClick={() => setOpen(false)}>
-                Request a Nurse
-              </Link>
-              <Link
-                href="/request-healthcare-staff"
-                className="btn btn-outline small"
+              <AntiMetalButton
+                href="/request-a-nurse"
+                label="Request a Nurse"
+                size="sm"
+                className="w-full"
                 onClick={() => setOpen(false)}
-              >
-                Request Staff
-              </Link>
+              />
+              <AntiMetalButton
+                href="/request-healthcare-staff"
+                label="Request Staff"
+                size="sm"
+                className="w-full"
+                onClick={() => setOpen(false)}
+              />
             </div>
           </motion.div>
         )}
@@ -253,9 +257,7 @@ function TwoJourneyBand() {
             <h3>Home care for individuals</h3>
             <p>{HOME_CARE_BLURB}</p>
             <div className="journey-path__actions">
-              <Link href={REQUEST_NURSE_PATH} className="btn btn-primary">
-                Request a Nurse <ArrowRight size={16} />
-              </Link>
+              <AntiMetalButton href={REQUEST_NURSE_PATH} label="Request a Nurse" />
               <Link href="/services#home-care" className="btn btn-outline">
                 View home care services
               </Link>
@@ -266,9 +268,7 @@ function TwoJourneyBand() {
             <h3>Healthcare staffing for business</h3>
             <p>{HEALTHCARE_STAFFING_BLURB}</p>
             <div className="journey-path__actions">
-              <Link href={REQUEST_STAFF_PATH} className="btn btn-primary">
-                Request Staff <ArrowRight size={16} />
-              </Link>
+              <AntiMetalButton href={REQUEST_STAFF_PATH} label="Request Staff" />
               <Link href="/services#healthcare-staffing" className="btn btn-outline">
                 View staffing services
               </Link>
@@ -315,9 +315,7 @@ function WhyBhsk() {
             Licence and screening details are shared by the BHSK team when relevant to an assignment. Approved wording
             will be published here once confirmed.
           </p>
-          <Link href="/about-us" className="btn btn-outline">
-            About BHSK <ArrowRight size={16} />
-          </Link>
+          <AntiMetalButton href="/about-us" label="About BHSK" />
         </Reveal>
       </div>
     </section>
@@ -336,9 +334,7 @@ function TrustNote() {
             consent. Genuine BHSK team photos and client reviews will be added here once permission is confirmed for
             use in Qatar.
           </p>
-          <Link href="/contact-us" className="btn btn-outline">
-            Contact the team <ArrowRight size={16} />
-          </Link>
+          <AntiMetalButton href="/contact-us" label="Contact the team" />
         </Reveal>
       </div>
     </section>
@@ -360,6 +356,16 @@ function Home() {
       <TrustNote />
       <FaqSection />
       <ContactActions />
+      <Cta69
+        badge={{ label: "Next step" }}
+        heading="Tell us what nursing support you need."
+        button={{ label: "Contact BHSK", href: "/contact-us" }}
+        labels={{
+          marqueePhrase: "BHSK Nursing",
+          note: "Facility staffing or home care — share your enquiry and we assess fit and availability before confirming.",
+          footnote: "Based in Old Airport, Doha. We reply within one business day.",
+        }}
+      />
     </main>
   );
 }
@@ -393,9 +399,7 @@ function StaffingHubPage() {
             {HEALTHCARE_STAFFING_BLURB}
           </Reveal>
           <Reveal direction="left" distance={36} delay={0.18}>
-            <Link href={REQUEST_STAFF_PATH} className="btn btn-primary">
-              Request Staff <ArrowRight size={16} />
-            </Link>
+            <AntiMetalButton href={REQUEST_STAFF_PATH} label="Request Staff" />
           </Reveal>
         </div>
       </section>
@@ -507,17 +511,12 @@ function InnerPage({
           {!isLead && (
             <Reveal direction="left" distance={36} delay={0.2}>
               {service ? (
-                <Link
+                <AntiMetalButton
                   href={service.category === "facility" ? REQUEST_STAFF_PATH : REQUEST_NURSE_PATH}
-                  className="btn btn-primary"
-                >
-                  {service.category === "facility" ? "Request Staff" : "Request a Nurse"}{" "}
-                  <ArrowRight size={16} />
-                </Link>
+                  label={service.category === "facility" ? "Request Staff" : "Request a Nurse"}
+                />
               ) : (
-                <Link href="/contact-us" className="btn btn-primary">
-                  Talk to our team <ArrowRight size={16} />
-                </Link>
+                <AntiMetalButton href="/contact-us" label="Talk to our team" />
               )}
             </Reveal>
           )}
@@ -582,7 +581,7 @@ function GeneralContent({
               <Check /> Local team coordination in Qatar
             </div>
           </div>
-          <Link
+          <AntiMetalButton
             href={
               service?.category === "facility"
                 ? REQUEST_STAFF_PATH
@@ -590,11 +589,9 @@ function GeneralContent({
                   ? requestNurseHref(service.name)
                   : REQUEST_NURSE_PATH
             }
-            className="btn btn-primary"
-            style={{ marginTop: 24 }}
-          >
-            {service?.category === "facility" ? "Request Staff" : "Request a Nurse"} <ArrowRight size={16} />
-          </Link>
+            label={service?.category === "facility" ? "Request Staff" : "Request a Nurse"}
+            className="mt-6"
+          />
         </Reveal>
         <Reveal delay={0.12} className="content-panel" direction="right" distance={48}>
           <h3>How it works</h3>
@@ -815,9 +812,7 @@ function ContactContent({
               Submitting starts a conversation with BHSK. Placement depends on clinical fit and availability — our team
               confirms after review.
             </p>
-            <button className="btn btn-primary" type="submit">
-              Submit enquiry <ArrowRight size={16} />
-            </button>
+            <AntiMetalButton type="submit" label="Submit enquiry" />
           </form>
         </Reveal>
       </div>

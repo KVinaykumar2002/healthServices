@@ -1,5 +1,4 @@
-import { ArrowRight } from "lucide-react";
-import { Link } from "wouter";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Reveal } from "@/lib/motion";
 import { REQUEST_NURSE_PATH } from "@/lib/site";
 
@@ -47,9 +46,7 @@ export function HowItWorks() {
           ))}
         </ol>
         <Reveal className="how-cta" direction="left" distance={32} delay={0.2}>
-          <Link href={REQUEST_NURSE_PATH} className="btn btn-primary">
-            Request a Nurse <ArrowRight size={16} />
-          </Link>
+          <AntiMetalButton href={REQUEST_NURSE_PATH} label="Request a Nurse" />
         </Reveal>
       </div>
     </section>
