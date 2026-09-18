@@ -1313,6 +1313,84 @@ button, select, input, textarea {
 
 .service-tile:hover span { color: var(--color-surface-strong); }
 
+/* ── Dual journeys (staffing vs home care) ─────────────────── */
+.journey-band {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-surface-strong) 6%, var(--color-surface-page)),
+      var(--color-surface-page)
+    );
+}
+
+.journey-intro {
+  max-width: 40rem;
+  margin-bottom: calc(var(--space-8) * 4);
+}
+
+.journey-intro h2 {
+  margin: 0 0 calc(var(--space-8) * 1.2);
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--color-text-primary);
+}
+
+.journey-intro p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.journey-paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--space-8) * 4);
+}
+
+.journey-path {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--space-8) * 1.4);
+  padding-block: calc(var(--space-8) * 0.5);
+}
+
+.journey-path__icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-surface-strong);
+}
+
+.journey-path h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.journey-path p {
+  margin: 0;
+  flex: 1;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  max-width: 28rem;
+}
+
+.journey-path .btn {
+  margin-top: calc(var(--space-8) * 0.8);
+}
+
+@media (max-width: 768px) {
+  .journey-paths {
+    grid-template-columns: 1fr;
+    gap: calc(var(--space-8) * 5);
+  }
+}
+
 /* ── Proof ────────────────────────────────────────────────── */
 .proof {
   background:
@@ -1622,6 +1700,13 @@ button, select, input, textarea {
 .form-feedback.is-success { color: #0d7a72; }
 .form-feedback.is-error { color: #b42318; }
 .form-feedback a { color: inherit; text-decoration: underline; }
+
+.contact-form__note {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
 
 /* ── Footer ───────────────────────────────────────────────── */
 footer {

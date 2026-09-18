@@ -42,12 +42,12 @@ interface CareServicesMenuProps {
 
 export function CareServicesMenu({ onNavigate, variant = "dropdown" }: CareServicesMenuProps) {
   return (
-    <div className={`care-menu care-menu--${variant}`} aria-label="Home healthcare services">
+    <div className={`care-menu care-menu--${variant}`} aria-label="BHSK nursing services">
       <header className="care-menu-heading">
         <span className="care-menu-kicker">Our services</span>
-        <p className="care-menu-title">Care, at home.</p>
+        <p className="care-menu-title">Staffing &amp; home care.</p>
       </header>
-      <nav className="care-menu-grid" aria-label="Healthcare services">
+      <nav className="care-menu-grid" aria-label="Nursing services">
         {careMenuServices.map(({ slug, label, icon: Icon }) => (
           <Link
             key={slug}

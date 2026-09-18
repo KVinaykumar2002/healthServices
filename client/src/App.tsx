@@ -1,16 +1,11 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Link, Route, Switch, useLocation, useSearchParams } from "wouter";
-import { ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { Building2, Home as HomeIcon, ArrowRight, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { Link, Route, Switch, useLocation } from "wouter";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
 import { submitEnquiry } from "@/lib/api";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
-import { HealthcareTrustStats } from "@/components/HealthcareTrustStats";
 import { HeroBand } from "@/components/HeroBand";
-import { HospitalPartners } from "@/components/HospitalPartners";
-import { LabTestsSection } from "@/components/LabTestsSection";
-import { NewOffers } from "@/components/NewOffers";
-import { QatarHealthcareHero } from "@/components/QatarHealthcareHero";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
@@ -110,10 +105,10 @@ const services = [
 function BrandMark({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`brand ${className}`}>
-      <img src="/image.png" alt="BHSK for Health Services" className="brand-logo" />
+      <img src="/image.png" alt="BHSK Nursing Services" className="brand-logo" />
       <span>
         <b>BHSK</b>
-        <small>FOR HEALTH SERVICES</small>
+        <small>NURSING SERVICES</small>
       </span>
     </Link>
   );
@@ -294,7 +289,7 @@ function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} BHSK for Health Services. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} BHSK Nursing Services. All rights reserved.</span>
         <span>Privacy · Terms</span>
       </div>
     </footer>
@@ -357,20 +352,57 @@ function CtaBand() {
   );
 }
 
+function TwoJourneyBand() {
+  return (
+    <section className="journey-band section" aria-labelledby="journey-heading">
+      <div className="container">
+        <Reveal className="journey-intro" direction="left" distance={48}>
+          <div className="eyebrow">HOW CAN WE HELP?</div>
+          <h2 id="journey-heading">Two clear paths to nursing support</h2>
+          <p>
+            Tell us whether you need nurses for a facility or specialised care at home — we assess each enquiry for
+            fit and availability.
+          </p>
+        </Reveal>
+        <div className="journey-paths">
+          <Reveal className="journey-path" direction="left" distance={40} delay={0.06}>
+            <Building2 className="journey-path__icon" aria-hidden="true" strokeWidth={1.6} />
+            <h3>Facility &amp; employer staffing</h3>
+            <p>
+              Hospitals, medical centres, schools, nurseries, and camp or construction sites that need reliable nursing
+              cover.
+            </p>
+            <Link href="/contact-us?type=employer" className="btn btn-primary">
+              Request staffing <ArrowRight size={16} />
+            </Link>
+          </Reveal>
+          <Reveal className="journey-path" direction="left" distance={40} delay={0.12}>
+            <HomeIcon className="journey-path__icon" aria-hidden="true" strokeWidth={1.6} />
+            <h3>Home care for families</h3>
+            <p>
+              Maternity and newborn, elderly, baby care, palliative, chronic, post-operative nursing, and physiotherapy
+              at home.
+            </p>
+            <Link href="/contact-us?type=patient" className="btn btn-outline">
+              Request home care <ArrowRight size={16} />
+            </Link>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Home() {
   return (
     <main>
       <HeroBand />
-      <QatarHealthcareHero />
+      <TwoJourneyBand />
       <ServiceGrid
         title="Nursing services built around real needs"
         subtitle="From facility staffing to specialised home care — choose the support that fits."
         services={[...services]}
       />
-      <NewOffers />
-      <LabTestsSection />
-      <HealthcareTrustStats />
-      <HospitalPartners />
       <Proof />
       <CtaBand />
     </main>
@@ -382,11 +414,11 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
   const title =
     service?.name ||
     ({
-      "about-us": "About BHSK for Health Services",
+      "about-us": "About BHSK Nursing Services",
       "contact-us": "We’re here to help",
       services: "Our nursing services",
     }[type] ||
-      "BHSK for Health Services");
+      "BHSK Nursing Services");
   const description =
     service?.text ||
     (type === "about-us"
@@ -400,7 +432,7 @@ function InnerPage({ type, slug }: { type: string; slug?: string }) {
       <section className="inner-hero">
         <div className="container inner-hero-inner">
           <Reveal className="eyebrow" direction="left" distance={40}>
-            BHSK FOR HEALTH SERVICES
+            BHSK NURSING SERVICES
           </Reveal>
           <Reveal as="h1" direction="left" distance={56} delay={0.06}>
             {title}
@@ -494,42 +526,96 @@ function GeneralContent({ service }: { service?: (typeof services)[number] }) {
   );
 }
 
-function ContactContent() {
-  const [searchParams] = useSearchParams();
-  const preselectedService = searchParams.get("service") ?? "";
+function useContactQuery() {
+  const [location] = useLocation();
+  return useMemo(() => {
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    const params = new URLSearchParams(search);
+    const typeParam = params.get("type");
+    const type =
+      typeParam === "employer" || typeParam === "patient" ? typeParam : "";
+    return {
+      service: params.get("service") ?? "",
+      type,
+      location,
+    };
+  }, [location]);
+}
 
+function ContactContent() {
+  const query = useContactQuery();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [org, setOrg] = useState("");
-  const [service, setService] = useState(preselectedService);
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
+  const [enquiryType, setEnquiryType] = useState(query.type);
+  const [selectedService, setSelectedService] = useState(() => {
+    if (!query.service) return "";
+    const byName = services.find((s) => s.name === query.service);
+    if (byName) return byName.name;
+    const byPartial = services.find(
+      (s) =>
+        s.name.toLowerCase().includes(query.service.toLowerCase()) ||
+        query.service.toLowerCase().includes(s.name.toLowerCase().split(" ")[0] ?? ""),
+    );
+    // Match hero care option labels to service names
+    const heroMap: Record<string, string> = {
+      "Hospital Nursing": "Nursing Services for Hospitals",
+      "Medical Centre Nursing": "Nursing Services for Medical Centres",
+      "School / Nursery Nursing": "Nursing Services for Schools / Nurseries",
+      "Camp / Construction Nursing": "Nursing Services for Camp or Construction Site",
+      "Maternity & Newborn Care": "Maternity and Newborn Care",
+      "Elderly Care": "Elderly Care",
+      "Baby Care": "Baby Care",
+      "Palliative Care": "Palliative Care",
+      "Chronic Patient Care": "Chronic Patient Care",
+      "Post-operative Care": "Post-operative Care",
+      Physiotherapy: "Physiotherapy",
+    };
+    return heroMap[query.service] ?? byPartial?.name ?? "";
+  });
 
   useEffect(() => {
-    if (preselectedService) setService(preselectedService);
-  }, [preselectedService]);
+    if (query.type) setEnquiryType(query.type);
+  }, [query.type]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
     setError("");
 
+    const typeLabel =
+      enquiryType === "employer"
+        ? "Employer / facility staffing"
+        : enquiryType === "patient"
+          ? "Patient / family home care"
+          : enquiryType || "Not specified";
+
+    const composedMessage = [
+      `Enquiry type: ${typeLabel}`,
+      message.trim() || "—",
+      "",
+      "Note: This enquiry requires assessment and availability confirmation by the BHSK team.",
+    ].join("\n");
+
     try {
       await submitEnquiry({
         name,
         phone,
         org,
-        service,
-        message,
+        service: selectedService,
+        message: composedMessage,
         source: "contact",
       });
       setStatus("success");
       setName("");
       setPhone("");
       setOrg("");
-      setService("");
       setMessage("");
+      setSelectedService("");
+      setEnquiryType("");
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Unable to submit enquiry");
@@ -598,21 +684,29 @@ function ContactContent() {
               value={org}
               onChange={(e) => setOrg(e.target.value)}
             />
-            <select name="service" value={service} onChange={(e) => setService(e.target.value)} required>
+            <select
+              name="enquiryType"
+              required
+              value={enquiryType}
+              onChange={(e) => setEnquiryType(e.target.value)}
+            >
               <option value="" disabled>
-                Select a service
+                Enquiry type
               </option>
+              <option value="patient">Patient / family home care</option>
+              <option value="employer">Employer / facility staffing</option>
+            </select>
+            <select
+              name="service"
+              value={selectedService}
+              onChange={(e) => setSelectedService(e.target.value)}
+            >
+              <option value="">Select a service (optional)</option>
               {services.map((s) => (
                 <option key={s.slug} value={s.name}>
                   {s.name}
                 </option>
               ))}
-              <option value="Lab Tests At Home">Lab Tests At Home</option>
-              {service &&
-              !services.some((s) => s.name === service) &&
-              service !== "Lab Tests At Home" ? (
-                <option value={service}>{service}</option>
-              ) : null}
             </select>
             <textarea
               placeholder="Tell us how we can help"
@@ -621,6 +715,10 @@ function ContactContent() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
+            <p className="contact-form__note">
+              Submitting an enquiry starts a conversation. Placement depends on clinical fit, licensing and current
+              availability — our team will confirm after review.
+            </p>
             <button className="btn btn-primary" type="submit" disabled={status === "loading"}>
               {status === "loading" ? "Sending…" : "Submit enquiry"} <ArrowRight size={16} />
             </button>
