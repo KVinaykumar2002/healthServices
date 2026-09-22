@@ -33,10 +33,10 @@ import {
 function BrandMark({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`brand ${className}`}>
-      <img src="/image.png" alt="BHSK Nursing Services" className="brand-logo" />
+      <img src="/image.png" alt="BHSK for Health Services" className="brand-logo" />
       <span>
         <b>BHSK</b>
-        <small>NURSING SERVICES</small>
+        <small>FOR HEALTH SERVICES</small>
       </span>
     </Link>
   );
@@ -232,7 +232,7 @@ function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} BHSK Nursing Services. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} BHSK for Health Services. All rights reserved.</span>
         <span>Doha, Qatar</span>
       </div>
     </footer>
@@ -296,7 +296,7 @@ function WhyBhsk() {
           <div className="eyebrow">WHY BHSK</div>
           <h2 id="why-heading">Nursing support based in Qatar</h2>
           <p>
-            BHSK Nursing Services operates from Doha and focuses on professional nursing for facilities and home care.
+            BHSK for Health Services operates from Doha and focuses on professional nursing for facilities and home care.
             We match enquiries to available staff after assessment — we do not publish unverified licence numbers,
             partner counts or response-time promises on this site.
           </p>
@@ -361,7 +361,7 @@ function Home() {
         heading="Tell us what nursing support you need."
         button={{ label: "Contact BHSK", href: "/contact-us" }}
         labels={{
-          marqueePhrase: "BHSK Nursing",
+          marqueePhrase: "BHSK for Health Services",
           note: "Facility staffing or home care — share your enquiry and we assess fit and availability before confirming.",
           footnote: "Based in Old Airport, Doha. We reply within one business day.",
         }}
@@ -434,13 +434,13 @@ function InnerPage({
   const title =
     service?.name ||
     ({
-      "about-us": "About BHSK Nursing Services",
+      "about-us": "About BHSK for Health Services",
       "contact-us": "We’re here to help",
       "request-a-nurse": "Request a Nurse",
       "request-healthcare-staff": "Request Staff",
       "book-consultation": "Book a consultation",
     }[type] ||
-      "BHSK Nursing Services");
+      "BHSK for Health Services");
   const description =
     service?.text ||
     (type === "about-us"
@@ -500,7 +500,7 @@ function InnerPage({
             <SiteBreadcrumb items={crumbs} />
           </Reveal>
           <Reveal className="eyebrow" direction="left" distance={40} delay={0.04}>
-            BHSK NURSING SERVICES
+            BHSK FOR HEALTH SERVICES
           </Reveal>
           <Reveal as="h1" direction="left" distance={56} delay={0.08}>
             {title}
@@ -557,13 +557,13 @@ function GeneralContent({
             {service
               ? service.name
               : type === "about-us"
-                ? "About BHSK Nursing Services"
+                ? "About BHSK for Health Services"
                 : "Healthcare that starts with listening"}
           </h2>
           <p>
             {service
               ? service.text
-              : "BHSK Nursing Services is based in Doha. We coordinate nursing for facilities and specialised home care for families. Claims about licences, partners or volumes appear on this site only when approved by BHSK."}
+              : "BHSK for Health Services is based in Doha. We coordinate nursing for facilities and specialised home care for families. Claims about licences, partners or volumes appear on this site only when approved by BHSK."}
           </p>
           {service ? (
             <div className="content-service-image">

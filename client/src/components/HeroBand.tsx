@@ -85,7 +85,7 @@ export function HeroBand() {
       <div className="home-hero__container">
         <div className="home-hero__content" ref={contentRef}>
           <p className="home-hero__brand" data-hero-animate>
-            BHSK Nursing Services
+            BHSK for Health Services
           </p>
           <h1 id="home-hero-title" data-hero-animate>
             Professional Nursing and Healthcare Staffing in Qatar

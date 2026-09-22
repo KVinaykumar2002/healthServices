@@ -76,7 +76,7 @@ export function CareServicesMenu({ onNavigate, variant = "dropdown" }: CareServi
   const facility = careMenuServices.filter((s) => s.group === "facility");
 
   return (
-    <div className={`care-menu care-menu--${variant}`} aria-label="BHSK nursing services">
+    <div className={`care-menu care-menu--${variant}`} aria-label="BHSK for Health Services">
       <header className="care-menu-heading">
         <span className="care-menu-kicker">Our services</span>
         <p className="care-menu-title">Home care &amp; healthcare staffing.</p>
