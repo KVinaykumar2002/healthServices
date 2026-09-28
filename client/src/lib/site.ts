@@ -22,6 +22,15 @@ export const OFFICE_ADDRESS = {
   ],
 } as const;
 
+/** Matches the "BHSK Health Services" Google Maps listing (plus code 7H55+RP, Old Airport). */
+const MAP_QUERY = encodeURIComponent("BHSK Health Services, Old Airport, Doha, Qatar");
+
+export const OFFICE_MAP = {
+  embedUrl: `https://www.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`,
+  viewUrl: `https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`,
+  directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${MAP_QUERY}`,
+} as const;
+
 export type ServiceCategory = "facility" | "home";
 
 export type ServiceItem = {
@@ -39,96 +48,84 @@ export const services: ServiceItem[] = [
     name: "Home Nursing",
     text: "Professional home nursing in Qatar for elderly support, recovery after surgery and ongoing care needs.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-home-nursing.jpg",
   },
   {
     slug: "hospitals",
     name: "Nursing Services for Hospitals",
     text: "Skilled nursing support that integrates with hospital wards and clinical teams in Qatar.",
     category: "facility",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-hospitals.jpg",
   },
   {
     slug: "medical-centres",
     name: "Nursing Services for Medical Centres",
     text: "Reliable clinic and outpatient nursing for busy medical centres.",
     category: "facility",
-    imageUrl:
-      "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-medical-centres.jpg",
   },
   {
     slug: "schools-nurseries",
     name: "Nursing Services for Schools / Nurseries",
     text: "On-site school and nursery nurses for first aid, wellness and parent peace of mind.",
     category: "facility",
-    imageUrl:
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-schools.jpg",
   },
   {
     slug: "camp-construction",
     name: "Nursing Services for Camp or Construction Site",
     text: "Occupational health nursing for remote camps and active construction sites.",
     category: "facility",
-    imageUrl:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-camp-construction.jpg",
   },
   {
     slug: "maternity-newborn",
     name: "Maternity and Newborn Care",
     text: "Gentle, expert nursing support for mothers and newborns through the early weeks at home.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-maternity-newborn.jpg",
   },
   {
     slug: "elderly-care",
     name: "Elderly Care",
     text: "Respectful companionship and clinical nursing support that helps seniors stay comfortable at home.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-elderly-care.jpg",
   },
   {
     slug: "baby-care",
     name: "Baby Care",
     text: "Attentive infant care from trained nurses who understand every stage of early life.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-baby-care.jpg",
   },
   {
     slug: "palliative-care",
     name: "Palliative Care",
     text: "Compassionate symptom relief and dignity-focused nursing support for serious illness.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-palliative-care.jpg",
   },
   {
     slug: "chronic-care",
     name: "Chronic Patient Care",
     text: "Ongoing nursing plans for long-term conditions, monitoring and daily management at home.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-chronic-care.jpg",
   },
   {
     slug: "post-operative",
     name: "Post-operative Care",
     text: "Safe recovery support after surgery — wound care, medication and mobility at home.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-post-operative.jpg",
   },
   {
     slug: "physiotherapy",
     name: "Physiotherapy",
     text: "Personalised rehabilitation to restore strength, movement and independence.",
     category: "home",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/care/svc-physiotherapy.jpg",
   },
 ];
 

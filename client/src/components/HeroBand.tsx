@@ -7,16 +7,16 @@ import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/si
 
 const heroSlides = [
   {
-    src: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1600&q=85",
-    alt: "Nursing professionals in a clinical setting",
+    src: "/images/care/hero-home-care.jpg",
+    alt: "Nurse checking an elderly man's pulse in a family living room",
   },
   {
-    src: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1600&q=85",
-    alt: "Nurse providing compassionate patient care",
+    src: "/images/care/hero-facility-staffing.jpg",
+    alt: "Two nurses walking together along a hospital corridor",
   },
   {
-    src: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1600&q=85",
-    alt: "Elder care support at home",
+    src: "/images/care/hero-maternity.jpg",
+    alt: "Nurse helping a new mother hold her newborn baby at home",
   },
 ] as const;
 

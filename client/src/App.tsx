@@ -12,6 +12,7 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { HowItWorks } from "@/components/HowItWorks";
 import { FaqSection } from "@/components/FaqSection";
 import { ContactActions } from "@/components/ContactActions";
+import { OfficeMap } from "@/components/OfficeMap";
 import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
@@ -21,6 +22,7 @@ import {
   CONTACT_EMAIL,
   CONTACT_PHONES,
   OFFICE_ADDRESS,
+  OFFICE_MAP,
   HOME_CARE_BLURB,
   HEALTHCARE_STAFFING_BLURB,
   REQUEST_NURSE_PATH,
@@ -229,6 +231,9 @@ function Footer() {
             <br />
             {OFFICE_ADDRESS.lines[2]}
           </p>
+          <a href={OFFICE_MAP.viewUrl} target="_blank" rel="noopener noreferrer">
+            <MapPin size={15} /> View on Google Maps
+          </a>
         </div>
       </div>
       <div className="container footer-bottom">
@@ -286,10 +291,7 @@ function WhyBhsk() {
       <div className="container proof-grid">
         <Reveal direction="left" distance={80}>
           <div className="proof-photo">
-            <img
-              src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=900&q=85"
-              alt="Nursing care in a clinical environment"
-            />
+            <img src="/images/care/why-team.jpg" alt="Team of nurses in teal scrubs smiling together" />
           </div>
         </Reveal>
         <Reveal delay={0.12} className="proof-copy" direction="left" distance={56}>
@@ -356,6 +358,7 @@ function Home() {
       <TrustNote />
       <FaqSection />
       <ContactActions />
+      <OfficeMap />
       <Cta69
         badge={{ label: "Next step" }}
         heading="Tell us what nursing support you need."
@@ -537,6 +540,7 @@ function InnerPage({
       ) : (
         <GeneralContent service={service} type={type} />
       )}
+      {type === "contact-us" ? <OfficeMap /> : null}
     </main>
   );
 }
