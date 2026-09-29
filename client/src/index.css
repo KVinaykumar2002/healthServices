@@ -1823,7 +1823,39 @@ button, select, input, textarea {
   width: 100%;
   height: 420px;
   object-fit: cover;
+  object-position: center 30%;
   display: block;
+}
+
+.svc-page__audience {
+  padding-top: 0;
+}
+
+.svc-page__audience-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: calc(var(--space-8) * 4);
+  align-items: start;
+}
+
+.svc-page__audience .section-heading {
+  margin-bottom: 0;
+}
+
+.svc-page__audience-list {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+}
+
+.svc-page__audience-list div {
+  align-items: flex-start;
+}
+
+@media (max-width: 860px) {
+  .svc-page__audience-inner {
+    grid-template-columns: 1fr;
+    gap: calc(var(--space-8) * 2);
+  }
 }
 
 .svc-page__scope-grid {

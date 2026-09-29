@@ -4,30 +4,34 @@ import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { Reveal } from "@/lib/motion";
 import {
-  homeNursingJsonLd,
   homeNursingPage,
   relatedServicesFor,
-  requestNurseHref,
+  requestHrefFor,
   serviceHref,
+  serviceJsonLd,
+  servicePageBySlug,
   type ServicePageContent,
 } from "@/lib/servicePages";
 import { CONTACT_PHONES } from "@/lib/site";
 import { ArrowRight, Check, MapPin, Phone, X } from "lucide-react";
+import { useMemo } from "react";
 import { Link } from "wouter";
 
 type ServiceDetailPageProps = {
   page: ServicePageContent;
-  jsonLd: Record<string, unknown>;
+  jsonLd?: Record<string, unknown>;
 };
 
 export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
   const related = relatedServicesFor(page);
-  const ctaHref = requestNurseHref(page.requestServiceName);
+  const ctaHref = requestHrefFor(page);
+  const isFacility = page.category === "facility";
   const phone = CONTACT_PHONES[0];
+  const structuredData = useMemo(() => jsonLd ?? serviceJsonLd(page), [jsonLd, page]);
 
   return (
     <main className="svc-page">
-      <Seo title={page.seoTitle} description={page.seoDescription} path={page.path} jsonLd={jsonLd} />
+      <Seo title={page.seoTitle} description={page.seoDescription} path={page.path} jsonLd={structuredData} />
 
       <section className="inner-hero svc-page__hero">
         <div className="container inner-hero-inner">
@@ -41,7 +45,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
             />
           </Reveal>
           <Reveal className="eyebrow" direction="left" distance={40} delay={0.04}>
-            HOME NURSING · QATAR
+            {page.eyebrow.toUpperCase()}
           </Reveal>
           <Reveal as="h1" direction="left" distance={56} delay={0.08}>
             {page.h1}
@@ -67,7 +71,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
         </div>
       </section>
 
-      <section className="section svc-page__media-section" aria-label="Home nursing in Qatar">
+      <section className="section svc-page__media-section" aria-label={`${page.name} in Qatar`}>
         <div className="container">
           <Reveal className="svc-page__media" direction="left" distance={48}>
             <img src={page.imageUrl} alt={page.imageAlt} />
@@ -75,11 +79,29 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
         </div>
       </section>
 
+      <section className="section svc-page__audience" aria-labelledby="audience-heading">
+        <div className="container svc-page__audience-inner">
+          <Reveal className="section-heading" direction="left" distance={48}>
+            <div className="eyebrow">{isFacility ? "WHO WE SUPPORT" : "WHO IT'S FOR"}</div>
+            <h2 id="audience-heading">{page.audience.heading}</h2>
+          </Reveal>
+          <div className="check-list svc-page__audience-list">
+            {page.audience.items.map((item, i) => (
+              <Reveal key={item} direction="left" distance={28} delay={0.04 * i}>
+                <div>
+                  <Check /> {item}
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="section svc-page__scope" aria-labelledby="scope-heading">
         <div className="container">
           <Reveal className="section-heading" direction="left" distance={48}>
             <div className="eyebrow">SERVICE DETAILS</div>
-            <h2 id="scope-heading">Scope of home nursing care</h2>
+            <h2 id="scope-heading">{page.scopeHeading}</h2>
             <p>{page.scope.scopeNote}</p>
           </Reveal>
           <div className="svc-page__scope-grid">
@@ -108,8 +130,10 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
           </div>
           <Reveal className="svc-page__lead-note" direction="left" distance={32} delay={0.12}>
             <p>
-              Need the service lead to confirm duties for your case? Use{" "}
-              <Link href={ctaHref}>Request a Nurse</Link> or call{" "}
+              {isFacility
+                ? "Need to confirm duties for a specific role? Use "
+                : "Need the service lead to confirm duties for your case? Use "}
+              <Link href={ctaHref}>{page.heroCtaLabel}</Link> or call{" "}
               <a href={phone.href}>{phone.display}</a> — the team will clarify approved tasks before any placement.
             </p>
           </Reveal>
@@ -182,10 +206,10 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
         <div className="container faq-layout">
           <Reveal className="faq-intro" direction="left" distance={48}>
             <div className="eyebrow">QUESTIONS</div>
-            <h2 id="svc-faq-heading">Questions about home nursing</h2>
+            <h2 id="svc-faq-heading">{page.faqHeading}</h2>
             <p>
-              Answers focused on this service. Final clinical or staffing wording should be reviewed by Team BHSK
-              before launch.
+              Can’t find your answer? Call <a href={phone.href}>{phone.display}</a> or use{" "}
+              <Link href={ctaHref}>{page.heroCtaLabel}</Link> and the BHSK team will get back to you.
             </p>
           </Reveal>
           <Reveal delay={0.08} direction="left" distance={40}>
@@ -207,7 +231,8 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
             <div className="eyebrow">RELATED</div>
             <h2 id="related-heading">Related services</h2>
             <p>
-              Explore related home care options, or return to the <Link href="/services">Services hub</Link>.
+              {isFacility ? "Explore other healthcare staffing options" : "Explore related home care options"}, or
+              return to the <Link href="/services">Services hub</Link>.
             </p>
           </Reveal>
           <ul className="svc-page__related-list">
@@ -225,7 +250,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
             </Reveal>
           </ul>
           <Reveal className="svc-page__related-cta" direction="left" distance={32} delay={0.12}>
-            <AntiMetalButton href={ctaHref} label="Request a Nurse" />
+            <AntiMetalButton href={ctaHref} label={page.heroCtaLabel} />
           </Reveal>
         </div>
       </section>
@@ -234,5 +259,10 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
 }
 
 export function HomeNursingPage() {
-  return <ServiceDetailPage page={homeNursingPage} jsonLd={homeNursingJsonLd()} />;
+  return <ServiceDetailPage page={homeNursingPage} />;
+}
+
+export function ServicePageBySlug({ slug }: { slug: string }) {
+  const page = servicePageBySlug(slug);
+  return page ? <ServiceDetailPage page={page} /> : null;
 }

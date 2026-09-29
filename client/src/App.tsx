@@ -7,7 +7,7 @@ import { CareServicesMenu } from "@/components/CareServicesMenu";
 import { HeroBand } from "@/components/HeroBand";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { ServicesPage } from "@/components/ServicesPage";
-import { HomeNursingPage } from "@/components/ServiceDetailPage";
+import { HomeNursingPage, ServicePageBySlug } from "@/components/ServiceDetailPage";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { HowItWorks } from "@/components/HowItWorks";
 import { FaqSection } from "@/components/FaqSection";
@@ -17,7 +17,7 @@ import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Cta69 } from "@/components/ui/cta69";
-import { requestNurseHref } from "@/lib/servicePages";
+import { servicePageBySlug } from "@/lib/servicePages";
 import {
   CONTACT_EMAIL,
   CONTACT_PHONES,
@@ -426,27 +426,21 @@ function StaffingHubPage() {
 
 function InnerPage({
   type,
-  slug,
   leadDefault,
 }: {
   type: string;
-  slug?: string;
   leadDefault?: "employer" | "patient" | "";
 }) {
-  const service = services.find((s) => s.slug === slug);
   const title =
-    service?.name ||
-    ({
+    {
       "about-us": "About BHSK for Health Services",
       "contact-us": "We’re here to help",
       "request-a-nurse": "Request a Nurse",
       "request-healthcare-staff": "Request Staff",
       "book-consultation": "Book a consultation",
-    }[type] ||
-      "BHSK for Health Services");
+    }[type] || "BHSK for Health Services";
   const description =
-    service?.text ||
-    (type === "about-us"
+    type === "about-us"
       ? "BHSK delivers professional nursing across hospitals, clinics, schools, worksites and homes in Qatar."
       : type === "request-a-nurse"
         ? "Tell us about the home care you need. Our team will assess fit and availability before confirming service."
@@ -454,7 +448,7 @@ function InnerPage({
           ? "Tell us about your facility staffing need. Placement depends on assessment and current availability."
           : type === "book-consultation"
             ? "Share your questions and preferred contact details. We will follow up to discuss next steps."
-            : "Share what you need and our team will get back to you shortly.");
+            : "Share what you need and our team will get back to you shortly.";
 
   const isLead =
     type === "contact-us" ||
@@ -462,13 +456,8 @@ function InnerPage({
     type === "request-healthcare-staff" ||
     type === "book-consultation";
 
-  const crumbs = service
-    ? [
-        { label: "Home", href: "/" },
-        { label: "Services", href: "/services" },
-        { label: service.name },
-      ]
-    : type === "request-a-nurse" || type === "request-healthcare-staff"
+  const crumbs =
+    type === "request-a-nurse" || type === "request-healthcare-staff"
       ? [
           { label: "Home", href: "/" },
           { label: "Services", href: "/services" },
@@ -478,13 +467,7 @@ function InnerPage({
 
   return (
     <main>
-      {service ? (
-        <Seo
-          title={`${service.name} | BHSK`}
-          description={service.text}
-          path={`/${service.slug}`}
-        />
-      ) : type === "request-a-nurse" ? (
+      {type === "request-a-nurse" ? (
         <Seo
           title="Request a Nurse | BHSK"
           description="Request home nursing support in Qatar. BHSK assesses fit and availability before confirming service."
@@ -513,14 +496,7 @@ function InnerPage({
           </Reveal>
           {!isLead && (
             <Reveal direction="left" distance={36} delay={0.2}>
-              {service ? (
-                <AntiMetalButton
-                  href={service.category === "facility" ? REQUEST_STAFF_PATH : REQUEST_NURSE_PATH}
-                  label={service.category === "facility" ? "Request Staff" : "Request a Nurse"}
-                />
-              ) : (
-                <AntiMetalButton href="/contact-us" label="Talk to our team" />
-              )}
+              <AntiMetalButton href="/contact-us" label="Talk to our team" />
             </Reveal>
           )}
         </div>
@@ -538,42 +514,24 @@ function InnerPage({
           lockType={type === "request-a-nurse" || type === "request-healthcare-staff"}
         />
       ) : (
-        <GeneralContent service={service} type={type} />
+        <GeneralContent type={type} />
       )}
       {type === "contact-us" ? <OfficeMap /> : null}
     </main>
   );
 }
 
-function GeneralContent({
-  service,
-  type,
-}: {
-  service?: (typeof services)[number];
-  type?: string;
-}) {
+function GeneralContent({ type }: { type?: string }) {
   return (
     <section className="section">
       <div className="container content-grid">
         <Reveal direction="left" distance={56}>
           <div className="eyebrow">CARE IN QATAR</div>
-          <h2>
-            {service
-              ? service.name
-              : type === "about-us"
-                ? "About BHSK for Health Services"
-                : "Healthcare that starts with listening"}
-          </h2>
+          <h2>{type === "about-us" ? "About BHSK for Health Services" : "Healthcare that starts with listening"}</h2>
           <p>
-            {service
-              ? service.text
-              : "BHSK for Health Services is based in Doha. We coordinate nursing for facilities and specialised home care for families. Claims about licences, partners or volumes appear on this site only when approved by BHSK."}
+            BHSK for Health Services is based in Doha. We coordinate nursing for facilities and specialised home care
+            for families. Claims about licences, partners or volumes appear on this site only when approved by BHSK.
           </p>
-          {service ? (
-            <div className="content-service-image">
-              <img src={service.imageUrl} alt={service.name} />
-            </div>
-          ) : null}
           <div className="check-list">
             <div>
               <Check /> Clear home care and staffing paths
@@ -585,17 +543,7 @@ function GeneralContent({
               <Check /> Local team coordination in Qatar
             </div>
           </div>
-          <AntiMetalButton
-            href={
-              service?.category === "facility"
-                ? REQUEST_STAFF_PATH
-                : service
-                  ? requestNurseHref(service.name)
-                  : REQUEST_NURSE_PATH
-            }
-            label={service?.category === "facility" ? "Request Staff" : "Request a Nurse"}
-            className="mt-6"
-          />
+          <AntiMetalButton href="/services" label="Explore our services" className="mt-6" />
         </Reveal>
         <Reveal delay={0.12} className="content-panel" direction="right" distance={48}>
           <h3>How it works</h3>
@@ -825,7 +773,8 @@ function ContactContent({
 }
 
 function SlugPage({ slug }: { slug: string }) {
-  return <InnerPage type={slug} slug={services.some((s) => s.slug === slug) ? slug : undefined} />;
+  if (servicePageBySlug(slug)) return <ServicePageBySlug slug={slug} />;
+  return <InnerPage type={slug} />;
 }
 
 function App() {
@@ -879,7 +828,7 @@ function App() {
               .filter((s) => s.slug !== "home-nursing")
               .map((s) => (
                 <Route key={s.slug} path={`/${s.slug}`}>
-                  <InnerPage type={s.slug} slug={s.slug} />
+                  <ServicePageBySlug slug={s.slug} />
                 </Route>
               ))}
             <Route path="/home-nursing">
