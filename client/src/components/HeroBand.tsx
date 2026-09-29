@@ -7,16 +7,16 @@ import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/si
 
 const heroSlides = [
   {
-    src: "/images/care/hero-home-care.jpg",
-    alt: "Nurse checking an elderly man's pulse in a family living room",
+    src: "/images/bhsk/hero-elderly-care.jpg",
+    alt: "BHSK nurse supporting an elderly man in a wheelchair at home",
   },
   {
-    src: "/images/care/hero-facility-staffing.jpg",
-    alt: "Two nurses walking together along a hospital corridor",
+    src: "/images/bhsk/hero-mobility-family.jpg",
+    alt: "BHSK nurse helping an elderly man walk with a frame while his family watches",
   },
   {
-    src: "/images/care/hero-maternity.jpg",
-    alt: "Nurse helping a new mother hold her newborn baby at home",
+    src: "/images/bhsk/hero-family-bedside.jpg",
+    alt: "BHSK nurse caring for an elderly patient in bed with his grandchildren beside him",
   },
 ] as const;
 

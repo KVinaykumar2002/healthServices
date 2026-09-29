@@ -291,7 +291,7 @@ function WhyBhsk() {
       <div className="container proof-grid">
         <Reveal direction="left" distance={80}>
           <div className="proof-photo">
-            <img src="/images/care/why-team.jpg" alt="Team of nurses in teal scrubs smiling together" />
+            <img src="/images/bhsk/nurse-portrait.jpg" alt="Nurse in BHSK uniform with a stethoscope" />
           </div>
         </Reveal>
         <Reveal delay={0.12} className="proof-copy" direction="left" distance={56}>

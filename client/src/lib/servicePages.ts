@@ -73,8 +73,8 @@ export const homeNursingPage: ServicePageContent = {
   heroCtaLabel: "Request a Nurse",
   requestPath: REQUEST_NURSE_PATH,
   requestServiceName: "Home Nursing",
-  imageUrl: "/images/care/home-nursing-banner.jpg",
-  imageAlt: "Nurse reviewing a home care plan with a family at their dining table",
+  imageUrl: "/images/bhsk/home-nursing-banner.jpg",
+  imageAlt: "BHSK nurse dressing a patient's knee at home in Qatar",
   scope: {
     scopeNote:
       "BHSK does not promise care or staffing outside the approved scope for each assignment. Exact duties, hours and clinical limits are confirmed only after assessment. The lists below describe typical home nursing discussions and must be verified by the BHSK service lead before any placement.",
