@@ -15,9 +15,9 @@ export const durationInstant = 0.15;
 export const durationFast = 1;
 
 export const pageTransition = {
-  initial: { opacity: 0, y: 18 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -12 },
+  exit: { opacity: 0, y: -6 },
 };
 
 export const staggerContainer = {
@@ -38,7 +38,11 @@ export const fadeUpItem = {
 
 type Direction = "left" | "right" | "up" | "down";
 
-const directionOffset = (direction: Direction, distance: number) => {
+/** Brand calm: content settles into place rather than sweeping across the page. */
+const MAX_TRAVEL = 20;
+
+const directionOffset = (direction: Direction, requested: number) => {
+  const distance = Math.min(requested * 0.4, MAX_TRAVEL);
   switch (direction) {
     case "left":
       return { x: -distance, y: 0 };
@@ -89,7 +93,7 @@ export function Reveal({
           opacity: 1,
           x: 0,
           y: 0,
-          duration: 1.05,
+          duration: 0.8,
           delay,
           ease: gsapEase,
           scrollTrigger: {
@@ -190,7 +194,7 @@ export function GsapStagger({
           opacity: 1,
           x: 0,
           y: 0,
-          duration: 0.9,
+          duration: 0.7,
           stagger,
           ease: gsapEase,
           scrollTrigger: {
@@ -246,7 +250,7 @@ export function RevealText({
       if (scroll) {
         gsap.fromTo(
           spans,
-          { opacity: 0, x: -28 },
+          { opacity: 0, x: -12 },
           {
             ...tween,
             scrollTrigger: {
@@ -257,7 +261,7 @@ export function RevealText({
           },
         );
       } else {
-        gsap.fromTo(spans, { opacity: 0, x: -28 }, tween);
+        gsap.fromTo(spans, { opacity: 0, x: -12 }, tween);
       }
     },
     { dependencies: [children, delay, scroll] },

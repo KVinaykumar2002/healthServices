@@ -81,7 +81,7 @@ export function Cta69({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 flex items-center overflow-hidden select-none"
         >
-          <div className="cta69-marquee flex w-max shrink-0 whitespace-nowrap text-foreground/[0.06]">
+          <div className="cta69-marquee flex w-max shrink-0 whitespace-nowrap text-[color:color-mix(in_srgb,var(--bhsk-sky)_16%,transparent)]">
             {[0, 1].map((copy) => (
               <span
                 key={copy}
@@ -99,7 +99,7 @@ export function Cta69({
         {badge && <Badge7 label={badge.label} />}
 
         {heading && (
-          <h2 className="mt-8 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
+          <h2 className="mt-8 text-balance text-[32px] font-bold leading-[1.12] tracking-[-0.01em] text-[color:var(--color-heading)] md:text-5xl lg:text-[56px]">
             {heading}
           </h2>
         )}

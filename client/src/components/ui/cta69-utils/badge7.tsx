@@ -48,7 +48,7 @@ export function Badge7({
   return (
     <span
       className={cn(
-        "font-mono text-base uppercase tracking-[0.25em]",
+        "text-sm font-semibold uppercase tracking-[0.2em]",
         toneStyles[tone],
         vertical ? "rotate-180 [writing-mode:vertical-rl]" : "inline-block",
         className,

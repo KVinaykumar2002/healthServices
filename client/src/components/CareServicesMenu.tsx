@@ -1,15 +1,16 @@
 import {
-  Accessibility,
+  Armchair,
   Baby,
-  ClipboardPlus,
+  Building,
+  Building2,
+  CalendarHeart,
+  Footprints,
+  HandHeart,
   HardHat,
   HeartHandshake,
-  HeartPulse,
   MessageCircleHeart,
-  Pill,
   School,
-  Siren,
-  Stethoscope,
+  Sunrise,
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "wouter";
@@ -22,18 +23,21 @@ export interface CareServiceItem {
   group: "home" | "facility";
 }
 
-/** Approved services only — short labels + icons for the navbar menu. */
+/**
+ * Approved services only — short labels + icons for the navbar menu.
+ * Icons describe everyday life and people, not clinical equipment (BHSK brand rule).
+ */
 export const careMenuServices: CareServiceItem[] = [
   { slug: "home-nursing", label: "Home Nursing", icon: HeartHandshake, group: "home" },
-  { slug: "maternity-newborn", label: "Mother & Baby Care", icon: Baby, group: "home" },
-  { slug: "elderly-care", label: "Elder Care", icon: HeartPulse, group: "home" },
+  { slug: "maternity-newborn", label: "Mother & Baby Care", icon: HandHeart, group: "home" },
+  { slug: "elderly-care", label: "Elder Care", icon: Armchair, group: "home" },
   { slug: "baby-care", label: "Baby Care", icon: Baby, group: "home" },
   { slug: "palliative-care", label: "Palliative Care", icon: MessageCircleHeart, group: "home" },
-  { slug: "chronic-care", label: "Chronic Care", icon: Pill, group: "home" },
-  { slug: "post-operative", label: "Post-operative Care", icon: Siren, group: "home" },
-  { slug: "physiotherapy", label: "Physiotherapy", icon: Accessibility, group: "home" },
-  { slug: "hospitals", label: "Hospital Nursing", icon: Stethoscope, group: "facility" },
-  { slug: "medical-centres", label: "Medical Centres", icon: ClipboardPlus, group: "facility" },
+  { slug: "chronic-care", label: "Chronic Care", icon: CalendarHeart, group: "home" },
+  { slug: "post-operative", label: "Post-operative Care", icon: Sunrise, group: "home" },
+  { slug: "physiotherapy", label: "Physiotherapy", icon: Footprints, group: "home" },
+  { slug: "hospitals", label: "Hospital Nursing", icon: Building2, group: "facility" },
+  { slug: "medical-centres", label: "Medical Centres", icon: Building, group: "facility" },
   { slug: "schools-nurseries", label: "Schools / Nurseries", icon: School, group: "facility" },
   { slug: "camp-construction", label: "Camp / Construction", icon: HardHat, group: "facility" },
 ];

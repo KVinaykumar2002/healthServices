@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Phone } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Phone } from "lucide-react";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { gsap, gsapEase, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { Parallax } from "@/lib/motion";
@@ -18,6 +18,12 @@ const heroSlides = [
     src: "/images/bhsk/hero-family-bedside.jpg",
     alt: "BHSK nurse caring for an elderly patient in bed with his grandchildren beside him",
   },
+] as const;
+
+const HERO_ASSURANCES = [
+  "Assessment before every placement",
+  "Local coordination from Doha",
+  "Home care & facility staffing",
 ] as const;
 
 /**
@@ -47,11 +53,11 @@ export function HeroBand() {
       const items = content.querySelectorAll("[data-hero-animate]");
       gsap.fromTo(
         items,
-        { x: -28 },
+        { x: -12 },
         {
           x: 0,
-          duration: 0.9,
-          stagger: 0.1,
+          duration: 0.7,
+          stagger: 0.08,
           ease: gsapEase,
           delay: 0.05,
           clearProps: "transform",
@@ -84,8 +90,8 @@ export function HeroBand() {
     <section ref={rootRef} className="home-hero" aria-labelledby="home-hero-title">
       <div className="home-hero__container">
         <div className="home-hero__content" ref={contentRef}>
-          <p className="home-hero__brand" data-hero-animate>
-            BHSK for Health Services
+          <p className="eyebrow home-hero__tagline" data-hero-animate>
+            BHSK for Health Services · Doha, Qatar
           </p>
           <h1 id="home-hero-title" data-hero-animate>
             Professional Nursing and Healthcare Staffing in Qatar
@@ -113,6 +119,14 @@ export function HeroBand() {
               <span>{phone.display}</span>
             </a>
           </div>
+          <ul className="home-hero__assurance" data-hero-animate aria-label="How BHSK works">
+            {HERO_ASSURANCES.map((item) => (
+              <li key={item}>
+                <Check size={14} strokeWidth={2.5} aria-hidden="true" />
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="home-hero__media">
@@ -159,6 +173,28 @@ export function HeroBand() {
           </div>
         </div>
       </div>
+      <HeroPulse animated={!reduce} />
     </section>
+  );
+}
+
+const HERO_PULSE_PATH = "M0 70 H700 L722 26 L754 108 L796 38 L810 70 H1600";
+
+/** The logo's pulse line, stretched across the hero from the copy into the photography. */
+function HeroPulse({ animated }: { animated: boolean }) {
+  return (
+    <svg
+      className={`home-hero__pulse bhsk-logo${animated ? " bhsk-logo--animated" : ""}`}
+      viewBox="0 0 1600 130"
+      preserveAspectRatio="xMinYMid meet"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path className="bhsk-logo__pulse" d={HERO_PULSE_PATH} strokeWidth={3} pathLength={1} />
+      {animated ? <path className="bhsk-logo__beat" d={HERO_PULSE_PATH} strokeWidth={3} pathLength={1} /> : null}
+    </svg>
   );
 }

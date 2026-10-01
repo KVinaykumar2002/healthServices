@@ -17,6 +17,7 @@ import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Cta69 } from "@/components/ui/cta69";
+import { BrandLockup, PulseDivider } from "@/components/brand/BhskLogo";
 import { servicePageBySlug } from "@/lib/servicePages";
 import {
   CONTACT_EMAIL,
@@ -32,14 +33,10 @@ import {
   services,
 } from "@/lib/site";
 
-function BrandMark({ className = "" }: { className?: string }) {
+function BrandMark({ className = "", animated = false }: { className?: string; animated?: boolean }) {
   return (
-    <Link href="/" className={`brand ${className}`}>
-      <img src="/image.png" alt="BHSK for Health Services" className="brand-logo" />
-      <span>
-        <b>BHSK</b>
-        <small>FOR HEALTH SERVICES</small>
-      </span>
+    <Link href="/" className={`brand ${className}`} aria-label="BHSK for Health Services — home">
+      <BrandLockup animated={animated} />
     </Link>
   );
 }
@@ -99,7 +96,7 @@ function Header() {
         </div>
       </div>
       <nav className="nav container">
-        <BrandMark />
+        <BrandMark animated={!reduce} />
         <button
           className="mobile-menu"
           onClick={() => setOpen(!open)}
@@ -193,9 +190,13 @@ function Header() {
 function Footer() {
   return (
     <footer>
+      <div className="container">
+        <PulseDivider className="footer-pulse" />
+      </div>
       <div className="container footer-grid">
         <div>
           <BrandMark className="footer-brand" />
+          <p className="footer-tagline">Care at the heart of everyday life.</p>
           <p className="muted">
             Professional nursing for hospitals, medical centres, schools, worksites and home care in Qatar.
           </p>
@@ -790,7 +791,7 @@ function App() {
           initial={pageTransition.initial}
           animate={pageTransition.animate}
           exit={pageTransition.exit}
-          transition={{ duration: 1, ease: easeOut }}
+          transition={{ duration: 0.45, ease: easeOut }}
         >
           <Switch location={location}>
             <Route path="/" component={Home} />

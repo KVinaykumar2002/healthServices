@@ -55,8 +55,8 @@ function isExternalHref(href: string) {
 
 const surfaceClass = (size: "default" | "sm", className?: string) =>
   cn(
-    "group/btn relative inline-flex overflow-hidden rounded-xl transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-surface-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-page)]",
-    "bg-[linear-gradient(180deg,#0d2222_0%,#061414_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_12px_rgba(13,34,34,0.22)]",
+    "anti-metal-btn group/btn relative inline-flex overflow-hidden rounded-xl transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-surface-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-page)]",
+    "bg-[linear-gradient(180deg,var(--bhsk-blue-text)_0%,var(--bhsk-blue-deep)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_4px_12px_rgba(20,103,132,0.24)]",
     size === "sm" ? "h-9 min-w-[9.5rem] w-auto" : "h-11 min-w-[11rem] w-auto",
     className
   );
@@ -84,10 +84,15 @@ function AntiMetalInner({
         .bd-dot {
           transform-box: fill-box;
           transform-origin: center;
+          opacity: 0.7;
+        }
+        .anti-metal-btn:hover .bd-dot,
+        .anti-metal-btn:focus-visible .bd-dot {
           animation: bd-dot-wave 1.4s ease-in-out infinite;
         }
         @media (prefers-reduced-motion: reduce) {
-          .bd-dot { animation: none; opacity: 1; }
+          .anti-metal-btn:hover .bd-dot,
+          .anti-metal-btn:focus-visible .bd-dot { animation: none; opacity: 1; }
         }
       `}</style>
 
@@ -126,7 +131,7 @@ export type AntiMetalButtonProps = {
   label?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
-  /** Sliding accent panel start (BHSK coral by default) */
+  /** Sliding accent panel start (BHSK pink by default) */
   accentFrom?: string;
   /** Sliding accent panel end */
   accentTo?: string;
@@ -146,8 +151,8 @@ export const AntiMetalButton = React.forwardRef<HTMLElement, AntiMetalButtonProp
       className,
       children,
       label,
-      accentFrom = "#f25922",
-      accentTo = "#d94a18",
+      accentFrom = "var(--bhsk-pink)",
+      accentTo = "var(--bhsk-pink-text)",
       dotColor = "#ffffff",
       size = "default",
       href,

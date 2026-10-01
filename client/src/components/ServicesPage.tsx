@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { Building2, Home as HomeIcon } from "lucide-react";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Reveal, RevealText, GsapStagger } from "@/lib/motion";
 import { Seo, servicesPageJsonLd } from "@/components/Seo";
@@ -72,7 +71,6 @@ export function ServicesPage() {
         <div className="container">
           <Reveal className="section-heading services-hub__group-heading" direction="left" distance={64}>
             <div className="services-hub__group-kicker">
-              <HomeIcon size={18} aria-hidden="true" strokeWidth={1.7} />
               <span className="eyebrow">FOR FAMILIES</span>
             </div>
             <h2 id="home-care-heading">
@@ -97,7 +95,6 @@ export function ServicesPage() {
         <div className="container">
           <Reveal className="section-heading services-hub__group-heading" direction="left" distance={64}>
             <div className="services-hub__group-kicker">
-              <Building2 size={18} aria-hidden="true" strokeWidth={1.7} />
               <span className="eyebrow">FOR EMPLOYERS &amp; FACILITIES</span>
             </div>
             <h2 id="staffing-heading">
