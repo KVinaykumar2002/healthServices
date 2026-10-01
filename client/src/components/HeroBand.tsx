@@ -112,6 +112,7 @@ export function HeroBand() {
             <AntiMetalButton
               href={REQUEST_STAFF_PATH}
               label="Request Staff"
+              variant="accent"
               className="w-full shrink-0 sm:w-auto sm:min-w-[10.5rem]"
             />
             <a className="home-hero__call" href={phone.href} aria-label={`Call BHSK at ${phone.display}`}>

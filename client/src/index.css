@@ -81,10 +81,26 @@
   --foreground: var(--color-text-primary);
   --muted: var(--color-surface-muted);
   --muted-foreground: var(--color-text-tertiary);
-  --primary: var(--color-surface-strong);
-  --primary-foreground: var(--color-text-secondary);
+  --primary: var(--btn-primary-bg);
+  --primary-foreground: var(--btn-primary-text);
   --border: var(--color-border);
   --ring: var(--color-focus-ring);
+
+  /* Buttons — primary (blue), secondary (white + blue outline), accent (pink, use sparingly) */
+  --btn-radius: 12px;
+  --btn-height: 44px;
+  --btn-height-sm: 36px;
+  --btn-primary-bg: var(--bhsk-blue);
+  --btn-primary-hover: #1f8db5;
+  --btn-primary-text: var(--bhsk-white);
+  --btn-secondary-bg: var(--bhsk-white);
+  --btn-secondary-border: var(--bhsk-blue);
+  --btn-secondary-text: var(--bhsk-blue);
+  --btn-secondary-hover-bg: color-mix(in srgb, var(--bhsk-sky) 16%, var(--bhsk-white));
+  --btn-secondary-hover-text: #1f8db5;
+  --btn-accent-bg: var(--bhsk-pink);
+  --btn-accent-hover: #e82c53;
+  --btn-accent-text: var(--bhsk-white);
 
   /* Spacing */
   --space-1: 1px;
@@ -136,7 +152,7 @@
 }
 
 .cta69-marquee {
-  animation: cta69-marquee 40s linear infinite;
+  animation: cta69-marquee 120s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -915,12 +931,13 @@ button, select, input, textarea {
   align-items: center;
   justify-content: center;
   gap: calc(var(--space-7) + var(--space-1));
-  padding: calc(var(--space-8) + var(--space-4)) calc(var(--space-8) * 2.2);
-  border-radius: var(--radius-md);
-  border: var(--space-1) solid transparent;
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  line-height: var(--font-line-height-base);
+  height: var(--btn-height);
+  padding: 0 calc(var(--space-8) * 2.2);
+  border-radius: var(--btn-radius);
+  border: 1.5px solid transparent;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
   transition:
     transform var(--motion-duration-instant) var(--motion-ease),
@@ -932,14 +949,8 @@ button, select, input, textarea {
   white-space: nowrap;
 }
 
-.btn:hover:not(:disabled):not([aria-disabled="true"]) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-1);
-}
-
 .btn:active:not(:disabled):not([aria-disabled="true"]) {
-  transform: scale(0.97);
-  box-shadow: none;
+  transform: scale(0.98);
 }
 
 .btn:focus-visible {
@@ -971,31 +982,42 @@ button, select, input, textarea {
 }
 
 .btn-primary {
-  background: var(--bhsk-blue-text);
-  color: var(--color-text-secondary);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 }
 
 .btn-primary:hover:not(:disabled):not([aria-disabled="true"]) {
-  background: var(--bhsk-blue-deep);
+  background: var(--btn-primary-hover);
 }
 
-.btn-primary:active:not(:disabled):not([aria-disabled="true"]) {
-  background: color-mix(in srgb, var(--bhsk-blue-deep) 85%, var(--bhsk-ink));
+.btn-accent {
+  background: var(--btn-accent-bg);
+  color: var(--btn-accent-text);
+}
+
+.btn-accent:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--btn-accent-hover);
 }
 
 .btn.small {
-  padding: var(--space-8) calc(var(--space-8) * 1.8);
-  font-size: var(--font-size-sm);
+  height: var(--btn-height-sm);
+  padding: 0 calc(var(--space-8) * 1.8);
+  font-size: 13px;
 }
 
-.btn-outline {
-  border-color: var(--color-surface-strong);
-  color: var(--color-surface-strong);
-  background: transparent;
+/* Secondary: white with BHSK Blue outline and text */
+.btn-outline,
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  border-color: var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
 }
 
-.btn-outline:hover:not(:disabled):not([aria-disabled="true"]) {
-  background: var(--color-surface-muted);
+.btn-outline:hover:not(:disabled):not([aria-disabled="true"]),
+.btn-secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--btn-secondary-hover-bg);
+  border-color: var(--btn-secondary-hover-text);
+  color: var(--btn-secondary-hover-text);
 }
 
 .btn-light {
@@ -1531,6 +1553,7 @@ button, select, input, textarea {
 .journey-path__actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: calc(var(--space-8) * 1.2);
   margin-top: calc(var(--space-8) * 0.8);
 }
@@ -2104,6 +2127,7 @@ button, select, input, textarea {
 .svc-page__hero-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: calc(var(--space-8) * 1.4);
   margin-top: calc(var(--space-8) * 0.5);
 }

@@ -53,11 +53,29 @@ function isExternalHref(href: string) {
   return /^(https?:|tel:|mailto:|sms:)/i.test(href) || href.startsWith("//");
 }
 
-const surfaceClass = (size: "default" | "sm", className?: string) =>
+export type AntiMetalVariant = "primary" | "accent";
+
+const VARIANT_STYLES: Record<
+  AntiMetalVariant,
+  { surface: string; accentFrom: string; accentTo: string }
+> = {
+  primary: {
+    surface: "bg-[var(--btn-primary-bg)] shadow-[0_4px_12px_rgba(38,160,203,0.28)]",
+    accentFrom: "var(--btn-primary-hover)",
+    accentTo: "var(--btn-primary-hover)",
+  },
+  accent: {
+    surface: "bg-[var(--btn-accent-bg)] shadow-[0_4px_12px_rgba(255,53,93,0.26)]",
+    accentFrom: "var(--btn-accent-hover)",
+    accentTo: "var(--btn-accent-hover)",
+  },
+};
+
+const surfaceClass = (variant: AntiMetalVariant, size: "default" | "sm", className?: string) =>
   cn(
-    "anti-metal-btn group/btn relative inline-flex overflow-hidden rounded-xl transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-surface-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-page)]",
-    "bg-[linear-gradient(180deg,var(--bhsk-blue-text)_0%,var(--bhsk-blue-deep)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_4px_12px_rgba(20,103,132,0.24)]",
-    size === "sm" ? "h-9 min-w-[9.5rem] w-auto" : "h-11 min-w-[11rem] w-auto",
+    "anti-metal-btn group/btn relative inline-flex overflow-hidden rounded-[var(--btn-radius)] transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-page)]",
+    VARIANT_STYLES[variant].surface,
+    size === "sm" ? "h-[var(--btn-height-sm)] min-w-[9.5rem] w-auto" : "h-[var(--btn-height)] min-w-[11rem] w-auto",
     className
   );
 
@@ -98,7 +116,7 @@ function AntiMetalInner({
 
       <span
         className={cn(
-          "absolute inset-y-0 right-3 flex items-center font-medium tracking-tight text-white sm:right-4",
+          "absolute inset-y-0 right-3 z-20 flex items-center font-bold text-white sm:right-4",
           size === "sm" ? "text-[12px]" : "text-[14px]"
         )}
       >
@@ -113,8 +131,6 @@ function AntiMetalInner({
         )}
         style={{
           background: `linear-gradient(180deg, ${accentFrom} 0%, ${accentTo} 100%)`,
-          boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.14), 0 2px 4px rgba(13,34,34,0.12)",
         }}
       >
         <DoubleChevron index={0} dotColor={dotColor} />
@@ -131,7 +147,9 @@ export type AntiMetalButtonProps = {
   label?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
-  /** Sliding accent panel start (BHSK pink by default) */
+  /** "primary" = BHSK Blue (default). "accent" = BHSK Pink — reserve for important secondary actions. */
+  variant?: AntiMetalVariant;
+  /** Sliding panel start (defaults to the variant's hover shade) */
   accentFrom?: string;
   /** Sliding accent panel end */
   accentTo?: string;
@@ -151,8 +169,9 @@ export const AntiMetalButton = React.forwardRef<HTMLElement, AntiMetalButtonProp
       className,
       children,
       label,
-      accentFrom = "var(--bhsk-pink)",
-      accentTo = "var(--bhsk-pink-text)",
+      variant = "primary",
+      accentFrom = VARIANT_STYLES[variant].accentFrom,
+      accentTo = VARIANT_STYLES[variant].accentTo,
       dotColor = "#ffffff",
       size = "default",
       href,
@@ -173,7 +192,7 @@ export const AntiMetalButton = React.forwardRef<HTMLElement, AntiMetalButtonProp
         size={size}
       />
     );
-    const classes = surfaceClass(size, className);
+    const classes = surfaceClass(variant, size, className);
 
     if (href) {
       if (isExternalHref(href)) {
