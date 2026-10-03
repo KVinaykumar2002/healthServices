@@ -5,8 +5,8 @@ export const SITE_ORIGIN = "https://www.bhskforhealthservices.com";
 export const CONTACT_EMAIL = "Info@bhskforhealthservices.com";
 
 export const CONTACT_PHONES = [
+  { display: "31331146", href: "tel:+97431331146" },
   { display: "31599965", href: "tel:+97431599965" },
-  { display: "55348635", href: "tel:+97455348635" },
 ] as const;
 
 export const WHATSAPP = {

@@ -8,7 +8,7 @@ import { HeroBand } from "@/components/HeroBand";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { ServicesPage } from "@/components/ServicesPage";
 import { HomeNursingPage, ServicePageBySlug } from "@/components/ServiceDetailPage";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { FloatingContactWidget } from "@/components/FloatingContactWidget";
 import { BackToTop } from "@/components/BackToTop";
 import { HowItWorks } from "@/components/HowItWorks";
 import { FaqSection } from "@/components/FaqSection";
@@ -160,9 +160,11 @@ function Header() {
               <Link href="/contact-us" onClick={() => setOpen(false)}>
                 Contact
               </Link>
-              <a href={CONTACT_PHONES[0].href} className="phone">
-                <Phone size={15} /> {CONTACT_PHONES[0].display} / {CONTACT_PHONES[1].display}
-              </a>
+              {CONTACT_PHONES.map((p) => (
+                <a key={p.href} href={p.href} className="phone">
+                  <Phone size={15} /> {p.display}
+                </a>
+              ))}
               <a href={`mailto:${CONTACT_EMAIL}`} className="phone">
                 <Mail size={15} /> {CONTACT_EMAIL}
               </a>
@@ -844,7 +846,7 @@ function App() {
         </motion.div>
       </AnimatePresence>
       <Footer />
-      <WhatsAppFloat />
+      <FloatingContactWidget />
       <BackToTop />
       <ScrollToTop />
     </>
