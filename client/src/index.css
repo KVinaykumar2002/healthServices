@@ -661,22 +661,105 @@ button, select, input, textarea {
   width: 96px;
   height: 32px;
   flex-shrink: 0;
+  overflow: visible;
   stroke: var(--bhsk-pulse);
 }
 
-.pulse-divider--animated .pulse-divider__beat path {
+/*
+ * Animated divider (footer): the pulse draws in like the header logo, then a soft
+ * glint runs in along the left line, travels through the pulse and out the right
+ * line — one continuous heartbeat. Three beats per visit, then it rests.
+ */
+.pulse-divider--animated {
+  --pulse-divider-glint: #ffffff;
+  --pulse-divider-glow: rgba(255, 255, 255, 0.75);
+  --pulse-divider-tail: 200px;
+  --pulse-divider-cycle: 4.2s;
+  --pulse-divider-start: 1.4s;
+}
+
+.pulse-divider--animated .pulse-divider__pulse {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: bhsk-pulse-draw 1.2s var(--motion-ease) 0.3s forwards;
+}
+
+.pulse-divider--animated.is-in-view .pulse-divider__pulse {
+  animation: bhsk-pulse-draw 1.2s var(--motion-ease) 0.15s forwards;
+}
+
+.pulse-divider__glint {
+  stroke: var(--pulse-divider-glint);
+  stroke-dasharray: 0.16 1.16;
+  stroke-dashoffset: 0.16;
+  filter: drop-shadow(0 0 3px var(--pulse-divider-glow));
+}
+
+.pulse-divider--animated.is-in-view .pulse-divider__glint {
+  animation: pulse-divider-glint var(--pulse-divider-cycle) cubic-bezier(0.45, 0, 0.25, 1) var(--pulse-divider-start) 3;
+}
+
+/* Comet on each line: head at the right edge, tail fading left. clip-path keeps it
+   inside the line horizontally while letting the glow spill vertically. */
+.pulse-divider--animated .pulse-divider__line {
+  position: relative;
+  clip-path: inset(-6px 0);
+}
+
+.pulse-divider--animated .pulse-divider__line::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent calc(100% - var(--pulse-divider-tail)),
+    var(--pulse-divider-glow) calc(100% - 6px),
+    var(--pulse-divider-glint)
+  );
+  filter: drop-shadow(0 0 4px var(--pulse-divider-glow));
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.pulse-divider--animated.is-in-view .pulse-divider__line--in::after {
+  animation: pulse-divider-comet-in var(--pulse-divider-cycle) linear var(--pulse-divider-start) 3;
+}
+
+.pulse-divider--animated.is-in-view .pulse-divider__line--out::after {
+  animation: pulse-divider-comet-out var(--pulse-divider-cycle) linear var(--pulse-divider-start) 3;
+}
+
+@keyframes pulse-divider-comet-in {
+  0% { transform: translateX(-100%); opacity: 1; }
+  28% { transform: translateX(0); opacity: 1; }
+  40%, 100% { transform: translateX(var(--pulse-divider-tail)); opacity: 1; }
+}
+
+@keyframes pulse-divider-glint {
+  0%, 26% { stroke-dashoffset: 0.16; }
+  56%, 100% { stroke-dashoffset: -1; }
+}
+
+@keyframes pulse-divider-comet-out {
+  0%, 54% { transform: translateX(-100%); opacity: 1; }
+  82% { transform: translateX(0); opacity: 1; }
+  92% { transform: translateX(var(--pulse-divider-tail)); opacity: 1; }
+  100% { transform: translateX(var(--pulse-divider-tail)); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bhsk-logo--animated .bhsk-logo__pulse,
-  .pulse-divider--animated .pulse-divider__beat path {
+  .pulse-divider--animated .pulse-divider__pulse,
+  .pulse-divider--animated.is-in-view .pulse-divider__pulse {
     animation: none;
     stroke-dashoffset: 0;
   }
-  .bhsk-logo--animated .bhsk-logo__beat { display: none; }
+  .bhsk-logo--animated .bhsk-logo__beat,
+  .pulse-divider__glint { display: none; }
+  .pulse-divider--animated .pulse-divider__line::after { display: none; }
 }
 
 .nav-links {
@@ -1615,13 +1698,56 @@ button, select, input, textarea {
   );
 }
 
+.how-timeline {
+  --how-gap: calc(var(--space-8) * 3);
+  --how-dot: 44px;
+  position: relative;
+}
+
 .how-steps {
+  position: relative;
+  z-index: 1;
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: calc(var(--space-8) * 3);
+  gap: var(--how-gap);
+}
+
+/* Continuity: one unbroken line carries every enquiry through to confirmation.
+   It runs from the centre of the first circle to the centre of the last. */
+.how-track {
+  position: absolute;
+  top: calc(var(--how-dot) / 2 - 1px);
+  left: calc(var(--how-dot) / 2);
+  width: calc(75% + var(--how-gap) * 0.75);
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--bhsk-sky) 35%, transparent);
+}
+
+.how-track__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--bhsk-sky), var(--bhsk-blue));
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.how-track__head {
+  position: absolute;
+  top: -5px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bhsk-pink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bhsk-pink) 22%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform;
 }
 
 .how-step {
@@ -1631,37 +1757,35 @@ button, select, input, textarea {
   gap: calc(var(--space-8) * 1.8);
 }
 
-/* Continuity: one unbroken line carries every enquiry through to confirmation */
-.how-step:not(:last-child)::before {
-  content: "";
-  position: absolute;
-  top: 22px;
-  left: 54px;
-  right: calc(var(--space-8) * -3 + 10px);
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--bhsk-heart-top), var(--bhsk-heart-base));
-  opacity: 0.55;
-}
-
-.how-step b {
+.how-step__dot {
+  position: relative;
   display: inline-grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: var(--how-dot);
+  height: var(--how-dot);
   border-radius: 50%;
-  border: 2px solid var(--bhsk-heart-base);
+  border: 2px solid var(--bhsk-blue);
   background: var(--color-surface-panel);
-  font-size: 14px;
-  letter-spacing: 0.04em;
-  color: var(--color-surface-strong);
+  overflow: hidden;
+  will-change: transform;
 }
 
-.how-step:last-child b {
-  background: var(--color-surface-strong);
-  border-color: var(--color-surface-strong);
-  color: var(--color-text-secondary);
+.how-step__dot-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--bhsk-blue);
 }
+
+.how-step__num {
+  position: relative;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--bhsk-white);
+}
+
+.how-step__copy { will-change: transform, opacity; }
 
 .how-step strong {
   display: block;
@@ -1687,7 +1811,7 @@ button, select, input, textarea {
   .how-steps {
     grid-template-columns: 1fr 1fr;
   }
-  .how-step:not(:last-child)::before { display: none; }
+  .how-track { display: none; }
 }
 
 @media (max-width: 560px) {
@@ -1832,6 +1956,13 @@ button, select, input, textarea {
   justify-content: center;
   gap: 8px;
   width: 100%;
+}
+
+.contact-actions__whatsapp-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #25d366;
 }
 
 .contact-actions__item p {
@@ -2466,22 +2597,28 @@ button, select, input, textarea {
   background: var(--color-surface-muted);
   padding: calc(var(--space-7) + var(--space-1));
   border-radius: var(--radius-sm);
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
 }
 
 .contact-detail b,
 .contact-detail span { display: block; }
 
+.contact-detail b {
+  font-size: 18px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .contact-detail span {
-  color: var(--color-text-inverse);
-  font-size: var(--font-size-xs);
-  line-height: 1.55;
+  color: var(--color-text-tertiary);
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 .contact-detail b + span {
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .contact-detail a {

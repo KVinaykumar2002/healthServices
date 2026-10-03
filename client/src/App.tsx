@@ -194,7 +194,7 @@ function Footer() {
   return (
     <footer>
       <div className="container">
-        <PulseDivider className="footer-pulse" />
+        <PulseDivider animated className="footer-pulse" />
       </div>
       <div className="container footer-grid">
         <div>

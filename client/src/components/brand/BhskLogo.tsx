@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -83,10 +84,30 @@ export function PulseGlyph({ className }: { className?: string }) {
  * Horizontal rule carrying one heartbeat — the pulse line from the logo
  * stretched into a layout divider.
  */
+const DIVIDER_PULSE_PATH = "M0 22 H34 L44 6 L58 34 L76 12 L83 22 H120";
+
 export function PulseDivider({ animated = false, className }: { animated?: boolean; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  // Plays when scrolled into view (and again on each return), not at page load while off-screen.
+  useEffect(() => {
+    const el = ref.current;
+    if (!animated || !el) return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.6,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [animated]);
+
   return (
-    <div className={cn("pulse-divider", animated && "pulse-divider--animated", className)} aria-hidden="true">
-      <span className="pulse-divider__line" />
+    <div
+      ref={ref}
+      className={cn("pulse-divider", animated && "pulse-divider--animated", inView && "is-in-view", className)}
+      aria-hidden="true"
+    >
+      <span className="pulse-divider__line pulse-divider__line--in" />
       <svg
         viewBox="0 0 120 40"
         className="pulse-divider__beat"
@@ -95,9 +116,12 @@ export function PulseDivider({ animated = false, className }: { animated?: boole
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d="M0 22 H34 L44 6 L58 34 L76 12 L83 22 H120" strokeWidth={3} pathLength={1} />
+        <path className="pulse-divider__pulse" d={DIVIDER_PULSE_PATH} strokeWidth={3} pathLength={1} />
+        {animated && (
+          <path className="pulse-divider__glint" d={DIVIDER_PULSE_PATH} strokeWidth={3} pathLength={1} />
+        )}
       </svg>
-      <span className="pulse-divider__line" />
+      <span className="pulse-divider__line pulse-divider__line--out" />
     </div>
   );
 }

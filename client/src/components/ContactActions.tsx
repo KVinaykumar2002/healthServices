@@ -1,5 +1,5 @@
-import { MessageCircle } from "lucide-react";
 import { Link } from "wouter";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Reveal } from "@/lib/motion";
 import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH, WHATSAPP } from "@/lib/site";
@@ -28,7 +28,7 @@ export function ContactActions() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <MessageCircle size={16} /> WhatsApp Us
+              <WhatsAppIcon className="contact-actions__whatsapp-icon" /> WhatsApp Us
             </a>
             <p>Message us on WhatsApp for a quick enquiry</p>
           </Reveal>
