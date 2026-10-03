@@ -9,6 +9,7 @@ import { ServiceGrid } from "@/components/ServiceGrid";
 import { ServicesPage } from "@/components/ServicesPage";
 import { HomeNursingPage, ServicePageBySlug } from "@/components/ServiceDetailPage";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { BackToTop } from "@/components/BackToTop";
 import { HowItWorks } from "@/components/HowItWorks";
 import { FaqSection } from "@/components/FaqSection";
 import { ContactActions } from "@/components/ContactActions";
@@ -844,6 +845,7 @@ function App() {
       </AnimatePresence>
       <Footer />
       <WhatsAppFloat />
+      <BackToTop />
       <ScrollToTop />
     </>
   );
