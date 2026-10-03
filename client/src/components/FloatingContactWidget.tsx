@@ -45,7 +45,7 @@ function TeacupMascot() {
   );
 }
 
-/** Bottom-right contact stack: waving teacup mascot, call button with "Talk to expert" tooltip, WhatsApp button. */
+/** Bottom-left contact stack: waving teacup mascot, call button with "Talk to expert" tooltip, WhatsApp button. */
 export function FloatingContactWidget({
   phoneHref = CONTACT_PHONES[0].href,
   whatsappHref = `${WHATSAPP.href}?text=${encodeURIComponent("Hi BHSK")}`,
@@ -62,13 +62,13 @@ export function FloatingContactWidget({
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex origin-bottom-right flex-col items-center gap-3 max-sm:scale-[0.85]">
+    <div className="fixed bottom-6 left-6 z-50 flex origin-bottom-left flex-col items-center gap-3 max-sm:scale-[0.85]">
       <TeacupMascot />
 
       <div className="relative z-10">
         <a
           href={phoneHref}
-          aria-label="Call a tea expert"
+          aria-label="Call BHSK"
           aria-describedby={tooltipId}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -82,12 +82,12 @@ export function FloatingContactWidget({
         <div
           id={tooltipId}
           role="tooltip"
-          className={`pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-[10px] bg-[var(--bhsk-blue-deep)] px-3.5 py-2 font-condensed text-[15px] font-semibold leading-none tracking-wide text-white shadow-[0_4px_12px_rgba(20,103,132,0.28)] transition duration-300 ease-out motion-reduce:transition-none ${
-            showTooltip ? "translate-x-0 opacity-100" : "translate-x-2 opacity-0"
+          className={`pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-[10px] bg-[var(--bhsk-blue-deep)] px-3.5 py-2 font-condensed text-[15px] font-semibold leading-none tracking-wide text-white shadow-[0_4px_12px_rgba(20,103,132,0.28)] transition duration-300 ease-out motion-reduce:transition-none ${
+            showTooltip ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0"
           }`}
         >
           Talk to expert
-          <span className="absolute left-full top-1/2 -translate-y-1/2 border-y-[6px] border-l-[6px] border-y-transparent border-l-[var(--bhsk-blue-deep)]" />
+          <span className="absolute right-full top-1/2 -translate-y-1/2 border-y-[6px] border-r-[6px] border-y-transparent border-r-[var(--bhsk-blue-deep)]" />
         </div>
       </div>
 
