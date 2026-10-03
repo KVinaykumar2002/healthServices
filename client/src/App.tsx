@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Building2, Home as HomeIcon, Check, ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { Building2, Home as HomeIcon, Check, ChevronDown, Facebook, Instagram, Linkedin, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Link, Route, Switch, useLocation } from "wouter";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
@@ -23,6 +23,9 @@ import { servicePageBySlug } from "@/lib/servicePages";
 import {
   CONTACT_EMAIL,
   CONTACT_PHONES,
+  FACEBOOK,
+  INSTAGRAM,
+  LINKEDIN,
   OFFICE_ADDRESS,
   OFFICE_MAP,
   HOME_CARE_BLURB,
@@ -238,6 +241,17 @@ function Footer() {
           <a href={OFFICE_MAP.viewUrl} target="_blank" rel="noopener noreferrer">
             <MapPin size={15} /> View on Google Maps
           </a>
+          <div className="footer-social">
+            <a href={INSTAGRAM.href} target="_blank" rel="noopener noreferrer" aria-label={`BHSK on Instagram (${INSTAGRAM.handle})`} title="Instagram">
+              <Instagram size={18} aria-hidden="true" />
+            </a>
+            <a href={FACEBOOK.href} target="_blank" rel="noopener noreferrer" aria-label={`${FACEBOOK.name} on Facebook`} title="Facebook">
+              <Facebook size={18} aria-hidden="true" />
+            </a>
+            <a href={LINKEDIN.href} target="_blank" rel="noopener noreferrer" aria-label={`${LINKEDIN.name} on LinkedIn`} title="LinkedIn">
+              <Linkedin size={18} aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </div>
       <div className="container footer-bottom">

@@ -10,8 +10,23 @@ export const CONTACT_PHONES = [
 ] as const;
 
 export const WHATSAPP = {
-  number: "97431599965",
-  href: "https://wa.me/97431599965",
+  number: "97431331146",
+  href: "https://wa.me/97431331146",
+} as const;
+
+export const INSTAGRAM = {
+  handle: "@bhsknursingservices",
+  href: "https://www.instagram.com/bhsknursingservices/",
+} as const;
+
+export const FACEBOOK = {
+  name: "BHSK Home Care",
+  href: "https://www.facebook.com/share/19QAPPA3Hd/",
+} as const;
+
+export const LINKEDIN = {
+  name: "BHSK Health Services",
+  href: "https://www.linkedin.com/in/bhsk-health-services-3aba2b222/",
 } as const;
 
 export const OFFICE_ADDRESS = {

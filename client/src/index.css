@@ -2778,6 +2778,32 @@ footer {
   color: var(--color-text-secondary);
 }
 
+.footer-social {
+  display: flex;
+  gap: var(--space-8);
+  margin-top: calc(var(--space-8) * 2);
+}
+
+.footer-grid .footer-social a {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--color-text-secondary) 28%, transparent);
+  background: color-mix(in srgb, var(--color-text-secondary) 8%, transparent);
+  transition:
+    color var(--motion-duration-instant) var(--motion-ease),
+    background-color var(--motion-duration-instant) var(--motion-ease),
+    border-color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.footer-grid .footer-social a:hover {
+  color: var(--bhsk-blue-deep);
+  background: var(--bhsk-white);
+  border-color: var(--bhsk-white);
+}
+
 .muted { color: var(--color-text-inverse); }
 
 .footer-grid .muted {
