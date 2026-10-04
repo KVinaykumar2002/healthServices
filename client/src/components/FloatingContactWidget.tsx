@@ -18,7 +18,7 @@ function TeacupMascot() {
   return (
     <div
       aria-hidden="true"
-      className="relative animate-teacup-bob motion-reduce:animate-none max-[379px]:hidden"
+      className="relative animate-teacup-bob motion-reduce:animate-none max-sm:hidden"
     >
       <div className="relative z-10 grid size-11 place-items-center rounded-full border-[3px] border-[var(--bhsk-sky)] bg-[var(--bhsk-blue-deep)] shadow-[0_4px_12px_rgba(20,103,132,0.3)]">
         <svg viewBox="0 0 32 32" className="size-9" fill="none">
@@ -52,7 +52,7 @@ export function FloatingContactWidget({
   }, []);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex origin-bottom-left flex-col items-center gap-3 max-sm:scale-[0.85]">
+    <div className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-50 flex origin-bottom-left flex-col items-center gap-3 max-sm:scale-[0.85] sm:bottom-6 sm:left-6">
       <TeacupMascot />
 
       <div className="relative z-10">

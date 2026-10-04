@@ -8,7 +8,10 @@ import { HeroBand } from "@/components/HeroBand";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { ServicesPage } from "@/components/ServicesPage";
 import { HomeNursingPage, ServicePageBySlug } from "@/components/ServiceDetailPage";
+import { FitImage } from "@/components/FitImage";
 import { FloatingContactWidget } from "@/components/FloatingContactWidget";
+import { LandlineIcon } from "@/components/LandlineIcon";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { BackToTop } from "@/components/BackToTop";
 import { HowItWorks } from "@/components/HowItWorks";
 import { FaqSection } from "@/components/FaqSection";
@@ -25,6 +28,7 @@ import {
   CONTACT_PHONES,
   FACEBOOK,
   INSTAGRAM,
+  LANDLINE,
   LINKEDIN,
   OFFICE_ADDRESS,
   OFFICE_MAP,
@@ -32,6 +36,7 @@ import {
   HEALTHCARE_STAFFING_BLURB,
   REQUEST_NURSE_PATH,
   REQUEST_STAFF_PATH,
+  WHATSAPP,
   facilityServices,
   homeCareServices,
   services,
@@ -55,6 +60,26 @@ function Header() {
     setOpen(false);
     setServicesOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    if (!open) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const desktop = window.matchMedia("(min-width: 851px)");
+    const onBreakpoint = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    desktop.addEventListener("change", onBreakpoint);
+    return () => {
+      document.body.style.overflow = overflow;
+      window.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onBreakpoint);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!servicesOpen) return;
@@ -171,20 +196,22 @@ function Header() {
               <a href={`mailto:${CONTACT_EMAIL}`} className="phone">
                 <Mail size={15} /> {CONTACT_EMAIL}
               </a>
-              <AntiMetalButton
-                href="/request-a-nurse"
-                label="Request a Nurse"
-                size="sm"
-                className="w-full"
-                onClick={() => setOpen(false)}
-              />
-              <AntiMetalButton
-                href="/request-healthcare-staff"
-                label="Request Staff"
-                size="sm"
-                className="w-full"
-                onClick={() => setOpen(false)}
-              />
+              <div className="mobile-drawer-actions">
+                <AntiMetalButton
+                  href="/request-a-nurse"
+                  label="Request a Nurse"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setOpen(false)}
+                />
+                <AntiMetalButton
+                  href="/request-healthcare-staff"
+                  label="Request Staff"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setOpen(false)}
+                />
+              </div>
             </div>
           </motion.div>
         )}
@@ -251,6 +278,9 @@ function Footer() {
             <a href={LINKEDIN.href} target="_blank" rel="noopener noreferrer" aria-label={`${LINKEDIN.name} on LinkedIn`} title="LinkedIn">
               <Linkedin size={18} aria-hidden="true" />
             </a>
+            <a href={LANDLINE.href} className="footer-landline" aria-label={`Call our landline ${LANDLINE.display}`}>
+              <LandlineIcon /> {LANDLINE.display}
+            </a>
           </div>
         </div>
       </div>
@@ -308,9 +338,11 @@ function WhyBhsk() {
     <section className="proof section" aria-labelledby="why-heading">
       <div className="container proof-grid">
         <Reveal direction="left" distance={80}>
-          <div className="proof-photo">
-            <img src="/images/bhsk/nurse-portrait.jpg" alt="Nurse in BHSK uniform with a stethoscope" />
-          </div>
+          <FitImage
+            src="/images/bhsk/nurse-portrait.jpg"
+            alt="Nurse in BHSK uniform with a stethoscope"
+            className="proof-photo"
+          />
         </Reveal>
         <Reveal delay={0.12} className="proof-copy" direction="left" distance={56}>
           <div className="eyebrow">WHY BHSK</div>
@@ -442,6 +474,12 @@ function StaffingHubPage() {
   );
 }
 
+const LEAD_FORM_SOURCE: Record<string, string> = {
+  "request-a-nurse": "Request a Nurse",
+  "request-healthcare-staff": "Request Staff",
+  "book-consultation": "Book a Consultation",
+};
+
 function InnerPage({
   type,
   leadDefault,
@@ -530,6 +568,7 @@ function InnerPage({
                 : "")
           }
           lockType={type === "request-a-nurse" || type === "request-healthcare-staff"}
+          source={LEAD_FORM_SOURCE[type] ?? "Contact us"}
         />
       ) : (
         <GeneralContent type={type} />
@@ -617,9 +656,11 @@ function useContactQuery() {
 function ContactContent({
   defaultType = "",
   lockType = false,
+  source,
 }: {
   defaultType?: "employer" | "patient" | "";
   lockType?: boolean;
+  source: string;
 }) {
   const query = useContactQuery();
   const [enquiryType, setEnquiryType] = useState(query.type || defaultType);
@@ -662,16 +703,13 @@ function ContactContent({
         ? homeCareServices
         : services;
 
+  const [whatsappOpened, setWhatsappOpened] = useState(false);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    const name = String(data.get("name") ?? "").trim();
-    const phone = String(data.get("phone") ?? "").trim();
-    const org = String(data.get("org") ?? "").trim();
-    const type = String(data.get("enquiryType") ?? "").trim();
-    const service = String(data.get("service") ?? "").trim();
-    const message = String(data.get("message") ?? "").trim();
+    const data = new FormData(event.currentTarget);
+    const field = (key: string) => String(data.get(key) ?? "").trim();
+    const type = field("enquiryType");
 
     const typeLabel =
       type === "employer"
@@ -680,25 +718,25 @@ function ContactContent({
           ? "Patient / family home care"
           : type || "Not specified";
 
-    const subject = encodeURIComponent(
-      `BHSK enquiry — ${typeLabel}${service ? ` — ${service}` : ""}`,
-    );
-    const body = encodeURIComponent(
-      [
-        `Name: ${name || "—"}`,
-        `Phone: ${phone || "—"}`,
-        `Organisation / city: ${org || "—"}`,
-        `Enquiry type: ${typeLabel}`,
-        `Service: ${service || "—"}`,
-        "",
-        "Message:",
-        message || "—",
-        "",
-        "Note: This enquiry requires assessment and availability confirmation by the BHSK team. It is not a confirmed booking.",
-      ].join("\n"),
-    );
+    const text = [
+      `*New enquiry — ${source}*`,
+      "",
+      `*Name:* ${field("name") || "—"}`,
+      `*Phone:* ${field("phone") || "—"}`,
+      `*Organisation / city:* ${field("org") || "—"}`,
+      `*Enquiry type:* ${typeLabel}`,
+      `*Service:* ${field("service") || "—"}`,
+      "",
+      "*Message:*",
+      field("message") || "—",
+    ].join("\n");
 
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    const url = `${WHATSAPP.href}?text=${encodeURIComponent(text)}`;
+    // Not using the "noopener" feature: it makes window.open return null, which would hide a blocked popup.
+    const whatsappWindow = window.open(url, "_blank");
+    if (whatsappWindow) whatsappWindow.opener = null;
+    else window.location.href = url;
+    setWhatsappOpened(true);
   }
 
   return (
@@ -779,10 +817,22 @@ function ContactContent({
             </select>
             <textarea placeholder="Tell us how we can help" rows={4} name="message" />
             <p className="contact-form__note">
-              Submitting starts a conversation with BHSK. Placement depends on clinical fit and availability — our team
-              confirms after review.
+              Submitting opens WhatsApp with your details filled in — just press Send. Placement depends on clinical
+              fit and availability — our team confirms after review.
             </p>
             <AntiMetalButton type="submit" label="Submit enquiry" />
+            {whatsappOpened ? (
+              <p className="contact-form__status" role="status">
+                <WhatsAppIcon className="contact-form__status-icon" />
+                <span>
+                  WhatsApp has opened with your enquiry. Press <b>Send</b> there to deliver it to BHSK. Didn’t open?{" "}
+                  <a href={WHATSAPP.href} target="_blank" rel="noopener noreferrer">
+                    Message us on WhatsApp
+                  </a>
+                  .
+                </span>
+              </p>
+            ) : null}
           </form>
         </Reveal>
       </div>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Phone } from "lucide-react";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { gsap, gsapEase, prefersReducedMotion, useGSAP } from "@/lib/gsap";
-import { Parallax } from "@/lib/motion";
+import { FitImage } from "@/components/FitImage";
 import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
 
 const heroSlides = [
@@ -133,11 +133,7 @@ export function HeroBand() {
         <div className="home-hero__media">
           <div className="home-hero__image-wrap" aria-live="polite">
             <div ref={slideRef} className="home-hero__slide" key={active.src}>
-              <Parallax speed={56} className="home-hero__parallax">
-                <picture>
-                  <img src={active.src} alt={active.alt} />
-                </picture>
-              </Parallax>
+              <FitImage src={active.src} alt={active.alt} className="home-hero__fit" />
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
+import { FitImage } from "@/components/FitImage";
 import { Seo } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { Reveal } from "@/lib/motion";
@@ -74,7 +75,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
       <section className="section svc-page__media-section" aria-label={`${page.name} in Qatar`}>
         <div className="container">
           <Reveal className="svc-page__media" direction="left" distance={48}>
-            <img src={page.imageUrl} alt={page.imageAlt} />
+            <FitImage src={page.imageUrl} alt={page.imageAlt} className="svc-page__frame" />
           </Reveal>
         </div>
       </section>
@@ -166,8 +167,11 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
           <ol className="how-steps">
             {page.process.steps.map((step, i) => (
               <Reveal as="li" key={step.n} className="how-step" direction="left" distance={36} delay={0.05 * i}>
-                <b aria-hidden="true">{step.n}</b>
-                <div>
+                <span className="how-step__dot" aria-hidden="true">
+                  <span className="how-step__dot-fill" />
+                  <span className="how-step__num">{step.n}</span>
+                </span>
+                <div className="how-step__copy">
                   <strong>{step.title}</strong>
                   <p>{step.text}</p>
                 </div>

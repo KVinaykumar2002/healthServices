@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { FitImage } from "@/components/FitImage";
 import { GsapStagger, Reveal } from "@/lib/motion";
 import { servicePath } from "@/lib/site";
 
@@ -32,10 +33,9 @@ export function ServiceGrid({ title, subtitle, services, className }: ServiceGri
           {services.map((service) => (
             <div key={service.slug}>
               <Link href={servicePath(service.slug)} className="service-tile service-tile--detailed">
-                <div className="service-tile-media">
-                  <img src={service.imageUrl} alt={service.name} loading="lazy" />
+                <FitImage src={service.imageUrl} alt={service.name} loading="lazy" className="service-tile-media">
                   <div className="service-tile-wash" />
-                </div>
+                </FitImage>
                 <span className="service-tile__title">{service.name}</span>
                 <p className="service-tile__text">{service.text}</p>
               </Link>

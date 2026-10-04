@@ -9,6 +9,8 @@ export const CONTACT_PHONES = [
   { display: "31599965", href: "tel:+97431599965" },
 ] as const;
 
+export const LANDLINE = { display: "+974-41497775", href: "tel:+97441497775" } as const;
+
 export const WHATSAPP = {
   number: "97431331146",
   href: "https://wa.me/97431331146",

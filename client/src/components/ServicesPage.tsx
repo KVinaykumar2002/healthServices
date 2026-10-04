@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
+import { FitImage } from "@/components/FitImage";
 import { Reveal, RevealText, GsapStagger } from "@/lib/motion";
 import { Seo, servicesPageJsonLd } from "@/components/Seo";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
@@ -20,10 +21,9 @@ function ServiceTiles({ items }: { items: ServiceItem[] }) {
       {items.map((service) => (
         <div key={service.slug}>
           <Link href={servicePath(service.slug)} className="service-tile service-tile--detailed">
-            <div className="service-tile-media">
-              <img src={service.imageUrl} alt={service.name} loading="lazy" />
+            <FitImage src={service.imageUrl} alt={service.name} loading="lazy" className="service-tile-media">
               <div className="service-tile-wash" />
-            </div>
+            </FitImage>
             <span className="service-tile__title">{service.name}</span>
             <p className="service-tile__text">{service.text}</p>
           </Link>
