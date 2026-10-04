@@ -45,7 +45,7 @@ export function BackToTop() {
       aria-label="Back to top"
       tabIndex={visible ? 0 : -1}
       aria-hidden={!visible}
-      onClick={() => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" })}
+      onClick={() => window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" })}
     >
       <svg className="back-to-top__ring" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
         <circle className="back-to-top__track" cx="24" cy="24" r={RING_RADIUS} />

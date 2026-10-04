@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Building2, Home as HomeIcon, Check, ChevronDown, Facebook, Instagram, Linkedin, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Link, Route, Switch, useLocation } from "wouter";
@@ -860,6 +860,7 @@ function App() {
           exit={pageTransition.exit}
           transition={{ duration: 0.45, ease: easeOut }}
         >
+          <RouteScroll />
           <Switch location={location}>
             <Route path="/" component={Home} />
             <Route path="/about-us">
@@ -917,23 +918,80 @@ function App() {
   );
 }
 
+/** Last scroll position per path, so Back / Forward return the reader to where they were. */
+const savedScroll = new Map<string, number>();
+let navigatedByHistory = false;
+
+if (typeof window !== "undefined") {
+  window.history.scrollRestoration = "manual";
+  window.addEventListener("popstate", () => {
+    navigatedByHistory = true;
+  });
+}
+
+function hashTarget() {
+  const hash = decodeURIComponent(window.location.hash.slice(1));
+  return hash ? document.getElementById(hash) : null;
+}
+
+/**
+ * Rendered inside each page, so it runs once the new page is in the DOM — i.e. after the
+ * previous page's exit animation. Scrolling earlier gets cut short when the old page unmounts.
+ * "instant" is required: html has scroll-behavior: smooth, which "auto" would inherit.
+ */
+function RouteScroll() {
+  useLayoutEffect(() => {
+    const target = hashTarget();
+    if (target) target.scrollIntoView({ behavior: "instant", block: "start" });
+    else {
+      const top = navigatedByHistory ? (savedScroll.get(window.location.pathname) ?? 0) : 0;
+      window.scrollTo({ top, behavior: "instant" });
+    }
+    navigatedByHistory = false;
+  }, []);
+  return null;
+}
+
 function ScrollToTop() {
   const [location] = useLocation();
   const reduce = useReducedMotion();
 
   useEffect(() => {
-    const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
-    if (hash) {
-      const id = window.setTimeout(() => {
-        document.getElementById(hash)?.scrollIntoView({
-          behavior: reduce ? "auto" : "smooth",
-          block: "start",
-        });
-      }, 80);
-      return () => window.clearTimeout(id);
-    }
-    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-  }, [location, reduce]);
+    let frame = 0;
+    const record = () => {
+      frame = 0;
+      savedScroll.set(window.location.pathname, window.scrollY);
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(record);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // Links to the page you're already on don't change the route, so handle them here:
+  // same-page section links scroll to the section, plain links scroll back to the top.
+  // Capture phase: wouter updates the URL in its own click handler, before bubbling reaches us.
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>("a[href]");
+      if (!link || link.target === "_blank") return;
+      const url = new URL(link.href, window.location.href);
+      if (url.origin !== window.location.origin || url.pathname !== window.location.pathname) return;
+      const behavior: ScrollBehavior = reduce ? "instant" : "smooth";
+      window.setTimeout(() => {
+        const target = url.hash ? hashTarget() : null;
+        if (target) target.scrollIntoView({ behavior, block: "start" });
+        else if (!url.hash) window.scrollTo({ top: 0, behavior });
+      }, 0);
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [reduce]);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
