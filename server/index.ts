@@ -19,7 +19,8 @@ async function startServer() {
       ? path.resolve(__dirname, "public")
       : path.resolve(__dirname, "..", "dist", "public");
 
-  app.use(express.static(staticPath));
+  // redirect: false — route folders (e.g. public/services/) would otherwise add a trailing-slash redirect.
+  app.use(express.static(staticPath, { redirect: false }));
 
   app.get("*", (_req, res) => {
     res.sendFile(path.join(staticPath, "index.html"));
