@@ -274,7 +274,7 @@ button, select, input, textarea {
   display: flex;
   width: max-content;
   align-items: center;
-  animation: topbar-marquee 32s linear infinite;
+  animation: topbar-marquee 40s linear infinite;
 }
 
 .topbar-marquee:hover .topbar-marquee-track {
@@ -292,9 +292,16 @@ button, select, input, textarea {
   width: auto;
 }
 
+.topbar-marquee.is-static .topbar-marquee-group {
+  min-width: 0;
+}
+
+/* Each group must be at least as wide as the viewport, or the -50% loop shows a blank gap. */
 .topbar-marquee-group {
   display: flex;
   flex-shrink: 0;
+  min-width: 100vw;
+  justify-content: space-around;
   align-items: center;
   gap: calc(var(--space-8) * 2.4);
   padding-inline: calc(var(--space-8) * 2.4);
@@ -323,20 +330,6 @@ button, select, input, textarea {
 @keyframes topbar-marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
-}
-
-/* Contact details fit on one line on desktop — keep them still and readable */
-@media (min-width: 851px) {
-  .topbar-marquee {
-    justify-content: center;
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-  .topbar-marquee-track {
-    animation: none;
-    width: auto;
-  }
-  .topbar-marquee-group[aria-hidden="true"] { display: none; }
 }
 
 .site-header {
