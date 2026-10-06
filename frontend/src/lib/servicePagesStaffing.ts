@@ -16,7 +16,7 @@ const hospitals: ServicePageContent = {
   ],
   heroCtaLabel: "Request Staff",
   requestServiceName: "Nursing Services for Hospitals",
-  imageUrl: "/images/bhsk/hospitals.jpg",
+  imageUrl: "/images/bhsk/services/hospitals.jpg",
   imageAlt: "BHSK nurse working on a hospital ward in Qatar",
   audience: {
     heading: "Who hospital staffing is for",
@@ -149,7 +149,7 @@ const medicalCentres: ServicePageContent = {
   ],
   heroCtaLabel: "Request Staff",
   requestServiceName: "Nursing Services for Medical Centres",
-  imageUrl: "/images/bhsk/medical-centres.jpg",
+  imageUrl: "/images/bhsk/services/medical-centres.jpg",
   imageAlt: "BHSK nurse assisting patients at a medical centre",
   audience: {
     heading: "Who clinic staffing is for",
@@ -281,7 +281,7 @@ const schoolsNurseries: ServicePageContent = {
   ],
   heroCtaLabel: "Request Staff",
   requestServiceName: "Nursing Services for Schools / Nurseries",
-  imageUrl: "/images/bhsk/schools-nurseries.jpg",
+  imageUrl: "/images/bhsk/services/schools-nurseries.jpg",
   imageAlt: "BHSK school nurse caring for a child in a school health room",
   audience: {
     heading: "Who school nursing is for",
@@ -413,8 +413,8 @@ const campConstruction: ServicePageContent = {
   ],
   heroCtaLabel: "Request Staff",
   requestServiceName: "Nursing Services for Camp or Construction Site",
-  imageUrl: "/images/bhsk/camp-construction.jpg",
-  imageAlt: "BHSK nurse providing first aid on a construction site",
+  imageUrl: "/images/bhsk/services/camp-construction.jpg",
+  imageAlt: "BHSK nurse checking a worker's blood pressure in a construction site clinic",
   audience: {
     heading: "Who site and camp nursing is for",
     items: [

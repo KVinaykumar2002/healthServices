@@ -16,8 +16,8 @@ const homeNursing: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Home Nursing",
-  imageUrl: "/images/bhsk/home-nursing-banner.jpg",
-  imageAlt: "BHSK nurse dressing a patient's knee at home in Qatar",
+  imageUrl: "/images/bhsk/services/home-nursing.jpg",
+  imageAlt: "BHSK nurse dressing a patient's leg at home in Qatar",
   audience: {
     heading: "Who home nursing is for",
     items: [
@@ -164,7 +164,7 @@ const maternityNewborn: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Maternity and Newborn Care",
-  imageUrl: "/images/bhsk/maternity-newborn.jpg",
+  imageUrl: "/images/bhsk/services/maternity-newborn.jpg",
   imageAlt: "BHSK nurse supporting a mother and her newborn baby at home",
   audience: {
     heading: "Who maternity and newborn care is for",
@@ -299,7 +299,7 @@ const elderlyCare: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Elderly Care",
-  imageUrl: "/images/bhsk/hero-elderly-care.jpg",
+  imageUrl: "/images/bhsk/services/elderly-care.jpg",
   imageAlt: "BHSK nurse caring for an elderly woman at home in Qatar",
   audience: {
     heading: "Who elderly care is for",
@@ -434,7 +434,7 @@ const babyCare: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Baby Care",
-  imageUrl: "/images/bhsk/baby-care.jpg",
+  imageUrl: "/images/bhsk/services/baby-care.jpg",
   imageAlt: "BHSK nurse caring for a baby at home",
   audience: {
     heading: "Who baby care is for",
@@ -569,7 +569,7 @@ const palliativeCare: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Palliative Care",
-  imageUrl: "/images/bhsk/hero-family-bedside.jpg",
+  imageUrl: "/images/bhsk/services/palliative-care.jpg",
   imageAlt: "BHSK nurse at the bedside of a patient with family at home",
   audience: {
     heading: "Who palliative care is for",
@@ -704,7 +704,7 @@ const chronicCare: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Chronic Patient Care",
-  imageUrl: "/images/bhsk/chronic-care.jpg",
+  imageUrl: "/images/bhsk/services/chronic-care.jpg",
   imageAlt: "BHSK nurse checking a patient’s health readings at home",
   audience: {
     heading: "Who chronic patient care is for",
@@ -839,7 +839,7 @@ const postOperative: ServicePageContent = {
   ],
   heroCtaLabel: "Request a Nurse",
   requestServiceName: "Post-operative Care",
-  imageUrl: "/images/bhsk/post-operative.jpg",
+  imageUrl: "/images/bhsk/services/post-operative.jpg",
   imageAlt: "BHSK nurse helping a patient recover after surgery at home",
   audience: {
     heading: "Who post-operative care is for",
@@ -974,7 +974,7 @@ const physiotherapy: ServicePageContent = {
   ],
   heroCtaLabel: "Request Physiotherapy",
   requestServiceName: "Physiotherapy",
-  imageUrl: "/images/bhsk/hero-mobility-family.jpg",
+  imageUrl: "/images/bhsk/services/physiotherapy.jpg",
   imageAlt: "BHSK therapist helping a patient walk with a walking frame at home",
   audience: {
     heading: "Who home physiotherapy is for",

@@ -95,15 +95,20 @@ export function EnquiryPanel({
   const notesDirty = notes !== enquiry.notes;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-labelledby="enquiry-panel-title">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="enquiry-panel-title"
+    >
       <button
         type="button"
-        className="absolute inset-0 cursor-default border-0 bg-[#10303c]/40 backdrop-blur-[1px]"
+        className="absolute inset-0 cursor-default border-0 bg-[#10303c]/50 backdrop-blur-[2px] animate-in fade-in duration-200"
         aria-label="Close"
         tabIndex={-1}
         onClick={onClose}
       />
-      <aside className="relative flex h-full w-full max-w-lg flex-col bg-white shadow-2xl">
+      <div className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200 sm:max-h-[calc(100dvh-3rem)]">
         <header className="flex items-start justify-between gap-4 border-b border-[var(--color-border)] px-6 py-5">
           <div className="min-w-0">
             <h2 id="enquiry-panel-title" className="m-0 truncate text-xl">
@@ -241,7 +246,7 @@ export function EnquiryPanel({
             Delete
           </button>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }

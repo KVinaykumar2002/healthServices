@@ -2397,8 +2397,9 @@ button, select, input, textarea {
   padding-top: 0;
 }
 
+/* Matches the 16:9 service photos so they fill the frame with no crop or blurred fill. */
 .svc-page__frame {
-  height: 520px;
+  aspect-ratio: 16 / 9;
   border-radius: var(--radius-xs);
 }
 
@@ -2580,10 +2581,6 @@ button, select, input, textarea {
   .svc-page__scope-grid,
   .svc-page__related-list {
     grid-template-columns: 1fr;
-  }
-
-  .svc-page__frame {
-    height: 380px;
   }
 }
 

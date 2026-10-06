@@ -103,7 +103,8 @@ async function request(path: string, init: RequestInit = {}): Promise<Response> 
       const payload = (await response.json()) as { error?: string };
       if (payload.error) message = payload.error;
     } catch {
-      // Non-JSON error (e.g. proxy page) — keep the generic message.
+      // Non-JSON error page: a 5xx here means a proxy or host couldn't reach the API.
+      if (response.status >= 500) message = "The server isn't responding right now. Please try again in a moment.";
     }
     if (response.status === 401 && path !== "/login") unauthorizedHandler?.();
     throw new AdminApiError(message, response.status);
