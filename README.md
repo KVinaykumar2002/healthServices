@@ -14,12 +14,13 @@ The root `package.json` is a workspace that runs both.
 
 | Service  | URL                                            |
 | -------- | ---------------------------------------------- |
-| Frontend | https://healthservices-hybm.onrender.com/      |
+| Frontend | https://bhskforhealthservices.com/ (also www and https://healthservices-hybm.onrender.com/) |
 | Backend  | https://healthservicesbackend.onrender.com/    |
 
-Both live in [`shared/urls.ts`](shared/urls.ts) — change them there only. The frontend uses `BACKEND_URL` for
+They live in [`shared/urls.ts`](shared/urls.ts) — change them there only. The frontend uses `BACKEND_URL` for
 API calls in production builds and `FRONTEND_URL` for canonical / structured-data links; the backend always
-allows `FRONTEND_URL` in CORS.
+allows `FRONTEND_URL` and `FRONTEND_ALIASES` in CORS. Add any new domain the site is served from to
+`FRONTEND_ALIASES`, otherwise the browser blocks its form submissions and admin logins.
 
 ## Getting started
 

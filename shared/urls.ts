@@ -4,8 +4,11 @@
  * No trailing slashes.
  */
 
-/** Deployed React site (Render static site). */
-export const FRONTEND_URL = "https://healthservices-hybm.onrender.com";
+/** Primary public address of the React site (custom domain on the Render static site). */
+export const FRONTEND_URL = "https://bhskforhealthservices.com";
+
+/** Other addresses the same site is reachable at; the API accepts requests from these too. */
+export const FRONTEND_ALIASES = ["https://www.bhskforhealthservices.com", "https://healthservices-hybm.onrender.com"];
 
 /** Deployed Express API (Render web service). API routes live under `${BACKEND_URL}/api`. */
 export const BACKEND_URL = "https://healthservicesbackend.onrender.com";
