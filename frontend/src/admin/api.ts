@@ -1,0 +1,175 @@
+import { API_BASE_URL } from "@/lib/api";
+
+export const ENQUIRY_STATUSES = ["new", "contacted", "in_progress", "closed", "spam"] as const;
+export type EnquiryStatus = (typeof ENQUIRY_STATUSES)[number];
+export type EnquiryTypeFilter = "" | "patient" | "employer" | "unspecified";
+
+export type Enquiry = {
+  id: string;
+  name: string;
+  phone: string;
+  org: string;
+  enquiryType: "patient" | "employer" | "";
+  service: string;
+  message: string;
+  source: string;
+  status: EnquiryStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EnquiryStats = {
+  total: number;
+  today: number;
+  last7Days: number;
+  byStatus: Record<EnquiryStatus, number>;
+  byType: { patient: number; employer: number; unspecified: number };
+  bySource: { source: string; count: number }[];
+  daily: { date: string; count: number }[];
+};
+
+export type EnquiryFilters = {
+  search: string;
+  status: EnquiryStatus | "";
+  enquiryType: EnquiryTypeFilter;
+};
+
+export type EnquiryPage = {
+  items: Enquiry[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+};
+
+export type AdminSession = { token: string; username: string; expiresAt: string };
+
+const SESSION_KEY = "bhsk-admin-session";
+
+export function loadSession(): AdminSession | null {
+  try {
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) ?? "null") as AdminSession | null;
+    if (!session?.token || new Date(session.expiresAt).getTime() <= Date.now()) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+export function saveSession(session: AdminSession) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+}
+
+export function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+export class AdminApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
+let unauthorizedHandler: (() => void) | null = null;
+
+/** Called whenever the server rejects the session (expired, password changed, …). */
+export function onUnauthorized(handler: (() => void) | null) {
+  unauthorizedHandler = handler;
+}
+
+async function request(path: string, init: RequestInit = {}): Promise<Response> {
+  const session = loadSession();
+  const headers = new Headers(init.headers);
+  if (session) headers.set("Authorization", `Bearer ${session.token}`);
+  if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/admin${path}`, { ...init, headers });
+  } catch {
+    throw new AdminApiError("Can't reach the server. Check your connection and try again.", 0);
+  }
+
+  if (!response.ok) {
+    let message = "Something went wrong. Please try again.";
+    try {
+      const payload = (await response.json()) as { error?: string };
+      if (payload.error) message = payload.error;
+    } catch {
+      // Non-JSON error (e.g. proxy page) — keep the generic message.
+    }
+    if (response.status === 401 && path !== "/login") unauthorizedHandler?.();
+    throw new AdminApiError(message, response.status);
+  }
+  return response;
+}
+
+async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  return (await (await request(path, init)).json()) as T;
+}
+
+function filterParams(filters: EnquiryFilters, extra: Record<string, string> = {}) {
+  const params = new URLSearchParams(extra);
+  if (filters.search.trim()) params.set("search", filters.search.trim());
+  if (filters.status) params.set("status", filters.status);
+  if (filters.enquiryType) params.set("enquiryType", filters.enquiryType);
+  return params;
+}
+
+export async function login(username: string, password: string): Promise<AdminSession> {
+  const result = await requestJson<AdminSession>("/login", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
+  });
+  const session = { token: result.token, username: result.username, expiresAt: result.expiresAt };
+  saveSession(session);
+  return session;
+}
+
+export function fetchMe() {
+  return requestJson<{ username: string }>("/me");
+}
+
+export function fetchStats() {
+  return requestJson<EnquiryStats>("/stats");
+}
+
+export function fetchEnquiries(filters: EnquiryFilters, page: number, pageSize = 20) {
+  const params = filterParams(filters, { page: String(page), pageSize: String(pageSize) });
+  return requestJson<EnquiryPage>(`/enquiries?${params}`);
+}
+
+export async function updateEnquiry(id: string, update: { status?: EnquiryStatus; notes?: string }) {
+  const result = await requestJson<{ enquiry: Enquiry }>(`/enquiries/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(update),
+  });
+  return result.enquiry;
+}
+
+export async function deleteEnquiry(id: string) {
+  await request(`/enquiries/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export async function downloadEnquiriesCsv(filters: EnquiryFilters) {
+  const response = await request(`/enquiries/export.csv?${filterParams(filters)}`);
+  const blob = await response.blob();
+  const filename =
+    /filename="([^"]+)"/.exec(response.headers.get("Content-Disposition") ?? "")?.[1] ?? "bhsk-enquiries.csv";
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
