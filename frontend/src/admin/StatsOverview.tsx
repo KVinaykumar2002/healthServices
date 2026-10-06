@@ -6,7 +6,7 @@ import { STATUS_META, formatDay } from "./format";
 
 function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-2xl border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-1)] ${className}`}>
+    <section className={`rounded-2xl border border-[var(--color-border)] bg-white p-4 shadow-[var(--shadow-1)] sm:p-5 ${className}`}>
       {children}
     </section>
   );
@@ -27,14 +27,14 @@ function StatCard({
 }) {
   return (
     <Card>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="m-0 text-sm font-semibold text-[var(--color-text-tertiary)]">{label}</p>
-          <p className="m-0 mt-1 text-3xl font-bold tabular-nums">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
+          <p className="m-0 text-xs font-semibold text-[var(--color-text-tertiary)] sm:text-sm">{label}</p>
+          <p className="m-0 mt-1 text-2xl font-bold tabular-nums sm:text-3xl">
             {value === undefined ? <span className="inline-block h-8 w-12 animate-pulse rounded bg-slate-100" /> : value}
           </p>
         </div>
-        <span className={`flex size-10 items-center justify-center rounded-xl ${accent}`}>{icon}</span>
+        <span className={`flex size-8 shrink-0 items-center justify-center rounded-xl sm:size-10 ${accent}`}>{icon}</span>
       </div>
       <p className="m-0 mt-2 text-xs text-[var(--color-text-tertiary)]">{hint}</p>
     </Card>
@@ -63,7 +63,7 @@ export function StatsOverview({ stats }: { stats: EnquiryStats | null }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           label="Total enquiries"
           value={stats?.total}

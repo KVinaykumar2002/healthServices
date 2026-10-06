@@ -88,7 +88,7 @@ function ExternalValue({ href, children }: { href: string; children: ReactNode }
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex max-w-full items-center gap-1.5 break-all text-[var(--bhsk-blue-text)] hover:underline"
+      className="inline-flex max-w-full items-center gap-1.5 text-[var(--bhsk-blue-text)] [overflow-wrap:anywhere] hover:underline"
     >
       {children}
       <ExternalLink className="size-3.5 shrink-0" />
@@ -205,7 +205,7 @@ export function SiteSettingsPage() {
                 href={mapUrls(form.mapQuery.trim() || DEFAULT_SITE_SETTINGS.mapQuery).viewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:bg-[var(--color-surface-page)]"
+                className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl sm:h-10 border border-[var(--color-border)] px-3 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:bg-[var(--color-surface-page)]"
               >
                 <ExternalLink className="size-4" /> Preview
               </a>
@@ -219,7 +219,7 @@ export function SiteSettingsPage() {
         return (
           <Field label={`${social.label} link`} htmlFor={`settings-${key}`} errors={fieldErrors[key]}>
             <div className="flex items-center gap-2">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-surface-page)] text-[var(--bhsk-blue-text)]">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl sm:size-10 bg-[var(--color-surface-page)] text-[var(--bhsk-blue-text)]">
                 {social.icon}
               </span>
               <input

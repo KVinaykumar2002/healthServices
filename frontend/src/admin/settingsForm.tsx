@@ -4,11 +4,12 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { AdminApiError } from "./api";
 import { formatDateTime } from "./format";
 
+// 16px text on phones: iOS Safari zooms the page when focusing an input smaller than that.
 export const inputClass =
-  "h-10 w-full rounded-xl border bg-white px-3 text-sm outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30";
+  "h-11 w-full rounded-xl border bg-white px-3 text-base outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30 sm:h-10 sm:text-sm";
 
 export const textareaClass =
-  "w-full rounded-xl border bg-white px-3 py-2.5 text-sm leading-relaxed outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30";
+  "w-full rounded-xl border bg-white px-3 py-2.5 text-base leading-relaxed outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30 sm:text-sm";
 
 export function borderFor(errors?: string[]) {
   return errors?.length ? "border-[var(--color-error)]" : "border-[var(--color-border)]";
@@ -28,7 +29,7 @@ export function Card({
   bodyClassName?: string;
 }) {
   return (
-    <section className="rounded-2xl border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-1)] sm:p-6">
+    <section className="rounded-2xl border border-[var(--color-border)] bg-white p-4 shadow-[var(--shadow-1)] sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="m-0 text-lg">{title}</h2>
@@ -41,14 +42,24 @@ export function Card({
   );
 }
 
-export function EditButton({ label, onClick, disabled }: { label: string; onClick: () => void; disabled?: boolean }) {
+export function EditButton({
+  label,
+  onClick,
+  disabled,
+  className = "",
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white px-3 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:border-[var(--bhsk-blue)] hover:bg-[var(--color-surface-page)] disabled:cursor-not-allowed disabled:opacity-50"
+      className={`${className} inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white px-3 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:border-[var(--bhsk-blue)] hover:bg-[var(--color-surface-page)] disabled:cursor-not-allowed disabled:opacity-50`}
     >
       <Pencil className="size-3.5" /> Edit
     </button>
@@ -72,10 +83,10 @@ export function DisplayRow({
   disabled?: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-4 last:pb-0">
+    <div className="flex items-start justify-between gap-3 py-4 last:pb-0 sm:gap-4">
       <div className="min-w-0">
         <p className="m-0 text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase">{label}</p>
-        <div className="mt-1 text-sm break-words text-[var(--bhsk-ink)]">{children}</div>
+        <div className="mt-1 text-sm text-[var(--bhsk-ink)] [overflow-wrap:anywhere]">{children}</div>
       </div>
       <EditButton label={`Edit ${label.toLowerCase()}`} onClick={onEdit} disabled={disabled} />
     </div>
@@ -159,7 +170,7 @@ export function ListField({
               type="button"
               onClick={() => onChange(values.filter((_, i) => i !== index))}
               disabled={values.length <= min}
-              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-[var(--color-border)] bg-white text-[var(--color-text-tertiary)] hover:bg-red-50 hover:text-[var(--color-error)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex size-11 shrink-0 cursor-pointer items-center sm:size-10 justify-center rounded-xl border border-[var(--color-border)] bg-white text-[var(--color-text-tertiary)] hover:bg-red-50 hover:text-[var(--color-error)] disabled:cursor-not-allowed disabled:opacity-40"
               aria-label={`Remove ${rowLabel(index).toLowerCase()}`}
             >
               <Trash2 className="size-4" />
@@ -254,28 +265,28 @@ export function EditDialog({
         className={`max-h-[calc(100dvh-2rem)] gap-0 overflow-hidden rounded-2xl p-0 ${wide ? "sm:max-w-3xl" : "sm:max-w-lg"}`}
       >
         <form onSubmit={submit} className="flex max-h-[calc(100dvh-2rem)] flex-col">
-          <div className="border-b border-[var(--color-border)] px-6 py-5 pr-12">
+          <div className="border-b border-[var(--color-border)] px-5 py-4 pr-12 sm:px-6 sm:py-5">
             <DialogTitle>{title}</DialogTitle>
             {description ? <DialogDescription className="mt-1">{description}</DialogDescription> : null}
           </div>
-          <div className="grid gap-5 overflow-y-auto px-6 py-5">
+          <div className="grid gap-5 overflow-y-auto px-5 py-5 sm:px-6">
             <FormError message={error ?? ""} />
             {children}
           </div>
           {hideFooter ? null : (
-            <div className="flex justify-end gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface-page)]/60 px-6 py-4">
+            <div className="grid grid-cols-2 gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface-page)]/60 px-5 py-4 sm:flex sm:justify-end sm:px-6">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={saving}
-                className="inline-flex h-10 cursor-pointer items-center rounded-xl border border-[var(--color-border)] bg-white px-4 text-sm font-semibold text-[var(--bhsk-ink)] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-xl border border-[var(--color-border)] bg-white px-4 text-sm font-semibold text-[var(--bhsk-ink)] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:h-10"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl border-0 px-5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                className={`inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-0 px-5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 sm:h-10 ${
                   tone === "danger"
                     ? "bg-[var(--color-error)] hover:brightness-95"
                     : "bg-[var(--bhsk-blue-text)] hover:bg-[var(--bhsk-blue-deep)]"

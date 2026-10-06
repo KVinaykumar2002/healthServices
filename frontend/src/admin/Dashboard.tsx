@@ -136,7 +136,7 @@ function SideNavItem({
       type="button"
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={`flex h-10 w-auto shrink-0 cursor-pointer items-center gap-3 rounded-xl border-0 px-3 text-left text-sm font-semibold whitespace-nowrap transition lg:h-11 lg:w-full ${
+      className={`flex h-11 w-full cursor-pointer items-center gap-3 rounded-xl border-0 px-3 text-left text-sm font-semibold whitespace-nowrap transition ${
         active
           ? "bg-[var(--bhsk-blue-text)] text-white shadow-[var(--shadow-1)]"
           : "bg-transparent text-[var(--color-text-tertiary)] hover:bg-[var(--color-surface-page)] hover:text-[var(--bhsk-ink)]"
@@ -159,6 +159,52 @@ function SideNavItem({
           {count}
         </span>
       ) : null}
+    </button>
+  );
+}
+
+/** App-style tab for the bottom bar on phones and tablets. */
+function BottomNavItem({
+  icon: Icon,
+  label,
+  highlight,
+  active,
+  onClick,
+}: {
+  icon: LucideIcon;
+  label: string;
+  highlight?: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={`relative flex h-16 cursor-pointer flex-col items-center justify-center gap-1 border-0 bg-transparent text-[11px] font-semibold transition ${
+        active
+          ? "text-[var(--bhsk-blue-text)]"
+          : "text-[var(--color-text-tertiary)] hover:text-[var(--bhsk-ink)]"
+      }`}
+    >
+      {active ? (
+        <span className="absolute top-0 h-0.5 w-10 rounded-full bg-[var(--bhsk-blue-text)]" />
+      ) : null}
+      <span
+        className={`relative flex h-8 w-14 items-center justify-center rounded-full transition ${active ? "bg-[var(--color-surface-page)]" : ""}`}
+      >
+        <Icon className="size-5" />
+        {highlight ? (
+          <span
+            className="absolute -top-0.5 right-1.5 min-w-4 rounded-full bg-rose-500 px-1 text-center text-[10px] leading-4 text-white tabular-nums"
+            aria-label={`${highlight} new`}
+          >
+            {highlight > 99 ? "99+" : highlight}
+          </span>
+        ) : null}
+      </span>
+      {label}
     </button>
   );
 }
@@ -295,6 +341,42 @@ export function Dashboard({
   const firstRow = page && page.total ? (page.page - 1) * page.pageSize + 1 : 0;
   const lastRow = page ? Math.min(page.page * page.pageSize, page.total) : 0;
 
+  const navItems: {
+    view: AdminView;
+    icon: LucideIcon;
+    label: string;
+    shortLabel: string;
+    count?: number;
+    highlight?: number;
+  }[] = [
+    {
+      view: "overview",
+      icon: LayoutDashboard,
+      label: "Overview",
+      shortLabel: "Overview",
+    },
+    {
+      view: "enquiries",
+      icon: Inbox,
+      label: "All enquiries",
+      shortLabel: "Enquiries",
+      count: stats?.total,
+      highlight: stats?.byStatus.new,
+    },
+    {
+      view: "hero",
+      icon: PanelTop,
+      label: "Homepage hero",
+      shortLabel: "Hero",
+    },
+    {
+      view: "settings",
+      icon: Settings,
+      label: "Site settings",
+      shortLabel: "Settings",
+    },
+  ];
+
   const statusTabs: {
     value: EnquiryStatus | "";
     label: string;
@@ -359,44 +441,45 @@ export function Dashboard({
       </header>
 
       <div className="lg:flex">
-        <aside className="sticky top-16 z-30 border-b border-[var(--color-border)] bg-white lg:h-[calc(100dvh-4rem)] lg:w-64 lg:shrink-0 lg:border-r lg:border-b-0">
+        <aside className="sticky top-16 z-30 hidden h-[calc(100dvh-4rem)] w-64 shrink-0 border-r border-[var(--color-border)] bg-white lg:block">
           <nav
-            className="flex gap-2 overflow-x-auto px-4 py-2 sm:px-6 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-4 lg:py-6"
+            className="flex flex-col gap-1 px-4 py-6"
             aria-label="Admin sections"
           >
-            <p className="m-0 mb-2 hidden px-3 text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase lg:block">
+            <p className="m-0 mb-2 px-3 text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase">
               Menu
             </p>
-            <SideNavItem
-              icon={LayoutDashboard}
-              label="Overview"
-              active={view === "overview"}
-              onClick={() => navigate("overview")}
-            />
-            <SideNavItem
-              icon={Inbox}
-              label="All enquiries"
-              count={stats?.total}
-              highlight={stats?.byStatus.new}
-              active={view === "enquiries"}
-              onClick={() => navigate("enquiries")}
-            />
-            <SideNavItem
-              icon={PanelTop}
-              label="Homepage hero"
-              active={view === "hero"}
-              onClick={() => navigate("hero")}
-            />
-            <SideNavItem
-              icon={Settings}
-              label="Site settings"
-              active={view === "settings"}
-              onClick={() => navigate("settings")}
-            />
+            {navItems.map(item => (
+              <SideNavItem
+                key={item.view}
+                icon={item.icon}
+                label={item.label}
+                count={item.count}
+                highlight={item.highlight}
+                active={view === item.view}
+                onClick={() => navigate(item.view)}
+              />
+            ))}
           </nav>
         </aside>
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <nav
+          className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-[var(--color-border)] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_20px_rgba(16,48,60,0.06)] backdrop-blur lg:hidden"
+          aria-label="Admin sections"
+        >
+          {navItems.map(item => (
+            <BottomNavItem
+              key={item.view}
+              icon={item.icon}
+              label={item.shortLabel}
+              highlight={item.highlight}
+              active={view === item.view}
+              onClick={() => navigate(item.view)}
+            />
+          ))}
+        </nav>
+
+        <main className="min-w-0 flex-1 px-4 pt-6 pb-28 sm:px-6 sm:pt-8 lg:px-8 lg:pb-8">
           <div className="mx-auto max-w-7xl space-y-6">
             <div>
               <h1 className="m-0 text-2xl sm:text-3xl">
@@ -515,8 +598,8 @@ export function Dashboard({
                         type="search"
                         value={searchInput}
                         onChange={event => setSearchInput(event.target.value)}
-                        placeholder="Search name, phone, service, message…"
-                        className="h-10 w-full rounded-xl border border-[var(--color-border)] bg-white pr-3 pl-9 text-sm outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30"
+                        placeholder="Search name, phone, service…"
+                        className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white pr-3 pl-9 text-base outline-none sm:h-10 sm:text-sm focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30"
                       />
                     </label>
                     <label className="sm:w-52">
@@ -529,7 +612,7 @@ export function Dashboard({
                               .value as EnquiryTypeFilter,
                           })
                         }
-                        className="h-10 w-full cursor-pointer rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30"
+                        className="h-11 w-full cursor-pointer rounded-xl border border-[var(--color-border)] bg-white px-3 text-base outline-none sm:h-10 sm:text-sm focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30"
                       >
                         <option value="">All types</option>
                         <option value="patient">Home care (patients)</option>
@@ -540,7 +623,52 @@ export function Dashboard({
                   </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <ul className="m-0 list-none divide-y divide-[var(--color-border)] p-0 sm:hidden">
+                  {loading && !page
+                    ? Array.from({ length: 5 }, (_, index) => (
+                        <li key={index} className="space-y-2 px-4 py-4">
+                          <div className="h-4 w-2/3 animate-pulse rounded bg-slate-100" />
+                          <div className="h-3 w-1/2 animate-pulse rounded bg-slate-100" />
+                        </li>
+                      ))
+                    : page?.items.map(enquiry => (
+                        <li key={enquiry.id}>
+                          <button
+                            type="button"
+                            onClick={() => setSelected(enquiry)}
+                            className="flex w-full cursor-pointer flex-col gap-1.5 border-0 bg-transparent px-4 py-3.5 text-left font-[inherit] text-[var(--bhsk-ink)] transition active:bg-[var(--color-surface-page)]"
+                          >
+                            <span className="flex w-full items-start justify-between gap-3">
+                              <span
+                                className={`min-w-0 truncate ${enquiry.status === "new" ? "font-bold" : "font-semibold"}`}
+                              >
+                                {enquiry.name}
+                              </span>
+                              <StatusBadge status={enquiry.status} />
+                            </span>
+                            <span className="flex w-full items-center justify-between gap-3 text-xs text-[var(--color-text-tertiary)]">
+                              <span className="truncate">{enquiry.phone}</span>
+                              <span
+                                className="shrink-0"
+                                title={formatDateTime(enquiry.createdAt)}
+                              >
+                                {formatRelative(enquiry.createdAt)}
+                              </span>
+                            </span>
+                            <span className="truncate text-xs text-[var(--color-text-tertiary)]">
+                              {[
+                                TYPE_LABELS[enquiry.enquiryType],
+                                enquiry.service,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                </ul>
+
+                <div className="hidden overflow-x-auto sm:block">
                   <table className="w-full border-collapse text-left text-sm">
                     <thead className="bg-[var(--color-surface-page)] text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase">
                       <tr>
@@ -551,10 +679,10 @@ export function Dashboard({
                         <th className="hidden px-4 py-3 font-bold sm:table-cell">
                           Type
                         </th>
-                        <th className="hidden px-4 py-3 font-bold md:table-cell">
+                        <th className="hidden px-4 py-3 font-bold xl:table-cell">
                           Service
                         </th>
-                        <th className="hidden px-4 py-3 font-bold lg:table-cell">
+                        <th className="hidden px-4 py-3 font-bold xl:table-cell">
                           Form
                         </th>
                         <th className="px-4 py-3 font-bold sm:px-5">Status</th>
@@ -604,14 +732,14 @@ export function Dashboard({
                               <td className="hidden px-4 py-3 whitespace-nowrap sm:table-cell">
                                 {TYPE_LABELS[enquiry.enquiryType]}
                               </td>
-                              <td className="hidden max-w-[14rem] truncate px-4 py-3 md:table-cell">
+                              <td className="hidden max-w-[14rem] truncate px-4 py-3 xl:table-cell">
                                 {enquiry.service || (
                                   <span className="text-[var(--color-text-tertiary)]">
                                     —
                                   </span>
                                 )}
                               </td>
-                              <td className="hidden px-4 py-3 whitespace-nowrap text-[var(--color-text-tertiary)] lg:table-cell">
+                              <td className="hidden px-4 py-3 whitespace-nowrap text-[var(--color-text-tertiary)] xl:table-cell">
                                 {enquiry.source}
                               </td>
                               <td className="px-4 py-3 sm:px-5">
@@ -621,38 +749,38 @@ export function Dashboard({
                           ))}
                     </tbody>
                   </table>
-
-                  {page && page.items.length === 0 ? (
-                    <div className="px-6 py-14 text-center">
-                      <p className="m-0 font-semibold">
-                        {hasFilters
-                          ? "No enquiries match these filters"
-                          : "No enquiries yet"}
-                      </p>
-                      <p className="m-0 mt-1 text-sm text-[var(--color-text-tertiary)]">
-                        {hasFilters
-                          ? "Try a different search or status."
-                          : "New leads from the website forms will appear here automatically."}
-                      </p>
-                      {hasFilters ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSearchInput("");
-                            updateFilter({
-                              search: "",
-                              status: "",
-                              enquiryType: "",
-                            });
-                          }}
-                          className="mt-4 cursor-pointer rounded-lg border border-[var(--color-border)] bg-white px-3 py-1.5 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:bg-[var(--color-surface-page)]"
-                        >
-                          Clear filters
-                        </button>
-                      ) : null}
-                    </div>
-                  ) : null}
                 </div>
+
+                {page && page.items.length === 0 ? (
+                  <div className="px-6 py-14 text-center">
+                    <p className="m-0 font-semibold">
+                      {hasFilters
+                        ? "No enquiries match these filters"
+                        : "No enquiries yet"}
+                    </p>
+                    <p className="m-0 mt-1 text-sm text-[var(--color-text-tertiary)]">
+                      {hasFilters
+                        ? "Try a different search or status."
+                        : "New leads from the website forms will appear here automatically."}
+                    </p>
+                    {hasFilters ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchInput("");
+                          updateFilter({
+                            search: "",
+                            status: "",
+                            enquiryType: "",
+                          });
+                        }}
+                        className="mt-4 cursor-pointer rounded-lg border border-[var(--color-border)] bg-white px-3 py-1.5 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:bg-[var(--color-surface-page)]"
+                      >
+                        Clear filters
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 {page && page.total > 0 ? (
                   <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-3 text-sm sm:px-5">

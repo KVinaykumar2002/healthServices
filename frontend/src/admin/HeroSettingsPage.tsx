@@ -453,21 +453,29 @@ export function HeroSettingsPage() {
           {slides.map((slide, index) => (
             <li
               key={`${index}-${slide.src}`}
-              className="flex flex-col gap-3 rounded-xl border border-[var(--color-border)] p-3 sm:flex-row sm:items-center"
+              className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 rounded-xl border border-[var(--color-border)] p-3 sm:flex sm:items-center"
             >
-              <div className="relative w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:w-40">
+              <div className="relative overflow-hidden rounded-lg bg-slate-100 sm:w-40 sm:shrink-0">
                 <img src={resolveImageSrc(slide.src)} alt="" className="block aspect-[4/3] w-full object-cover" />
-                <span className="absolute top-2 left-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-bold text-[var(--bhsk-ink)]">
-                  {index === 0 ? "1 · shown first" : index + 1}
+                <span className="absolute top-1.5 left-1.5 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-bold text-[var(--bhsk-ink)] sm:top-2 sm:left-2 sm:text-xs">
+                  {index + 1}
+                  {index === 0 ? <span className="hidden sm:inline"> · shown first</span> : null}
                 </span>
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 sm:flex-1">
                 <p className="m-0 text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase">
-                  Photo description
+                  {index === 0 ? (
+                    <>
+                      <span className="sm:hidden">Shown first</span>
+                      <span className="hidden sm:inline">Photo description</span>
+                    </>
+                  ) : (
+                    "Photo description"
+                  )}
                 </p>
-                <p className="m-0 mt-1 text-sm break-words">{slide.alt}</p>
+                <p className="m-0 mt-1 line-clamp-3 text-sm break-words sm:line-clamp-none">{slide.alt}</p>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="col-span-2 flex items-center gap-2 border-t border-[var(--color-border)] pt-3 sm:col-span-1 sm:shrink-0 sm:border-0 sm:pt-0">
                 <button
                   type="button"
                   className={iconButtonClass}
@@ -488,7 +496,12 @@ export function HeroSettingsPage() {
                 >
                   <ArrowDown className="size-4" />
                 </button>
-                <EditButton label={`Edit photo ${index + 1}`} onClick={() => openSlide(index)} disabled={saving} />
+                <EditButton
+                  label={`Edit photo ${index + 1}`}
+                  onClick={() => openSlide(index)}
+                  disabled={saving}
+                  className="ml-auto sm:ml-0"
+                />
                 <button
                   type="button"
                   className={`${iconButtonClass} hover:bg-red-50 hover:text-[var(--color-error)]`}
@@ -586,17 +599,27 @@ export function HeroSettingsPage() {
               hint="Describe what's in the photo — read aloud by screen readers and used by Google."
               errors={fieldErrors.slides}
             >
-              <input
+              <textarea
                 id="hero-slide-alt"
                 required
                 autoFocus
+                rows={3}
                 maxLength={200}
                 value={slideEdit.slide.alt}
                 onChange={(event) =>
-                  setSlideEdit({ ...slideEdit, slide: { ...slideEdit.slide, alt: event.target.value } })
+                  setSlideEdit({
+                    ...slideEdit,
+                    slide: { ...slideEdit.slide, alt: event.target.value.replace(/\s*\n\s*/g, " ") },
+                  })
                 }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    event.currentTarget.form?.requestSubmit();
+                  }
+                }}
                 placeholder="e.g. BHSK nurse checking an elderly patient's blood pressure at home"
-                className={`${inputClass} ${borderFor(fieldErrors.slides)}`}
+                className={`${textareaClass} resize-none ${borderFor(fieldErrors.slides)}`}
               />
             </Field>
           </>

@@ -96,7 +96,7 @@ export function EnquiryPanel({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="enquiry-panel-title"
@@ -108,8 +108,8 @@ export function EnquiryPanel({
         tabIndex={-1}
         onClick={onClose}
       />
-      <div className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200 sm:max-h-[calc(100dvh-3rem)]">
-        <header className="flex items-start justify-between gap-4 border-b border-[var(--color-border)] px-6 py-5">
+      <div className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200 sm:max-h-[calc(100dvh-3rem)]">
+        <header className="flex items-start justify-between gap-3 border-b border-[var(--color-border)] px-4 py-4 sm:gap-4 sm:px-6 sm:py-5">
           <div className="min-w-0">
             <h2 id="enquiry-panel-title" className="m-0 truncate text-xl">
               {enquiry.name}
@@ -129,7 +129,7 @@ export function EnquiryPanel({
           </button>
         </header>
 
-        <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-5">
+        <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-4 py-4 sm:gap-6 sm:px-6 sm:py-5">
           {error ? (
             <p className="m-0 rounded-lg bg-[var(--color-error-bg)] px-3 py-2 text-sm text-[var(--color-error)]" role="alert">
               {error}
@@ -213,7 +213,7 @@ export function EnquiryPanel({
                 setNotesSaved(false);
               }}
               placeholder="Call outcomes, follow-ups, assigned nurse… (only visible to admins)"
-              className="w-full resize-y rounded-xl border border-[var(--color-border)] p-3 text-sm outline-none focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30"
+              className="w-full resize-y rounded-xl border border-[var(--color-border)] p-3 text-base outline-none sm:text-sm focus:border-[var(--bhsk-blue)] focus:ring-3 focus:ring-[var(--bhsk-sky)]/30"
             />
             <div className="mt-2 flex items-center justify-end gap-3">
               {notesSaved && !notesDirty ? (
@@ -234,7 +234,7 @@ export function EnquiryPanel({
           </section>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] px-6 py-4">
+        <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-3 sm:px-6 sm:py-4">
           <span className="text-xs text-[var(--color-text-tertiary)]">Updated {formatDateTime(enquiry.updatedAt)}</span>
           <button
             type="button"
