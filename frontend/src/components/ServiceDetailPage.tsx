@@ -13,7 +13,7 @@ import {
   servicePageBySlug,
   type ServicePageContent,
 } from "@/lib/servicePages";
-import { CONTACT_PHONES } from "@/lib/site";
+import { useSiteContact } from "@/lib/siteSettings";
 import { ArrowRight, Check, MapPin, Phone, X } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "wouter";
@@ -27,7 +27,7 @@ export function ServiceDetailPage({ page, jsonLd }: ServiceDetailPageProps) {
   const related = relatedServicesFor(page);
   const ctaHref = requestHrefFor(page);
   const isFacility = page.category === "facility";
-  const phone = CONTACT_PHONES[0];
+  const phone = useSiteContact().primaryPhone;
   const structuredData = useMemo(() => jsonLd ?? serviceJsonLd(page), [jsonLd, page]);
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState, type FormEvent } from "react";
+import { Fragment, useEffect, useLayoutEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Building2, Home as HomeIcon, Check, ChevronDown, Facebook, Instagram, Linkedin, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Link, Route, Switch, useLocation } from "wouter";
@@ -25,23 +25,15 @@ import { BrandLockup, PulseDivider } from "@/components/brand/BhskLogo";
 import { servicePageBySlug } from "@/lib/servicePages";
 import { submitEnquiry } from "@/lib/api";
 import {
-  CONTACT_EMAIL,
-  CONTACT_PHONES,
-  FACEBOOK,
-  INSTAGRAM,
-  LANDLINE,
-  LINKEDIN,
-  OFFICE_ADDRESS,
-  OFFICE_MAP,
   HOME_CARE_BLURB,
   HEALTHCARE_STAFFING_BLURB,
   REQUEST_NURSE_PATH,
   REQUEST_STAFF_PATH,
-  WHATSAPP,
   facilityServices,
   homeCareServices,
   services,
 } from "@/lib/site";
+import { useSiteContact } from "@/lib/siteSettings";
 
 function BrandMark({ className = "", animated = false }: { className?: string; animated?: boolean }) {
   return (
@@ -56,6 +48,7 @@ function Header() {
   const [servicesOpen, setServicesOpen] = useState(false);
   const [location] = useLocation();
   const reduce = useReducedMotion();
+  const contact = useSiteContact();
 
   useEffect(() => {
     setOpen(false);
@@ -99,14 +92,14 @@ function Header() {
       <span className="topbar-sep" aria-hidden="true">
         ·
       </span>
-      <a href={CONTACT_PHONES[0].href}>
-        <Phone size={13} /> {CONTACT_PHONES[0].display}
+      <a href={contact.primaryPhone.href}>
+        <Phone size={13} /> {contact.primaryPhone.display}
       </a>
       <span className="topbar-sep" aria-hidden="true">
         ·
       </span>
-      <a href={`mailto:${CONTACT_EMAIL}`}>
-        <Mail size={13} /> {CONTACT_EMAIL}
+      <a href={contact.emailHref}>
+        <Mail size={13} /> {contact.email}
       </a>
     </>
   );
@@ -163,8 +156,8 @@ function Header() {
           <Link className={location === "/contact-us" ? "active" : ""} href="/contact-us">
             Contact
           </Link>
-          <a href={CONTACT_PHONES[0].href} className="phone">
-            <Phone size={15} /> {CONTACT_PHONES[0].display}
+          <a href={contact.primaryPhone.href} className="phone">
+            <Phone size={15} /> {contact.primaryPhone.display}
           </a>
           <AntiMetalButton href="/request-a-nurse" label="Request a Nurse" size="sm" />
         </div>
@@ -189,13 +182,13 @@ function Header() {
               <Link href="/contact-us" onClick={() => setOpen(false)}>
                 Contact
               </Link>
-              {CONTACT_PHONES.map((p) => (
+              {contact.phones.map((p) => (
                 <a key={p.href} href={p.href} className="phone">
                   <Phone size={15} /> {p.display}
                 </a>
               ))}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="phone">
-                <Mail size={15} /> {CONTACT_EMAIL}
+              <a href={contact.emailHref} className="phone">
+                <Mail size={15} /> {contact.email}
               </a>
               <div className="mobile-drawer-actions">
                 <AntiMetalButton
@@ -222,6 +215,9 @@ function Header() {
 }
 
 function Footer() {
+  const contact = useSiteContact();
+  const { social } = contact;
+
   return (
     <footer>
       <div className="container">
@@ -250,38 +246,46 @@ function Footer() {
         </div>
         <div>
           <h4>Get in touch</h4>
-          <a href={CONTACT_PHONES[0].href}>
-            <Phone size={15} /> {CONTACT_PHONES[0].display}
-          </a>
-          <a href={CONTACT_PHONES[1].href}>
-            <Phone size={15} /> {CONTACT_PHONES[1].display}
-          </a>
-          <a href={`mailto:${CONTACT_EMAIL}`}>
-            <Mail size={15} /> {CONTACT_EMAIL}
+          {contact.phones.map((phone) => (
+            <a key={phone.href} href={phone.href}>
+              <Phone size={15} /> {phone.display}
+            </a>
+          ))}
+          <a href={contact.emailHref}>
+            <Mail size={15} /> {contact.email}
           </a>
           <p className="muted small-text">
-            {OFFICE_ADDRESS.lines[0]}
-            <br />
-            {OFFICE_ADDRESS.lines[1]}
-            <br />
-            {OFFICE_ADDRESS.lines[2]}
+            {contact.addressLines.map((line, index) => (
+              <Fragment key={line}>
+                {index > 0 ? <br /> : null}
+                {line}
+              </Fragment>
+            ))}
           </p>
-          <a href={OFFICE_MAP.viewUrl} target="_blank" rel="noopener noreferrer">
+          <a href={contact.map.viewUrl} target="_blank" rel="noopener noreferrer">
             <MapPin size={15} /> View on Google Maps
           </a>
           <div className="footer-social">
-            <a href={INSTAGRAM.href} target="_blank" rel="noopener noreferrer" aria-label={`BHSK on Instagram (${INSTAGRAM.handle})`} title="Instagram">
-              <Instagram size={18} aria-hidden="true" />
-            </a>
-            <a href={FACEBOOK.href} target="_blank" rel="noopener noreferrer" aria-label={`${FACEBOOK.name} on Facebook`} title="Facebook">
-              <Facebook size={18} aria-hidden="true" />
-            </a>
-            <a href={LINKEDIN.href} target="_blank" rel="noopener noreferrer" aria-label={`${LINKEDIN.name} on LinkedIn`} title="LinkedIn">
-              <Linkedin size={18} aria-hidden="true" />
-            </a>
-            <a href={LANDLINE.href} className="footer-landline" aria-label={`Call our landline ${LANDLINE.display}`}>
-              <LandlineIcon /> {LANDLINE.display}
-            </a>
+            {social.instagram ? (
+              <a href={social.instagram} target="_blank" rel="noopener noreferrer" aria-label="BHSK on Instagram" title="Instagram">
+                <Instagram size={18} aria-hidden="true" />
+              </a>
+            ) : null}
+            {social.facebook ? (
+              <a href={social.facebook} target="_blank" rel="noopener noreferrer" aria-label="BHSK on Facebook" title="Facebook">
+                <Facebook size={18} aria-hidden="true" />
+              </a>
+            ) : null}
+            {social.linkedin ? (
+              <a href={social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="BHSK on LinkedIn" title="LinkedIn">
+                <Linkedin size={18} aria-hidden="true" />
+              </a>
+            ) : null}
+            {contact.landline ? (
+              <a href={contact.landline.href} className="footer-landline" aria-label={`Call our landline ${contact.landline.display}`}>
+                <LandlineIcon /> {contact.landline.display}
+              </a>
+            ) : null}
           </div>
         </div>
       </div>
@@ -664,6 +668,7 @@ function ContactContent({
   source: string;
 }) {
   const query = useContactQuery();
+  const contact = useSiteContact();
   const [enquiryType, setEnquiryType] = useState(query.type || defaultType);
   const [selectedService, setSelectedService] = useState(() => {
     if (!query.service) return "";
@@ -749,7 +754,7 @@ function ContactContent({
       field("message") || "—",
     ].join("\n");
 
-    const url = `${WHATSAPP.href}?text=${encodeURIComponent(text)}`;
+    const url = `${contact.whatsapp.href}?text=${encodeURIComponent(text)}`;
     // Not using the "noopener" feature: it makes window.open return null, which would hide a blocked popup.
     const whatsappWindow = window.open(url, "_blank");
     if (whatsappWindow) whatsappWindow.opener = null;
@@ -771,7 +776,7 @@ function ContactContent({
             <MapPin />
             <div>
               <b>Office address</b>
-              {OFFICE_ADDRESS.lines.map((line) => (
+              {contact.addressLines.map((line) => (
                 <span key={line}>{line}</span>
               ))}
             </div>
@@ -781,9 +786,12 @@ function ContactContent({
             <div>
               <b>Contact</b>
               <span>
-                <a href={CONTACT_PHONES[0].href}>{CONTACT_PHONES[0].display}</a>
-                {" / "}
-                <a href={CONTACT_PHONES[1].href}>{CONTACT_PHONES[1].display}</a>
+                {contact.phones.map((phone, index) => (
+                  <Fragment key={phone.href}>
+                    {index > 0 ? " / " : null}
+                    <a href={phone.href}>{phone.display}</a>
+                  </Fragment>
+                ))}
               </span>
             </div>
           </div>
@@ -791,7 +799,7 @@ function ContactContent({
             <Mail />
             <div>
               <b>
-                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+                <a href={contact.emailHref}>{contact.email}</a>
               </b>
               <span>We aim to reply within one business day</span>
             </div>
@@ -850,7 +858,7 @@ function ContactContent({
                 ) : (
                   <span>
                     WhatsApp has opened with your enquiry. Press <b>Send</b> there to deliver it to BHSK. Didn’t open?{" "}
-                    <a href={WHATSAPP.href} target="_blank" rel="noopener noreferrer">
+                    <a href={contact.whatsapp.href} target="_blank" rel="noopener noreferrer">
                       Message us on WhatsApp
                     </a>
                     .

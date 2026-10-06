@@ -4,51 +4,7 @@ import { FRONTEND_URL } from "@shared/urls";
 
 export const SITE_ORIGIN = FRONTEND_URL;
 
-export const CONTACT_EMAIL = "Info@bhskforhealthservices.com";
-
-export const CONTACT_PHONES = [
-  { display: "31331146", href: "tel:+97431331146" },
-  { display: "31599965", href: "tel:+97431599965" },
-] as const;
-
-export const LANDLINE = { display: "+974-41497775", href: "tel:+97441497775" } as const;
-
-export const WHATSAPP = {
-  number: "97431331146",
-  href: "https://wa.me/97431331146",
-} as const;
-
-export const INSTAGRAM = {
-  handle: "@bhsknursingservices",
-  href: "https://www.instagram.com/bhsknursingservices/",
-} as const;
-
-export const FACEBOOK = {
-  name: "BHSK Home Care",
-  href: "https://www.facebook.com/share/19QAPPA3Hd/",
-} as const;
-
-export const LINKEDIN = {
-  name: "BHSK Health Services",
-  href: "https://www.linkedin.com/in/bhsk-health-services-3aba2b222/",
-} as const;
-
-export const OFFICE_ADDRESS = {
-  lines: [
-    "Building No. 212, Street 310, Zone 45",
-    "Office No. 551, Floor 01",
-    "Old Airport, Doha, Qatar",
-  ],
-} as const;
-
-/** Matches the "BHSK Health Services" Google Maps listing (plus code 7H55+RP, Old Airport). */
-const MAP_QUERY = encodeURIComponent("BHSK Health Services, Old Airport, Doha, Qatar");
-
-export const OFFICE_MAP = {
-  embedUrl: `https://www.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`,
-  viewUrl: `https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`,
-  directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${MAP_QUERY}`,
-} as const;
+// Contact details, address and social links are managed in the admin dashboard — see useSiteContact().
 
 export type ServiceCategory = "facility" | "home";
 

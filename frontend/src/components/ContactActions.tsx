@@ -2,11 +2,12 @@ import { Link } from "wouter";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Reveal } from "@/lib/motion";
-import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH, WHATSAPP } from "@/lib/site";
+import { REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
+import { useSiteContact } from "@/lib/siteSettings";
 
 /** Four primary contact actions — phone, WhatsApp, nurse request, consultation. */
 export function ContactActions() {
-  const phone = CONTACT_PHONES[0];
+  const { primaryPhone: phone, whatsapp } = useSiteContact();
 
   return (
     <section className="contact-actions section" aria-labelledby="contact-actions-heading">
@@ -23,7 +24,7 @@ export function ContactActions() {
           </Reveal>
           <Reveal className="contact-actions__item" direction="left" distance={32} delay={0.08}>
             <a
-              href={WHATSAPP.href}
+              href={whatsapp.href}
               className="btn btn-outline contact-actions__btn"
               target="_blank"
               rel="noopener noreferrer"

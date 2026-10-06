@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { Phone } from "lucide-react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import { CONTACT_PHONES, WHATSAPP } from "@/lib/site";
+import { useSiteContact } from "@/lib/siteSettings";
 
 const INTRO_TOOLTIP_MS = 4000;
 const RIPPLE_DELAYS = ["0s", "0.66s", "1.33s"];
@@ -36,10 +36,10 @@ function TeacupMascot() {
 }
 
 /** Bottom-left contact stack: waving teacup mascot, call button with "Talk to expert" tooltip, WhatsApp button. */
-export function FloatingContactWidget({
-  phoneHref = CONTACT_PHONES[0].href,
-  whatsappHref = `${WHATSAPP.href}?text=${encodeURIComponent("Hi BHSK")}`,
-}: FloatingContactWidgetProps) {
+export function FloatingContactWidget(props: FloatingContactWidgetProps) {
+  const contact = useSiteContact();
+  const phoneHref = props.phoneHref ?? contact.primaryPhone.href;
+  const whatsappHref = props.whatsappHref ?? `${contact.whatsapp.href}?text=${encodeURIComponent("Hi BHSK")}`;
   const tooltipId = useId();
   const [intro, setIntro] = useState(true);
   const [hovered, setHovered] = useState(false);

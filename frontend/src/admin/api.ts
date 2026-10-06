@@ -1,3 +1,5 @@
+import type { HomeHero } from "@shared/homeHero";
+import type { SiteSettings } from "@shared/siteSettings";
 import { API_BASE_URL } from "@/lib/api";
 
 export const ENQUIRY_STATUSES = ["new", "contacted", "in_progress", "closed", "spam"] as const;
@@ -70,10 +72,13 @@ export function clearSession() {
 
 export class AdminApiError extends Error {
   status: number;
+  /** Per-field validation messages from the server, keyed by field name. */
+  fieldErrors: Record<string, string[]>;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, fieldErrors: Record<string, string[]> = {}) {
     super(message);
     this.status = status;
+    this.fieldErrors = fieldErrors;
   }
 }
 
@@ -99,15 +104,20 @@ async function request(path: string, init: RequestInit = {}): Promise<Response> 
 
   if (!response.ok) {
     let message = "Something went wrong. Please try again.";
+    let fieldErrors: Record<string, string[]> = {};
     try {
-      const payload = (await response.json()) as { error?: string };
+      const payload = (await response.json()) as {
+        error?: string;
+        details?: { fieldErrors?: Record<string, string[]> };
+      };
       if (payload.error) message = payload.error;
+      fieldErrors = payload.details?.fieldErrors ?? {};
     } catch {
       // Non-JSON error page: a 5xx here means a proxy or host couldn't reach the API.
       if (response.status >= 500) message = "The server isn't responding right now. Please try again in a moment.";
     }
     if (response.status === 401 && path !== "/login") unauthorizedHandler?.();
-    throw new AdminApiError(message, response.status);
+    throw new AdminApiError(message, response.status, fieldErrors);
   }
   return response;
 }
@@ -153,6 +163,51 @@ export async function updateEnquiry(id: string, update: { status?: EnquiryStatus
     body: JSON.stringify(update),
   });
   return result.enquiry;
+}
+
+export type SiteSettingsRecord = SiteSettings & { updatedAt: string | null };
+
+export async function fetchSiteSettings() {
+  return (await requestJson<{ settings: SiteSettingsRecord }>("/site-settings")).settings;
+}
+
+export async function saveSiteSettings(settings: SiteSettings) {
+  const result = await requestJson<{ settings: SiteSettingsRecord }>("/site-settings", {
+    method: "PATCH",
+    body: JSON.stringify(settings),
+  });
+  return result.settings;
+}
+
+export type HomeHeroRecord = HomeHero & { updatedAt: string | null };
+
+export async function fetchHomeHero() {
+  return (await requestJson<{ hero: HomeHeroRecord }>("/home-hero")).hero;
+}
+
+export async function saveHomeHero(hero: HomeHero) {
+  const result = await requestJson<{ hero: HomeHeroRecord }>("/home-hero", {
+    method: "PATCH",
+    body: JSON.stringify(hero),
+  });
+  return result.hero;
+}
+
+/** Uploads an image and returns its site path (/api/media/<id>). */
+export async function uploadImage(image: Blob) {
+  try {
+    const result = await requestJson<{ src: string }>("/media", {
+      method: "POST",
+      headers: { "Content-Type": image.type },
+      body: image,
+    });
+    return result.src;
+  } catch (error) {
+    if (error instanceof AdminApiError && error.status === 413) {
+      throw new AdminApiError("That photo is too large. Try a smaller image.", 413);
+    }
+    throw error;
+  }
 }
 
 export async function deleteEnquiry(id: string) {

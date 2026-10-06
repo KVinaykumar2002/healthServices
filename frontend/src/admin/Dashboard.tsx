@@ -8,8 +8,10 @@ import {
   LayoutDashboard,
   LoaderCircle,
   LogOut,
+  PanelTop,
   RefreshCw,
   Search,
+  Settings,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -26,12 +28,14 @@ import {
   type EnquiryTypeFilter,
 } from "./api";
 import { EnquiryPanel } from "./EnquiryPanel";
+import { HeroSettingsPage } from "./HeroSettingsPage";
 import {
   STATUS_META,
   TYPE_LABELS,
   formatDateTime,
   formatRelative,
 } from "./format";
+import { SiteSettingsPage } from "./SiteSettingsPage";
 import { StatsOverview } from "./StatsOverview";
 
 const PAGE_SIZE = 20;
@@ -53,17 +57,44 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Something went wrong";
 }
 
-type AdminView = "overview" | "enquiries";
+type AdminView = "overview" | "enquiries" | "hero" | "settings";
 
 const VIEW_HASHES: Record<AdminView, string> = {
   overview: "#overview",
   enquiries: "#enquiries",
+  hero: "#hero",
+  settings: "#settings",
 };
 
+const VIEW_HEADINGS: Record<AdminView, { title: string; description: string }> =
+  {
+    overview: {
+      title: "Enquiries dashboard",
+      description:
+        "Leads from the Contact us, Request a Nurse and Request Staff forms. Times are shown in Qatar time.",
+    },
+    enquiries: {
+      title: "All enquiries",
+      description:
+        "Search, filter and update every enquiry. Click a row to open its details. Times are shown in Qatar time.",
+    },
+    hero: {
+      title: "Homepage hero",
+      description:
+        "The headline, buttons, highlights and photo slideshow at the top of the home page.",
+    },
+    settings: {
+      title: "Site settings",
+      description:
+        "Contact details, office address and social media links shown on the public website.",
+    },
+  };
+
 function viewFromHash(): AdminView {
-  return window.location.hash === VIEW_HASHES.enquiries
-    ? "enquiries"
-    : "overview";
+  const match = (Object.keys(VIEW_HASHES) as AdminView[]).find(
+    view => VIEW_HASHES[view] === window.location.hash
+  );
+  return match ?? "overview";
 }
 
 function useAdminView() {
@@ -350,6 +381,18 @@ export function Dashboard({
               active={view === "enquiries"}
               onClick={() => navigate("enquiries")}
             />
+            <SideNavItem
+              icon={PanelTop}
+              label="Homepage hero"
+              active={view === "hero"}
+              onClick={() => navigate("hero")}
+            />
+            <SideNavItem
+              icon={Settings}
+              label="Site settings"
+              active={view === "settings"}
+              onClick={() => navigate("settings")}
+            />
           </nav>
         </aside>
 
@@ -357,12 +400,10 @@ export function Dashboard({
           <div className="mx-auto max-w-7xl space-y-6">
             <div>
               <h1 className="m-0 text-2xl sm:text-3xl">
-                {view === "overview" ? "Enquiries dashboard" : "All enquiries"}
+                {VIEW_HEADINGS[view].title}
               </h1>
               <p className="m-0 mt-1 text-sm text-[var(--color-text-tertiary)]">
-                {view === "overview"
-                  ? "Leads from the Contact us, Request a Nurse and Request Staff forms. Times are shown in Qatar time."
-                  : "Search, filter and update every enquiry. Click a row to open its details. Times are shown in Qatar time."}
+                {VIEW_HEADINGS[view].description}
               </p>
             </div>
 
@@ -409,6 +450,10 @@ export function Dashboard({
                   <ChevronRight className="size-5 text-[var(--color-text-tertiary)]" />
                 </button>
               </>
+            ) : view === "hero" ? (
+              <HeroSettingsPage />
+            ) : view === "settings" ? (
+              <SiteSettingsPage />
             ) : (
               <section className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-1)]">
                 <div className="space-y-4 border-b border-[var(--color-border)] p-4 sm:p-5">

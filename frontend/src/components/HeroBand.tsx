@@ -3,47 +3,30 @@ import { Check, ChevronLeft, ChevronRight, Phone } from "lucide-react";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { gsap, gsapEase, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { FitImage } from "@/components/FitImage";
-import { CONTACT_PHONES, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
-
-const heroSlides = [
-  {
-    src: "/images/bhsk/hero-elderly-care.jpg",
-    alt: "BHSK nurse supporting an elderly man in a wheelchair at home",
-  },
-  {
-    src: "/images/bhsk/hero-mobility-family.jpg",
-    alt: "BHSK nurse helping an elderly man walk with a frame while his family watches",
-  },
-  {
-    src: "/images/bhsk/hero-family-bedside.jpg",
-    alt: "BHSK nurse caring for an elderly patient in bed with his grandchildren beside him",
-  },
-] as const;
-
-const HERO_ASSURANCES = [
-  "Assessment before every placement",
-  "Local coordination from Doha",
-  "Home care & facility staffing",
-] as const;
+import { resolveImageSrc, useHomeHero, useSiteContact } from "@/lib/siteSettings";
 
 /**
  * Hero keeps copy visible before GSAP runs (no opacity:0 on text).
- * Motion is limited to a light horizontal settle.
+ * Motion is limited to a light horizontal settle. Content is managed from the admin dashboard.
  */
 export function HeroBand() {
+  const hero = useHomeHero();
+  const heroSlides = hero.slides;
+  const slideCount = heroSlides.length;
   const reduce = prefersReducedMotion();
-  const [slide, setSlide] = useState(0);
+  const [current, setSlide] = useState(0);
+  const slide = current % slideCount;
   const rootRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const slideRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (reduce) return;
+    if (reduce || slideCount < 2) return;
     const id = window.setInterval(() => {
-      setSlide((current) => (current + 1) % heroSlides.length);
+      setSlide((value) => (value + 1) % slideCount);
     }, 5200);
     return () => window.clearInterval(id);
-  }, [reduce, slide]);
+  }, [reduce, slide, slideCount]);
 
   useGSAP(
     () => {
@@ -80,94 +63,105 @@ export function HeroBand() {
   );
 
   function goTo(index: number) {
-    setSlide((index + heroSlides.length) % heroSlides.length);
+    setSlide((index + slideCount) % slideCount);
   }
 
   const active = heroSlides[slide];
-  const phone = CONTACT_PHONES[0];
+  const phone = useSiteContact().primaryPhone;
 
   return (
     <section ref={rootRef} className="home-hero" aria-labelledby="home-hero-title">
       <div className="home-hero__container">
         <div className="home-hero__content" ref={contentRef}>
-          <p className="eyebrow home-hero__tagline" data-hero-animate>
-            BHSK for Health Services · Doha, Qatar
-          </p>
+          {hero.tagline ? (
+            <p className="eyebrow home-hero__tagline" data-hero-animate>
+              {hero.tagline}
+            </p>
+          ) : null}
           <h1 id="home-hero-title" data-hero-animate>
-            Professional Nursing and Healthcare Staffing in Qatar
+            {hero.title}
           </h1>
-          <h2 className="home-hero__subhead" data-hero-animate>
-            Home Care Services in Qatar
-          </h2>
-          <p className="home-hero__description" data-hero-animate>
-            Trained nurses for facilities and families across Doha — request home care or healthcare staffing and our
-            team will confirm fit and availability.
-          </p>
+          {hero.subtitle ? (
+            <h2 className="home-hero__subhead" data-hero-animate>
+              {hero.subtitle}
+            </h2>
+          ) : null}
+          {hero.description ? (
+            <p className="home-hero__description" data-hero-animate>
+              {hero.description}
+            </p>
+          ) : null}
           <div className="home-hero__cta-row" data-hero-animate>
             <AntiMetalButton
-              href={REQUEST_NURSE_PATH}
-              label="Request a Nurse"
+              href={hero.primaryButton.href}
+              label={hero.primaryButton.label}
               className="w-full shrink-0 sm:w-auto sm:min-w-[11.5rem]"
             />
             <AntiMetalButton
-              href={REQUEST_STAFF_PATH}
-              label="Request Staff"
+              href={hero.secondaryButton.href}
+              label={hero.secondaryButton.label}
               variant="accent"
               className="w-full shrink-0 sm:w-auto sm:min-w-[10.5rem]"
             />
-            <a className="home-hero__call" href={phone.href} aria-label={`Call BHSK at ${phone.display}`}>
-              <Phone size={15} strokeWidth={2.5} aria-hidden="true" />
-              <span>{phone.display}</span>
-            </a>
+            {hero.showCallButton ? (
+              <a className="home-hero__call" href={phone.href} aria-label={`Call BHSK at ${phone.display}`}>
+                <Phone size={15} strokeWidth={2.5} aria-hidden="true" />
+                <span>{phone.display}</span>
+              </a>
+            ) : null}
           </div>
-          <ul className="home-hero__assurance" data-hero-animate aria-label="How BHSK works">
-            {HERO_ASSURANCES.map((item) => (
-              <li key={item}>
-                <Check size={14} strokeWidth={2.5} aria-hidden="true" />
-                {item}
-              </li>
-            ))}
-          </ul>
+          {hero.highlights.length ? (
+            <ul className="home-hero__assurance" data-hero-animate aria-label="How BHSK works">
+              {hero.highlights.map((item, index) => (
+                <li key={`${index}-${item}`}>
+                  <Check size={14} strokeWidth={2.5} aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div className="home-hero__media">
           <div className="home-hero__image-wrap" aria-live="polite">
-            <div ref={slideRef} className="home-hero__slide" key={active.src}>
-              <FitImage src={active.src} alt={active.alt} className="home-hero__fit" />
+            <div ref={slideRef} className="home-hero__slide" key={`${slide}-${active.src}`}>
+              <FitImage src={resolveImageSrc(active.src)} alt={active.alt} className="home-hero__fit" />
             </div>
           </div>
 
-          <div className="home-hero__carousel-controls">
-            <button
-              type="button"
-              className="home-hero__nav"
-              onClick={() => goTo(slide - 1)}
-              aria-label="Previous slide"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <div className="home-hero__dots" role="tablist" aria-label="Hero slides">
-              {heroSlides.map((item, index) => (
-                <button
-                  key={item.src}
-                  type="button"
-                  role="tab"
-                  aria-selected={index === slide}
-                  aria-label={`Show slide ${index + 1}`}
-                  className={`home-hero__dot${index === slide ? " is-active" : ""}`}
-                  onClick={() => goTo(index)}
-                />
-              ))}
+          {slideCount > 1 ? (
+            <div className="home-hero__carousel-controls">
+              <button
+                type="button"
+                className="home-hero__nav"
+                onClick={() => goTo(slide - 1)}
+                aria-label="Previous slide"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <div className="home-hero__dots" role="tablist" aria-label="Hero slides">
+                {heroSlides.map((_item, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    role="tab"
+                    aria-selected={index === slide}
+                    aria-label={`Show slide ${index + 1}`}
+                    className={`home-hero__dot${index === slide ? " is-active" : ""}`}
+                    onClick={() => goTo(index)}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                className="home-hero__nav"
+                onClick={() => goTo(slide + 1)}
+                aria-label="Next slide"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
-            <button
-              type="button"
-              className="home-hero__nav"
-              onClick={() => goTo(slide + 1)}
-              aria-label="Next slide"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
+          ) : null}
         </div>
       </div>
       <HeroPulse animated={!reduce} />

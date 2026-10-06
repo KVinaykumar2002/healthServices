@@ -1,4 +1,4 @@
-const WHATSAPP_URL = "https://wa.me/97431331146";
+import { useSiteContact } from "@/lib/siteSettings";
 
 function WhatsAppGlyph() {
   return (
@@ -12,10 +12,11 @@ function WhatsAppGlyph() {
 }
 
 export function WhatsAppFloat() {
+  const { whatsapp } = useSiteContact();
   return (
     <a
       className="whatsapp-float"
-      href={WHATSAPP_URL}
+      href={whatsapp.href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with BHSK on WhatsApp"

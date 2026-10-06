@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express, { Router } from "express";
+import { MEDIA_PATH_PREFIX } from "../../../shared/homeHero";
 import { createSessionToken, isAdminConfigured, requireAdmin, verifyCredentials } from "../auth";
 import {
   deleteEnquiry,
@@ -8,8 +9,18 @@ import {
   listEnquiries,
   updateEnquiry,
 } from "../enquiries";
+import { getHomeHero, saveHomeHero } from "../homeHero";
+import { MAX_UPLOAD_BYTES, detectImageType, saveMedia } from "../media";
 import { rateLimit } from "../rateLimit";
-import { enquiryListQuerySchema, enquiryUpdateSchema, loginSchema, type EnquiryRecord } from "../schema";
+import {
+  enquiryListQuerySchema,
+  enquiryUpdateSchema,
+  homeHeroSchema,
+  loginSchema,
+  siteSettingsSchema,
+  type EnquiryRecord,
+} from "../schema";
+import { getSiteSettings, saveSiteSettings } from "../siteSettings";
 import { asyncHandler } from "./asyncHandler";
 
 export const adminRouter = Router();
@@ -123,6 +134,58 @@ adminRouter.patch(
       return;
     }
     res.json({ ok: true, enquiry: record });
+  }),
+);
+
+adminRouter.get(
+  "/site-settings",
+  asyncHandler(async (_req, res) => {
+    res.json({ ok: true, settings: await getSiteSettings() });
+  }),
+);
+
+adminRouter.patch(
+  "/site-settings",
+  asyncHandler(async (req, res) => {
+    const parsed = siteSettingsSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ ok: false, error: "Please fix the highlighted fields", details: parsed.error.flatten() });
+      return;
+    }
+    res.json({ ok: true, settings: await saveSiteSettings(parsed.data) });
+  }),
+);
+
+adminRouter.get(
+  "/home-hero",
+  asyncHandler(async (_req, res) => {
+    res.json({ ok: true, hero: await getHomeHero() });
+  }),
+);
+
+adminRouter.patch(
+  "/home-hero",
+  asyncHandler(async (req, res) => {
+    const parsed = homeHeroSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ ok: false, error: "Please fix the highlighted fields", details: parsed.error.flatten() });
+      return;
+    }
+    res.json({ ok: true, hero: await saveHomeHero(parsed.data) });
+  }),
+);
+
+adminRouter.post(
+  "/media",
+  express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: MAX_UPLOAD_BYTES }),
+  asyncHandler(async (req, res) => {
+    const contentType = Buffer.isBuffer(req.body) ? detectImageType(req.body) : null;
+    if (!contentType) {
+      res.status(415).json({ ok: false, error: "Upload a JPEG, PNG or WebP photo" });
+      return;
+    }
+    const id = await saveMedia(req.body, contentType);
+    res.status(201).json({ ok: true, id, src: `${MEDIA_PATH_PREFIX}${id}` });
   }),
 );
 
