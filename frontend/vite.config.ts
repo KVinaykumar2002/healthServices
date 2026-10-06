@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import { LOCAL_BACKEND_URL } from "../shared/urls";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
@@ -211,14 +212,15 @@ const plugins = [
 ];
 
 // Dev only: forward /api to the Express backend (backend/). Production builds call
-// VITE_API_BASE_URL, or the same origin when the backend serves this build.
-const API_PROXY_TARGET = process.env.API_PROXY_TARGET || "http://localhost:4000";
+// BACKEND_URL from shared/urls.ts (overridable with VITE_API_BASE_URL).
+const API_PROXY_TARGET = process.env.API_PROXY_TARGET || LOCAL_BACKEND_URL;
 
 export default defineConfig({
   plugins,
   resolve: {
     alias: {
       "@": path.resolve(PROJECT_ROOT, "src"),
+      "@shared": path.resolve(PROJECT_ROOT, "..", "shared"),
     },
   },
   envDir: PROJECT_ROOT,

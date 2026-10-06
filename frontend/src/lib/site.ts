@@ -1,6 +1,8 @@
 /** Shared BHSK site constants — Qatar-only, no unverified claims. */
 
-export const SITE_ORIGIN = "https://www.bhskforhealthservices.com";
+import { FRONTEND_URL } from "@shared/urls";
+
+export const SITE_ORIGIN = FRONTEND_URL;
 
 export const CONTACT_EMAIL = "Info@bhskforhealthservices.com";
 

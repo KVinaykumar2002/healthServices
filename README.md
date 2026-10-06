@@ -5,9 +5,21 @@ Website for BHSK home nursing and healthcare staffing in Qatar.
 ```
 frontend/   React + Vite site (pages, components, images)
 backend/    Express API — receives lead-form enquiries, stores them, sends notifications
+shared/     urls.ts — deployed frontend and backend URLs, used by both packages
 ```
 
 The root `package.json` is a workspace that runs both.
+
+## URLs
+
+| Service  | URL                                            |
+| -------- | ---------------------------------------------- |
+| Frontend | https://healthservices-hybm.onrender.com/      |
+| Backend  | https://healthservicesbackend.onrender.com/    |
+
+Both live in [`shared/urls.ts`](shared/urls.ts) — change them there only. The frontend uses `BACKEND_URL` for
+API calls in production builds and `FRONTEND_URL` for canonical / structured-data links; the backend always
+allows `FRONTEND_URL` in CORS.
 
 ## Getting started
 
@@ -73,7 +85,8 @@ Admin API (all except login require `Authorization: Bearer <token>` from the log
 **Separate static frontend + backend:**
 
 - Frontend (static site): build `npm install && npm run build:frontend`, publish directory `frontend/dist`.
-  Set `VITE_API_BASE_URL` to the backend URL at build time.
-- Backend: any Node host running `npm start`, with `CORS_ORIGINS` set to the frontend's URL.
+  It calls `BACKEND_URL` from `shared/urls.ts`; set `VITE_API_BASE_URL` only to override it.
+- Backend: any Node host running `npm start`. `FRONTEND_URL` is allowed by CORS automatically; use
+  `CORS_ORIGINS` for any extra origins.
   `backend/api/` also contains a Vercel serverless handler if the backend is deployed to Vercel with root
   directory `backend`.

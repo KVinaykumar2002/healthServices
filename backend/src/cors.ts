@@ -1,15 +1,15 @@
 import type { RequestHandler } from "express";
+import { FRONTEND_URL, LOCAL_FRONTEND_URL } from "../../shared/urls";
 
 /**
- * CORS for a cross-origin frontend (e.g. a static site on another domain).
- * CORS_ORIGINS is a comma-separated allow-list, or "*" to allow any origin.
+ * CORS for the separately hosted frontend. FRONTEND_URL (shared/urls.ts) and the local dev server are
+ * always allowed; CORS_ORIGINS adds a comma-separated list of extra origins, or "*" to allow any.
  */
 function corsHeaders(origin: string | undefined): Record<string, string> {
-  const allowed = (process.env.CORS_ORIGINS ?? "")
-    .split(",")
+  const allowed = [FRONTEND_URL, LOCAL_FRONTEND_URL, ...(process.env.CORS_ORIGINS ?? "").split(",")]
     .map((value) => value.trim().replace(/\/+$/, ""))
     .filter(Boolean);
-  if (!origin || allowed.length === 0) return {};
+  if (!origin) return {};
 
   const allowAny = allowed.includes("*");
   if (!allowAny && !allowed.includes(origin)) return {};

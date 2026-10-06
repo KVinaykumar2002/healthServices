@@ -1,4 +1,10 @@
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
+import { BACKEND_URL } from "@shared/urls";
+
+/** Dev uses "" so requests go through the Vite /api proxy; VITE_API_BASE_URL overrides both ("" = same origin). */
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? "" : BACKEND_URL)).replace(
+  /\/+$/,
+  "",
+);
 
 /** Mirrors the backend enquiry schema (backend/src/schema.ts). */
 export type EnquiryPayload = {
