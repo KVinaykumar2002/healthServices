@@ -2925,13 +2925,35 @@ footer {
 }
 
 .footer-bottom {
-  border-top: var(--space-1) solid color-mix(in srgb, var(--color-text-secondary) 12%, transparent);
   margin-top: calc(var(--space-8) * 4.5);
-  padding-top: calc(var(--space-8) * 1.6);
   color: color-mix(in srgb, var(--color-text-secondary) 75%, transparent);
   font-size: var(--font-size-xs);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--space-8) * 1.6);
+  text-align: center;
+}
+
+.footer-copyright {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--font-size-sm);
+  color: color-mix(in srgb, var(--color-text-secondary) 90%, transparent);
+}
+
+.footer-copyright svg {
+  flex-shrink: 0;
+  color: var(--bhsk-sky);
+}
+
+.footer-license {
+  align-self: stretch;
+  margin: 0;
+  border-top: var(--space-1) solid color-mix(in srgb, var(--color-text-secondary) 12%, transparent);
+  padding-top: calc(var(--space-8) * 1.6);
 }
 
 .whatsapp-float {
@@ -3863,10 +3885,6 @@ footer {
     gap: calc(var(--space-8) * 3);
   }
   .footer-grid > div:first-child { grid-column: span 2; }
-  .footer-bottom {
-    flex-direction: column;
-    gap: var(--space-8);
-  }
 }
 
 @media (max-width: 600px) {
@@ -3947,7 +3965,6 @@ footer {
   .footer-grid > div:first-child,
   .footer-grid > div:last-child { grid-column: 1 / -1; }
   .footer-grid a { overflow-wrap: anywhere; }
-  .footer-bottom { text-align: center; align-items: center; }
   /* Room for the fixed call / WhatsApp / back-to-top buttons */
   footer { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
   .contact-form button { width: 100%; }

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Building2, Home as HomeIcon, Check, ChevronDown, Facebook, Instagram, Linkedin, Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { Building2, Home as HomeIcon, Check, ChevronDown, Facebook, Heart, Instagram, Linkedin, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { Link, Route, Switch, useLocation } from "wouter";
 import { Reveal, easeOut, pageTransition } from "@/lib/motion";
 import { CareServicesMenu } from "@/components/CareServicesMenu";
@@ -290,8 +290,12 @@ function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} BHSK for Health Services. All rights reserved.</span>
-        <span>Doha, Qatar</span>
+        <p className="footer-copyright">
+          <Heart size={16} aria-hidden="true" />
+          <span>© {new Date().getFullYear()} BHSK Health Services. All rights reserved.</span>
+          <Heart size={16} aria-hidden="true" />
+        </p>
+        <p className="footer-license">Licensed Healthcare Provider | Ministry of Public Health Qatar</p>
       </div>
     </footer>
   );
