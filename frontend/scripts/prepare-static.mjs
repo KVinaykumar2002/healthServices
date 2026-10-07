@@ -12,8 +12,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const indexHtml = readFileSync(path.join(dist, "index.html"), "utf8");
 
-const siteSource = readFileSync(path.join(root, "src/lib/site.ts"), "utf8");
-const serviceSlugs = [...siteSource.matchAll(/slug:\s*"([^"]+)"/g)].map((match) => match[1]);
+// Services added later in the admin dashboard rely on the host's fallback to index.html instead.
+const servicesSource = readFileSync(path.join(root, "../shared/serviceDefaults.ts"), "utf8");
+const serviceSlugs = [...servicesSource.matchAll(/slug:\s*"([^"]+)"/g)].map((match) => match[1]);
 
 const routes = new Set([
   "about-us",

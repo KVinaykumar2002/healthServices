@@ -7,7 +7,7 @@ import { CareServicesMenu } from "@/components/CareServicesMenu";
 import { HeroBand } from "@/components/HeroBand";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { ServicesPage } from "@/components/ServicesPage";
-import { HomeNursingPage, ServicePageBySlug } from "@/components/ServiceDetailPage";
+import { ServiceDetailPage } from "@/components/ServiceDetailPage";
 import { FitImage } from "@/components/FitImage";
 import { FloatingContactWidget } from "@/components/FloatingContactWidget";
 import { LandlineIcon } from "@/components/LandlineIcon";
@@ -22,17 +22,9 @@ import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 import { Cta69 } from "@/components/ui/cta69";
 import { BrandLockup, PulseDivider } from "@/components/brand/BhskLogo";
-import { servicePageBySlug } from "@/lib/servicePages";
 import { submitEnquiry } from "@/lib/api";
-import {
-  HOME_CARE_BLURB,
-  HEALTHCARE_STAFFING_BLURB,
-  REQUEST_NURSE_PATH,
-  REQUEST_STAFF_PATH,
-  facilityServices,
-  homeCareServices,
-  services,
-} from "@/lib/site";
+import { useServices, useServicesLoaded } from "@/lib/services";
+import { HOME_CARE_BLURB, HEALTHCARE_STAFFING_BLURB, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
 import { useSiteContact } from "@/lib/siteSettings";
 
 function BrandMark({ className = "", animated = false }: { className?: string; animated?: boolean }) {
@@ -403,6 +395,7 @@ function TrustNote() {
 }
 
 function Home() {
+  const services = useServices();
   return (
     <main>
       <HeroBand />
@@ -410,7 +403,7 @@ function Home() {
       <ServiceGrid
         title="Nursing services from BHSK"
         subtitle="Real services we coordinate in Qatar — each card links to a full page with a short description."
-        services={[...services]}
+        services={services}
       />
       <WhyBhsk />
       <HowItWorks />
@@ -433,6 +426,7 @@ function Home() {
 }
 
 function StaffingHubPage() {
+  const facilityServices = useServices().filter((s) => s.category === "facility");
   return (
     <main>
       <Seo
@@ -468,7 +462,7 @@ function StaffingHubPage() {
       <ServiceGrid
         title="Facility nursing staffing in Qatar"
         subtitle="Hospitals, medical centres, schools and worksites we support."
-        services={[...facilityServices]}
+        services={facilityServices}
       />
       <section className="section">
         <div className="container services-hub__staffing-note">
@@ -673,18 +667,9 @@ function ContactContent({
 }) {
   const query = useContactQuery();
   const contact = useSiteContact();
+  const services = useServices();
   const [enquiryType, setEnquiryType] = useState(query.type || defaultType);
-  const [selectedService, setSelectedService] = useState(() => {
-    if (!query.service) return "";
-    const byName = services.find((s) => s.name === query.service);
-    if (byName) return byName.name;
-    const byPartial = services.find(
-      (s) =>
-        s.name.toLowerCase().includes(query.service.toLowerCase()) ||
-        query.service.toLowerCase().includes(s.name.toLowerCase().split(" ")[0] ?? ""),
-    );
-    return byPartial?.name ?? "";
-  });
+  const [selectedService, setSelectedService] = useState("");
 
   useEffect(() => {
     if (query.type) setEnquiryType(query.type);
@@ -693,24 +678,21 @@ function ContactContent({
 
   useEffect(() => {
     if (!query.service) return;
-    const byName = services.find((s) => s.name === query.service);
-    if (byName) {
-      setSelectedService(byName.name);
-      return;
-    }
-    const byPartial = services.find(
-      (s) =>
-        s.name.toLowerCase().includes(query.service.toLowerCase()) ||
-        query.service.toLowerCase().includes(s.name.toLowerCase().split(" ")[0] ?? ""),
-    );
-    if (byPartial) setSelectedService(byPartial.name);
-  }, [query.service]);
+    const wanted = query.service.toLowerCase();
+    const match =
+      services.find((s) => s.name.toLowerCase() === wanted) ??
+      services.find(
+        (s) =>
+          s.name.toLowerCase().includes(wanted) || wanted.includes(s.name.toLowerCase().split(" ")[0] ?? ""),
+      );
+    if (match) setSelectedService(match.name);
+  }, [query.service, services]);
 
   const serviceOptions =
     enquiryType === "employer"
-      ? facilityServices
+      ? services.filter((s) => s.category === "facility")
       : enquiryType === "patient"
-        ? homeCareServices
+        ? services.filter((s) => s.category === "home")
         : services;
 
   const [whatsappOpened, setWhatsappOpened] = useState(false);
@@ -878,7 +860,11 @@ function ContactContent({
 }
 
 function SlugPage({ slug }: { slug: string }) {
-  if (servicePageBySlug(slug)) return <ServicePageBySlug slug={slug} />;
+  const page = useServices().find((s) => s.slug === slug);
+  const loaded = useServicesLoaded();
+  if (page) return <ServiceDetailPage page={page} />;
+  // A service added since this visitor's last visit isn't known until the list arrives.
+  if (!loaded) return <main className="svc-page" aria-busy="true" style={{ minHeight: "100vh" }} />;
   return <InnerPage type={slug} />;
 }
 
@@ -910,10 +896,10 @@ function App() {
               <ServicesPage />
             </Route>
             <Route path="/services/home-nursing">
-              <HomeNursingPage />
+              <SlugPage slug="home-nursing" />
             </Route>
             <Route path="/services/home-nursing/">
-              <HomeNursingPage />
+              <SlugPage slug="home-nursing" />
             </Route>
             <Route path="/healthcare-staffing">
               <StaffingHubPage />
@@ -929,16 +915,6 @@ function App() {
             </Route>
             <Route path="/book-consultation">
               <InnerPage type="book-consultation" />
-            </Route>
-            {services
-              .filter((s) => s.slug !== "home-nursing")
-              .map((s) => (
-                <Route key={s.slug} path={`/${s.slug}`}>
-                  <ServicePageBySlug slug={s.slug} />
-                </Route>
-              ))}
-            <Route path="/home-nursing">
-              <HomeNursingPage />
             </Route>
             <Route path="/:slug">{(params) => <SlugPage slug={params.slug} />}</Route>
             <Route>

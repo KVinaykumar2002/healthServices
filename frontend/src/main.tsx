@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { ServicesProvider } from "./lib/services";
 import { SiteSettingsProvider } from "./lib/siteSettings";
 import "./index.css";
 
@@ -14,7 +15,9 @@ createRoot(document.getElementById("root")!).render(
     </Suspense>
   ) : (
     <SiteSettingsProvider>
-      <App />
+      <ServicesProvider>
+        <App />
+      </ServicesProvider>
     </SiteSettingsProvider>
   ),
 );

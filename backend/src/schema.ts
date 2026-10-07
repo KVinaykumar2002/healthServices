@@ -1,5 +1,13 @@
 import { z } from "zod";
 import { HOME_HERO_LIMITS, isAllowedHeroLink, isAllowedImageSrc } from "../../shared/homeHero";
+import {
+  SERVICE_CATEGORIES,
+  SERVICE_ICONS,
+  SERVICE_LIMITS,
+  SERVICE_TEXT_LIMITS as MAX,
+  SLUG_PATTERN,
+  isValidServiceSlug,
+} from "../../shared/services";
 import { SITE_SETTINGS_LIMITS, isSafeHttpUrl } from "../../shared/siteSettings";
 
 export const enquiryTypes = ["patient", "employer"] as const;
@@ -120,4 +128,79 @@ export const homeHeroSchema = z.object({
     )
     .min(1, "Add at least one photo")
     .max(HOME_HERO_LIMITS.slides, `Up to ${HOME_HERO_LIMITS.slides} photos`),
+});
+
+const required = (label: string, max: number) =>
+  z.string().trim().min(1, `Enter ${label}`).max(max, `Keep ${label} under ${max} characters`);
+const optional = (label: string, max: number) =>
+  z.string().trim().max(max, `Keep ${label} under ${max} characters`);
+const textList = (label: string, maxItems: number, maxLength: number = MAX.listItem) =>
+  z
+    .array(z.string().trim().min(1, `${label} can't be empty`).max(maxLength, `Keep each item under ${maxLength} characters`))
+    .max(maxItems, `Up to ${maxItems} ${label.toLowerCase()}`);
+const servicePhoto = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(isAllowedImageSrc, "Choose a photo from the library or upload one");
+
+export const serviceSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1, "Enter a web address")
+    .max(MAX.slug, `Keep the web address under ${MAX.slug} characters`)
+    .regex(SLUG_PATTERN, "Use lowercase letters, numbers and single dashes, e.g. elderly-care")
+    .refine(isValidServiceSlug, "This address is already used by another page of the website"),
+  category: z.enum(SERVICE_CATEGORIES),
+  visible: z.boolean(),
+  name: required("a name", MAX.name),
+  menuLabel: required("a menu name", MAX.menuLabel),
+  icon: z.enum(SERVICE_ICONS),
+  text: required("a short description", MAX.text),
+  cardImageUrl: servicePhoto,
+  imageUrl: servicePhoto,
+  imageAlt: required("a photo description", MAX.imageAlt),
+  eyebrow: optional("the small heading", MAX.eyebrow),
+  h1: required("a page title", MAX.h1),
+  intro: textList("Paragraphs", SERVICE_LIMITS.intro, MAX.paragraph),
+  heroCtaLabel: required("the button text", MAX.heroCtaLabel),
+  seoTitle: required("a Google title", MAX.seoTitle),
+  seoDescription: required("a Google description", MAX.seoDescription),
+  audience: z.object({
+    heading: optional("the heading", MAX.heading),
+    items: textList("Points", SERVICE_LIMITS.audience),
+  }),
+  scopeHeading: optional("the heading", MAX.heading),
+  scope: z.object({
+    included: textList("Included items", SERVICE_LIMITS.scopeItems),
+    notIncluded: textList("Not-included items", SERVICE_LIMITS.scopeItems),
+    scopeNote: optional("the note", MAX.paragraph),
+  }),
+  coverage: z.object({
+    heading: optional("the heading", MAX.heading),
+    paragraphs: textList("Paragraphs", SERVICE_LIMITS.coverage, MAX.paragraph),
+  }),
+  process: z.object({
+    heading: optional("the heading", MAX.heading),
+    intro: optional("the introduction", MAX.paragraph),
+    whoContacts: optional("the closing note", MAX.paragraph),
+    steps: z
+      .array(z.object({ title: required("a step title", MAX.stepTitle), text: required("the step text", MAX.stepText) }))
+      .max(SERVICE_LIMITS.steps, `Up to ${SERVICE_LIMITS.steps} steps`),
+  }),
+  trust: z.object({
+    heading: optional("the heading", MAX.heading),
+    paragraphs: textList("Paragraphs", SERVICE_LIMITS.trustParagraphs, MAX.paragraph),
+    facts: textList("Points", SERVICE_LIMITS.trustFacts),
+  }),
+  faqHeading: optional("the heading", MAX.heading),
+  faqs: z
+    .array(z.object({ question: required("a question", MAX.question), answer: required("an answer", MAX.answer) }))
+    .max(SERVICE_LIMITS.faqs, `Up to ${SERVICE_LIMITS.faqs} questions`),
+  relatedSlugs: z.array(z.string().trim().max(MAX.slug)).max(SERVICE_LIMITS.related, `Up to ${SERVICE_LIMITS.related} related services`),
+});
+
+export const serviceOrderSchema = z.object({
+  ids: z.array(z.string().trim().min(1).max(80)).min(1).max(SERVICE_LIMITS.services),
 });

@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Download,
   ExternalLink,
+  HandHeart,
   Inbox,
   LayoutDashboard,
   LoaderCircle,
@@ -35,6 +36,7 @@ import {
   formatDateTime,
   formatRelative,
 } from "./format";
+import { ServicesAdmin } from "./ServicesAdmin";
 import { SiteSettingsPage } from "./SiteSettingsPage";
 import { StatsOverview } from "./StatsOverview";
 
@@ -57,11 +59,12 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Something went wrong";
 }
 
-type AdminView = "overview" | "enquiries" | "hero" | "settings";
+type AdminView = "overview" | "enquiries" | "services" | "hero" | "settings";
 
 const VIEW_HASHES: Record<AdminView, string> = {
   overview: "#overview",
   enquiries: "#enquiries",
+  services: "#services",
   hero: "#hero",
   settings: "#settings",
 };
@@ -78,6 +81,11 @@ const VIEW_HEADINGS: Record<AdminView, { title: string; description: string }> =
       description:
         "Search, filter and update every enquiry. Click a row to open its details. Times are shown in Qatar time.",
     },
+    services: {
+      title: "Services",
+      description:
+        "Add, edit, hide and reorder the services on the website — their cards, menu links and pages.",
+    },
     hero: {
       title: "Homepage hero",
       description:
@@ -91,8 +99,10 @@ const VIEW_HEADINGS: Record<AdminView, { title: string; description: string }> =
   };
 
 function viewFromHash(): AdminView {
+  // Sub-pages add a path, e.g. #services/<id>.
+  const base = window.location.hash.split("/")[0];
   const match = (Object.keys(VIEW_HASHES) as AdminView[]).find(
-    view => VIEW_HASHES[view] === window.location.hash
+    view => VIEW_HASHES[view] === base
   );
   return match ?? "overview";
 }
@@ -364,6 +374,12 @@ export function Dashboard({
       highlight: stats?.byStatus.new,
     },
     {
+      view: "services",
+      icon: HandHeart,
+      label: "Services",
+      shortLabel: "Services",
+    },
+    {
       view: "hero",
       icon: PanelTop,
       label: "Homepage hero",
@@ -464,7 +480,7 @@ export function Dashboard({
         </aside>
 
         <nav
-          className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-[var(--color-border)] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_20px_rgba(16,48,60,0.06)] backdrop-blur lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-[var(--color-border)] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_20px_rgba(16,48,60,0.06)] backdrop-blur lg:hidden"
           aria-label="Admin sections"
         >
           {navItems.map(item => (
@@ -533,6 +549,8 @@ export function Dashboard({
                   <ChevronRight className="size-5 text-[var(--color-text-tertiary)]" />
                 </button>
               </>
+            ) : view === "services" ? (
+              <ServicesAdmin />
             ) : view === "hero" ? (
               <HeroSettingsPage />
             ) : view === "settings" ? (

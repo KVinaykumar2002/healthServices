@@ -6,6 +6,7 @@ import { createEnquiry, parseEnquiryBody } from "../enquiries";
 import { getHomeHero } from "../homeHero";
 import { getMedia } from "../media";
 import { rateLimit } from "../rateLimit";
+import { listServices } from "../services";
 import { getSiteSettings } from "../siteSettings";
 import { asyncHandler } from "./asyncHandler";
 
@@ -48,6 +49,21 @@ publicRouter.get(
 
     res.setHeader("Cache-Control", "public, max-age=60");
     res.json({ ok: true, settings, hero });
+  }),
+);
+
+publicRouter.get(
+  "/services",
+  asyncHandler(async (_req, res) => {
+    try {
+      const services = (await listServices()).map(({ updatedAt: _updatedAt, ...service }) => service);
+      res.setHeader("Cache-Control", "public, max-age=60");
+      res.json({ ok: true, services });
+    } catch (error) {
+      // The site keeps its last copy (or the original services) rather than showing a stale fallback.
+      console.error("[services] unable to load", error);
+      res.status(503).json({ ok: false, error: "Services are temporarily unavailable" });
+    }
   }),
 );
 

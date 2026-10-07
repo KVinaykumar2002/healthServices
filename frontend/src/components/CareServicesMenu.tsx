@@ -1,46 +1,8 @@
-import {
-  Armchair,
-  Baby,
-  Building,
-  Building2,
-  CalendarHeart,
-  Footprints,
-  HandHeart,
-  HardHat,
-  HeartHandshake,
-  MessageCircleHeart,
-  School,
-  Sunrise,
-  type LucideIcon,
-} from "lucide-react";
 import { Link } from "wouter";
+import type { Service } from "@shared/services";
+import { SERVICE_ICON_COMPONENTS } from "@/lib/serviceIcons";
+import { useServices } from "@/lib/services";
 import { servicePath } from "@/lib/site";
-
-export interface CareServiceItem {
-  slug: string;
-  label: string;
-  icon: LucideIcon;
-  group: "home" | "facility";
-}
-
-/**
- * Approved services only — short labels + icons for the navbar menu.
- * Icons describe everyday life and people, not clinical equipment (BHSK brand rule).
- */
-export const careMenuServices: CareServiceItem[] = [
-  { slug: "home-nursing", label: "Home Nursing", icon: HeartHandshake, group: "home" },
-  { slug: "maternity-newborn", label: "Mother & Baby Care", icon: HandHeart, group: "home" },
-  { slug: "elderly-care", label: "Elder Care", icon: Armchair, group: "home" },
-  { slug: "baby-care", label: "Baby Care", icon: Baby, group: "home" },
-  { slug: "palliative-care", label: "Palliative Care", icon: MessageCircleHeart, group: "home" },
-  { slug: "chronic-care", label: "Chronic Care", icon: CalendarHeart, group: "home" },
-  { slug: "post-operative", label: "Post-operative Care", icon: Sunrise, group: "home" },
-  { slug: "physiotherapy", label: "Physiotherapy", icon: Footprints, group: "home" },
-  { slug: "hospitals", label: "Hospital Nursing", icon: Building2, group: "facility" },
-  { slug: "medical-centres", label: "Medical Centres", icon: Building, group: "facility" },
-  { slug: "schools-nurseries", label: "Schools / Nurseries", icon: School, group: "facility" },
-  { slug: "camp-construction", label: "Camp / Construction", icon: HardHat, group: "facility" },
-];
 
 interface CareServicesMenuProps {
   onNavigate?: () => void;
@@ -52,32 +14,37 @@ function MenuLinks({
   items,
   onNavigate,
 }: {
-  items: CareServiceItem[];
+  items: Service[];
   onNavigate?: () => void;
 }) {
   return (
     <div className="care-menu-grid">
-      {items.map(({ slug, label, icon: Icon }) => (
-        <Link
-          key={slug}
-          href={servicePath(slug)}
-          className="care-service-link"
-          onClick={onNavigate}
-          aria-label={label}
-        >
-          <span className="care-service-icon" aria-hidden="true">
-            <Icon strokeWidth={1.65} />
-          </span>
-          <span>{label}</span>
-        </Link>
-      ))}
+      {items.map(({ slug, menuLabel, icon }) => {
+        const Icon = SERVICE_ICON_COMPONENTS[icon];
+        return (
+          <Link
+            key={slug}
+            href={servicePath(slug)}
+            className="care-service-link"
+            onClick={onNavigate}
+            aria-label={menuLabel}
+          >
+            <span className="care-service-icon" aria-hidden="true">
+              <Icon strokeWidth={1.65} />
+            </span>
+            <span>{menuLabel}</span>
+          </Link>
+        );
+      })}
     </div>
   );
 }
 
+/** Icons describe everyday life and people, not clinical equipment (BHSK brand rule). */
 export function CareServicesMenu({ onNavigate, variant = "dropdown" }: CareServicesMenuProps) {
-  const home = careMenuServices.filter((s) => s.group === "home");
-  const facility = careMenuServices.filter((s) => s.group === "facility");
+  const services = useServices();
+  const home = services.filter((s) => s.category === "home");
+  const facility = services.filter((s) => s.category === "facility");
 
   return (
     <div className={`care-menu care-menu--${variant}`} aria-label="BHSK for Health Services">
@@ -87,14 +54,18 @@ export function CareServicesMenu({ onNavigate, variant = "dropdown" }: CareServi
       </header>
 
       <div className="care-menu-groups">
-        <section className="care-menu-group" aria-label="Home care services">
-          <p className="care-menu-group__label">Home care</p>
-          <MenuLinks items={home} onNavigate={onNavigate} />
-        </section>
-        <section className="care-menu-group" aria-label="Healthcare staffing">
-          <p className="care-menu-group__label">Healthcare staffing</p>
-          <MenuLinks items={facility} onNavigate={onNavigate} />
-        </section>
+        {home.length ? (
+          <section className="care-menu-group" aria-label="Home care services">
+            <p className="care-menu-group__label">Home care</p>
+            <MenuLinks items={home} onNavigate={onNavigate} />
+          </section>
+        ) : null}
+        {facility.length ? (
+          <section className="care-menu-group" aria-label="Healthcare staffing">
+            <p className="care-menu-group__label">Healthcare staffing</p>
+            <MenuLinks items={facility} onNavigate={onNavigate} />
+          </section>
+        ) : null}
       </div>
 
       <Link href="/services" className="care-menu-all" onClick={onNavigate}>

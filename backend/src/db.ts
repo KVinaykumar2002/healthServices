@@ -24,6 +24,8 @@ async function ensureIndexes(db: Db) {
   await Promise.all([
     enquiries.createIndex({ createdAt: -1 }),
     enquiries.createIndex({ status: 1, createdAt: -1 }),
+    db.collection("services").createIndex({ slug: 1 }, { unique: true }),
+    db.collection("services").createIndex({ position: 1 }),
   ]);
 }
 

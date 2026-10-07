@@ -1,41 +1,19 @@
 import { Link } from "wouter";
 import { AntiMetalButton } from "@/components/ui/anti-metal-button";
-import { FitImage } from "@/components/FitImage";
-import { Reveal, RevealText, GsapStagger } from "@/lib/motion";
+import { Reveal, RevealText } from "@/lib/motion";
 import { Seo, servicesPageJsonLd } from "@/components/Seo";
+import { ServiceCards } from "@/components/ServiceGrid";
 import { SiteBreadcrumb } from "@/components/SiteBreadcrumb";
-import {
-  HOME_CARE_BLURB,
-  HEALTHCARE_STAFFING_BLURB,
-  REQUEST_NURSE_PATH,
-  REQUEST_STAFF_PATH,
-  facilityServices,
-  homeCareServices,
-  servicePath,
-  type ServiceItem,
-} from "@/lib/site";
-
-function ServiceTiles({ items }: { items: ServiceItem[] }) {
-  return (
-    <GsapStagger className="service-image-grid" direction="left" distance={48} stagger={0.08}>
-      {items.map((service) => (
-        <div key={service.slug}>
-          <Link href={servicePath(service.slug)} className="service-tile service-tile--detailed">
-            <FitImage src={service.imageUrl} alt={service.name} loading="lazy" className="service-tile-media">
-              <div className="service-tile-wash" />
-            </FitImage>
-            <span className="service-tile__title">{service.name}</span>
-            <p className="service-tile__text">{service.text}</p>
-          </Link>
-        </div>
-      ))}
-    </GsapStagger>
-  );
-}
+import { useServices } from "@/lib/services";
+import { HOME_CARE_BLURB, HEALTHCARE_STAFFING_BLURB, REQUEST_NURSE_PATH, REQUEST_STAFF_PATH } from "@/lib/site";
 
 const SERVICES_PAGE_JSON_LD = servicesPageJsonLd();
 
 export function ServicesPage() {
+  const services = useServices();
+  const homeCareServices = services.filter((service) => service.category === "home");
+  const facilityServices = services.filter((service) => service.category === "facility");
+
   return (
     <main className="services-hub">
       <Seo
@@ -83,7 +61,7 @@ export function ServicesPage() {
               className="services-hub__cta"
             />
           </Reveal>
-          <ServiceTiles items={homeCareServices} />
+          <ServiceCards services={homeCareServices} />
         </div>
       </section>
 
@@ -107,7 +85,7 @@ export function ServicesPage() {
               className="services-hub__cta"
             />
           </Reveal>
-          <ServiceTiles items={facilityServices} />
+          <ServiceCards services={facilityServices} />
           <Reveal className="services-hub__staffing-note" direction="left" distance={40} delay={0.08}>
             <p>
               Licensed nurse staffing for hospitals, medical centres, schools and worksites in Qatar is arranged

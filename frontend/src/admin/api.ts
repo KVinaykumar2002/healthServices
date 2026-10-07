@@ -1,4 +1,5 @@
 import type { HomeHero } from "@shared/homeHero";
+import type { Service, ServiceContent } from "@shared/services";
 import type { SiteSettings } from "@shared/siteSettings";
 import { API_BASE_URL } from "@/lib/api";
 
@@ -191,6 +192,44 @@ export async function saveHomeHero(hero: HomeHero) {
     body: JSON.stringify(hero),
   });
   return result.hero;
+}
+
+export type ServiceRecord = Service & { updatedAt: string | null };
+
+export async function fetchServices() {
+  return (await requestJson<{ services: ServiceRecord[] }>("/services")).services;
+}
+
+export async function fetchService(id: string) {
+  return (await requestJson<{ service: ServiceRecord }>(`/services/${encodeURIComponent(id)}`)).service;
+}
+
+export async function createService(service: ServiceContent) {
+  const result = await requestJson<{ service: ServiceRecord }>("/services", {
+    method: "POST",
+    body: JSON.stringify(service),
+  });
+  return result.service;
+}
+
+export async function saveService(id: string, service: ServiceContent) {
+  const result = await requestJson<{ service: ServiceRecord }>(`/services/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(service),
+  });
+  return result.service;
+}
+
+export async function deleteService(id: string) {
+  await request(`/services/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export async function reorderServices(ids: string[]) {
+  const result = await requestJson<{ services: ServiceRecord[] }>("/services/order", {
+    method: "PATCH",
+    body: JSON.stringify({ ids }),
+  });
+  return result.services;
 }
 
 /** Uploads an image and returns its site path (/api/media/<id>). */

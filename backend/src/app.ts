@@ -10,7 +10,9 @@ export function createApp() {
   // Behind Render / Vercel / other proxies, so req.ip is the visitor's address for rate limiting.
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
-  app.use(express.json({ limit: "32kb" }));
+  // Service pages are larger; the admin router parses those after checking the session.
+  const json = express.json({ limit: "32kb" });
+  app.use((req, res, next) => (req.path.startsWith("/api/admin/services") ? next() : json(req, res, next)));
 
   app.use("/api", cors);
   app.use("/api/admin", (_req, res, next) => {

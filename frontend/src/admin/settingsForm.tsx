@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Check, LoaderCircle, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, LoaderCircle, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { AdminApiError } from "./api";
 import { formatDateTime } from "./format";
@@ -135,6 +135,8 @@ export function ListField({
   addLabel,
   rowLabel,
   inputMode,
+  multiline,
+  autoFocus = true,
   onChange,
 }: {
   label: string;
@@ -148,40 +150,186 @@ export function ListField({
   addLabel: string;
   rowLabel: (index: number) => string;
   inputMode?: "tel" | "text";
+  /** Rows per item, for paragraphs. */
+  multiline?: number;
+  autoFocus?: boolean;
   onChange: (values: string[]) => void;
 }) {
   return (
     <Field label={label} hint={hint} errors={errors}>
       <div className="grid gap-2">
-        {values.map((value, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <input
-              value={value}
-              onChange={(event) => onChange(values.map((item, i) => (i === index ? event.target.value : item)))}
-              placeholder={placeholder}
-              aria-label={rowLabel(index)}
-              inputMode={inputMode}
-              maxLength={maxLength}
-              required={index < min}
-              autoFocus={index === 0}
-              className={`${inputClass} ${borderFor(errors)}`}
-            />
-            <button
-              type="button"
-              onClick={() => onChange(values.filter((_, i) => i !== index))}
-              disabled={values.length <= min}
-              className="flex size-11 shrink-0 cursor-pointer items-center sm:size-10 justify-center rounded-xl border border-[var(--color-border)] bg-white text-[var(--color-text-tertiary)] hover:bg-red-50 hover:text-[var(--color-error)] disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label={`Remove ${rowLabel(index).toLowerCase()}`}
-            >
-              <Trash2 className="size-4" />
-            </button>
-          </div>
-        ))}
+        {values.map((value, index) => {
+          const common = {
+            value,
+            placeholder,
+            maxLength,
+            "aria-label": rowLabel(index),
+            required: index < min,
+            autoFocus: autoFocus && index === 0,
+          };
+          return (
+            <div key={index} className={`flex gap-2 ${multiline ? "items-start" : "items-center"}`}>
+              {multiline ? (
+                <textarea
+                  {...common}
+                  rows={multiline}
+                  onChange={(event) => onChange(values.map((item, i) => (i === index ? event.target.value : item)))}
+                  className={`${textareaClass} ${borderFor(errors)}`}
+                />
+              ) : (
+                <input
+                  {...common}
+                  inputMode={inputMode}
+                  onChange={(event) => onChange(values.map((item, i) => (i === index ? event.target.value : item)))}
+                  className={`${inputClass} ${borderFor(errors)}`}
+                />
+              )}
+              <RemoveButton
+                label={`Remove ${rowLabel(index).toLowerCase()}`}
+                disabled={values.length <= min}
+                onClick={() => onChange(values.filter((_, i) => i !== index))}
+              />
+            </div>
+          );
+        })}
       </div>
       {values.length < max ? (
         <button
           type="button"
           onClick={() => onChange([...values, ""])}
+          className="mt-2 inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-transparent px-2 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:bg-[var(--color-surface-page)]"
+        >
+          <Plus className="size-4" /> {addLabel}
+        </button>
+      ) : null}
+    </Field>
+  );
+}
+
+function RemoveButton({ label, disabled, onClick }: { label: string; disabled?: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-[var(--color-border)] bg-white text-[var(--color-text-tertiary)] hover:bg-red-50 hover:text-[var(--color-error)] disabled:cursor-not-allowed disabled:opacity-40 sm:size-10"
+      aria-label={label}
+    >
+      <Trash2 className="size-4" />
+    </button>
+  );
+}
+
+export type PairItem = { first: string; second: string };
+
+/** Numbered items with a short line and a longer text each, e.g. process steps or questions and answers. */
+export function PairListField({
+  label,
+  hint,
+  errors,
+  items,
+  max,
+  itemLabel,
+  firstLabel,
+  secondLabel,
+  firstMaxLength,
+  secondMaxLength,
+  secondRows = 3,
+  addLabel,
+  autoFocus = true,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  errors?: string[];
+  items: PairItem[];
+  max: number;
+  itemLabel: string;
+  firstLabel: string;
+  secondLabel: string;
+  firstMaxLength: number;
+  secondMaxLength: number;
+  secondRows?: number;
+  addLabel: string;
+  autoFocus?: boolean;
+  onChange: (items: PairItem[]) => void;
+}) {
+  const update = (index: number, patch: Partial<PairItem>) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  const move = (index: number, offset: number) => {
+    const next = [...items];
+    const [item] = next.splice(index, 1);
+    next.splice(index + offset, 0, item);
+    onChange(next);
+  };
+  const smallButton =
+    "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-[var(--color-border)] bg-white text-[var(--color-text-tertiary)] hover:bg-[var(--color-surface-page)] hover:text-[var(--bhsk-ink)] disabled:cursor-not-allowed disabled:opacity-40";
+
+  return (
+    <Field label={label} hint={hint} errors={errors}>
+      <ol className="m-0 grid list-none gap-3 p-0">
+        {items.map((item, index) => (
+          <li key={index} className="grid gap-2 rounded-xl border border-[var(--color-border)] p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase">
+                {itemLabel} {index + 1}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  className={smallButton}
+                  onClick={() => move(index, -1)}
+                  disabled={index === 0}
+                  aria-label={`Move ${itemLabel.toLowerCase()} ${index + 1} up`}
+                >
+                  <ArrowUp className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  className={smallButton}
+                  onClick={() => move(index, 1)}
+                  disabled={index === items.length - 1}
+                  aria-label={`Move ${itemLabel.toLowerCase()} ${index + 1} down`}
+                >
+                  <ArrowDown className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  className={`${smallButton} hover:bg-red-50 hover:text-[var(--color-error)]`}
+                  onClick={() => onChange(items.filter((_, i) => i !== index))}
+                  aria-label={`Remove ${itemLabel.toLowerCase()} ${index + 1}`}
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </span>
+            </div>
+            <input
+              value={item.first}
+              required
+              autoFocus={autoFocus && index === 0}
+              maxLength={firstMaxLength}
+              placeholder={firstLabel}
+              aria-label={`${itemLabel} ${index + 1}: ${firstLabel.toLowerCase()}`}
+              onChange={(event) => update(index, { first: event.target.value })}
+              className={`${inputClass} font-semibold ${borderFor(errors)}`}
+            />
+            <textarea
+              value={item.second}
+              required
+              rows={secondRows}
+              maxLength={secondMaxLength}
+              placeholder={secondLabel}
+              aria-label={`${itemLabel} ${index + 1}: ${secondLabel.toLowerCase()}`}
+              onChange={(event) => update(index, { second: event.target.value })}
+              className={`${textareaClass} ${borderFor(errors)}`}
+            />
+          </li>
+        ))}
+      </ol>
+      {items.length < max ? (
+        <button
+          type="button"
+          onClick={() => onChange([...items, { first: "", second: "" }])}
           className="mt-2 inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-transparent px-2 text-sm font-semibold text-[var(--bhsk-blue-text)] hover:bg-[var(--color-surface-page)]"
         >
           <Plus className="size-4" /> {addLabel}
@@ -315,8 +463,8 @@ export function SettingsStatus({
   updatedAt: string | null;
   justSaved: boolean;
   pristineLabel: string;
-  restoreLabel: string;
-  onRestore: () => void;
+  restoreLabel?: string;
+  onRestore?: () => void;
   disabled?: boolean;
 }) {
   return (
@@ -332,14 +480,16 @@ export function SettingsStatus({
           pristineLabel
         )}
       </span>
-      <button
-        type="button"
-        onClick={onRestore}
-        disabled={disabled}
-        className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-transparent px-3 text-sm font-semibold text-[var(--color-text-tertiary)] hover:bg-[var(--color-surface-page)] hover:text-[var(--bhsk-ink)] disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <RotateCcw className="size-4" /> {restoreLabel}
-      </button>
+      {onRestore ? (
+        <button
+          type="button"
+          onClick={onRestore}
+          disabled={disabled}
+          className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-transparent px-3 text-sm font-semibold text-[var(--color-text-tertiary)] hover:bg-[var(--color-surface-page)] hover:text-[var(--bhsk-ink)] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <RotateCcw className="size-4" /> {restoreLabel}
+        </button>
+      ) : null}
     </div>
   );
 }

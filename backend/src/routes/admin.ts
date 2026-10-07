@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { Router, type Response } from "express";
 import { MEDIA_PATH_PREFIX } from "../../../shared/homeHero";
 import { createSessionToken, isAdminConfigured, requireAdmin, verifyCredentials } from "../auth";
 import {
@@ -11,15 +11,27 @@ import {
 } from "../enquiries";
 import { getHomeHero, saveHomeHero } from "../homeHero";
 import { MAX_UPLOAD_BYTES, detectImageType, saveMedia } from "../media";
+import { cleanupUnusedMedia } from "../mediaCleanup";
 import { rateLimit } from "../rateLimit";
 import {
   enquiryListQuerySchema,
   enquiryUpdateSchema,
   homeHeroSchema,
   loginSchema,
+  serviceOrderSchema,
+  serviceSchema,
   siteSettingsSchema,
   type EnquiryRecord,
 } from "../schema";
+import {
+  createService,
+  deleteService,
+  getService,
+  listServices,
+  reorderServices,
+  updateService,
+  type ServiceResult,
+} from "../services";
 import { getSiteSettings, saveSiteSettings } from "../siteSettings";
 import { asyncHandler } from "./asyncHandler";
 
@@ -41,6 +53,7 @@ adminRouter.post("/login", rateLimit({ windowMs: 15 * 60 * 1000, max: 10 }), (re
 });
 
 adminRouter.use(requireAdmin);
+adminRouter.use("/services", express.json({ limit: "256kb" }));
 
 adminRouter.get("/me", (_req, res) => {
   res.json({ ok: true, username: res.locals.admin });
@@ -171,7 +184,89 @@ adminRouter.patch(
       res.status(400).json({ ok: false, error: "Please fix the highlighted fields", details: parsed.error.flatten() });
       return;
     }
-    res.json({ ok: true, hero: await saveHomeHero(parsed.data) });
+    const hero = await saveHomeHero(parsed.data);
+    await cleanupUnusedMedia();
+    res.json({ ok: true, hero });
+  }),
+);
+
+function sendFailure(res: Response, result: Exclude<ServiceResult<unknown>, { ok: true }>) {
+  res.status(result.status).json({
+    ok: false,
+    error: result.error,
+    ...(result.fieldErrors ? { details: { fieldErrors: result.fieldErrors } } : {}),
+  });
+}
+
+adminRouter.get(
+  "/services",
+  asyncHandler(async (_req, res) => {
+    res.json({ ok: true, services: await listServices({ includeHidden: true }) });
+  }),
+);
+
+adminRouter.post(
+  "/services",
+  asyncHandler(async (req, res) => {
+    const parsed = serviceSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ ok: false, error: "Please fix the highlighted fields", details: parsed.error.flatten() });
+      return;
+    }
+    const result = await createService(parsed.data);
+    if (!result.ok) return sendFailure(res, result);
+    res.status(201).json({ ok: true, service: result.value });
+  }),
+);
+
+adminRouter.patch(
+  "/services/order",
+  asyncHandler(async (req, res) => {
+    const parsed = serviceOrderSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ ok: false, error: "Invalid order" });
+      return;
+    }
+    const result = await reorderServices(parsed.data.ids);
+    if (!result.ok) return sendFailure(res, result);
+    res.json({ ok: true, services: result.value });
+  }),
+);
+
+adminRouter.get(
+  "/services/:id",
+  asyncHandler(async (req, res) => {
+    const service = await getService(req.params.id);
+    if (!service) {
+      res.status(404).json({ ok: false, error: "Service not found" });
+      return;
+    }
+    res.json({ ok: true, service });
+  }),
+);
+
+adminRouter.patch(
+  "/services/:id",
+  asyncHandler(async (req, res) => {
+    const parsed = serviceSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ ok: false, error: "Please fix the highlighted fields", details: parsed.error.flatten() });
+      return;
+    }
+    const result = await updateService(req.params.id, parsed.data);
+    if (!result.ok) return sendFailure(res, result);
+    await cleanupUnusedMedia();
+    res.json({ ok: true, service: result.value });
+  }),
+);
+
+adminRouter.delete(
+  "/services/:id",
+  asyncHandler(async (req, res) => {
+    const result = await deleteService(req.params.id);
+    if (!result.ok) return sendFailure(res, result);
+    await cleanupUnusedMedia();
+    res.json({ ok: true });
   }),
 );
 
