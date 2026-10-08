@@ -1,15 +1,12 @@
-import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
-import { promisify } from "node:util";
+import { createHash, timingSafeEqual } from "node:crypto";
 import type { Collection } from "mongodb";
 import { getDb } from "./db";
 
-const scryptAsync = promisify(scrypt) as (password: string, salt: Buffer, keylen: number) => Promise<Buffer>;
-const KEY_LENGTH = 64;
-
+// Passwords are kept as plain text on purpose so admins can look theirs up on the Account page.
 export type UserDocument = {
   _id: string;
   username: string;
-  passwordHash: string;
+  password: string;
   role: "admin";
   createdAt: Date;
   updatedAt: Date;
@@ -23,26 +20,16 @@ export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDb()).collection<UserDocument>("users");
 }
 
-export async function hashPassword(password: string) {
-  const salt = randomBytes(16);
-  const key = await scryptAsync(password, salt, KEY_LENGTH);
-  return `scrypt:${salt.toString("hex")}:${key.toString("hex")}`;
+// Compare fixed-length digests so neither content nor length leaks through timing.
+function passwordMatches(password: string, stored: string) {
+  const a = createHash("sha256").update(password).digest();
+  const b = createHash("sha256").update(stored).digest();
+  return timingSafeEqual(a, b);
 }
-
-async function passwordMatches(password: string, stored: string) {
-  const [scheme, saltHex, keyHex] = stored.split(":");
-  if (scheme !== "scrypt" || !saltHex || !keyHex) return false;
-  const expected = Buffer.from(keyHex, "hex");
-  const actual = await scryptAsync(password, Buffer.from(saltHex, "hex"), expected.length);
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
-}
-
-// Hashed against when the username is unknown, so a miss costs the same time as a wrong password.
-const DUMMY_HASH = `scrypt:${"00".repeat(16)}:${"00".repeat(KEY_LENGTH)}`;
 
 export async function findUserByCredentials(username: string, password: string): Promise<UserDocument | null> {
   const user = await (await usersCollection()).findOne({ _id: normalizeUsername(username) });
-  const ok = await passwordMatches(password, user?.passwordHash ?? DUMMY_HASH);
+  const ok = passwordMatches(password, user?.password ?? "");
   return user && ok ? user : null;
 }
 
@@ -50,32 +37,24 @@ export async function findUser(username: string): Promise<UserDocument | null> {
   return (await usersCollection()).findOne({ _id: normalizeUsername(username) });
 }
 
-type AccountFailure = { ok: false; status: 403 | 404 | 409; error: string; fieldErrors?: Record<string, string[]> };
+type AccountFailure = { ok: false; status: 404 | 409; error: string; fieldErrors?: Record<string, string[]> };
 export type AccountResult = { ok: true; user: UserDocument } | AccountFailure;
 
-/** Changes the signed-in user's username and/or password after re-checking their current password. */
+/** Changes the signed-in user's username and/or password. */
 export async function updateAccount(
   currentUsername: string,
-  update: { currentPassword: string; username?: string; newPassword?: string },
+  update: { username?: string; password?: string },
 ): Promise<AccountResult> {
   const users = await usersCollection();
   const user = await users.findOne({ _id: normalizeUsername(currentUsername) });
   if (!user) return { ok: false, status: 404, error: "Your account no longer exists" };
-  if (!(await passwordMatches(update.currentPassword, user.passwordHash))) {
-    return {
-      ok: false,
-      status: 403,
-      error: "Your current password is incorrect",
-      fieldErrors: { currentPassword: ["Your current password is incorrect"] },
-    };
-  }
 
   const nextId = update.username ? normalizeUsername(update.username) : user._id;
   const next: UserDocument = {
     ...user,
     _id: nextId,
     username: nextId,
-    passwordHash: update.newPassword ? await hashPassword(update.newPassword) : user.passwordHash,
+    password: update.password ?? user.password,
     updatedAt: new Date(),
   };
 
@@ -108,7 +87,8 @@ export async function upsertUser(username: string, password: string) {
   const result = await (await usersCollection()).updateOne(
     { _id: id },
     {
-      $set: { username: id, passwordHash: await hashPassword(password), role: "admin", updatedAt: now },
+      $set: { username: id, password, role: "admin", updatedAt: now },
+      $unset: { passwordHash: "" },
       $setOnInsert: { createdAt: now },
     },
     { upsert: true },

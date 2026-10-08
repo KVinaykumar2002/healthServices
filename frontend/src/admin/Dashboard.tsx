@@ -587,7 +587,7 @@ export function Dashboard({
             ) : view === "settings" ? (
               <SiteSettingsPage />
             ) : view === "account" ? (
-              <AccountPage username={username} onSessionChange={onSessionChange} />
+              <AccountPage onSessionChange={onSessionChange} />
             ) : (
               <section className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-1)]">
                 <div className="space-y-4 border-b border-[var(--color-border)] p-4 sm:p-5">

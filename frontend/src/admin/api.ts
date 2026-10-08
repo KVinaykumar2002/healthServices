@@ -149,8 +149,14 @@ export function fetchMe() {
   return requestJson<{ username: string }>("/me");
 }
 
+export type AdminAccount = { username: string; password: string; updatedAt: string };
+
+export async function fetchAccount() {
+  return (await requestJson<{ account: AdminAccount }>("/account")).account;
+}
+
 /** Changes the signed-in admin's username and/or password; the server returns a fresh session for the new details. */
-export async function updateAccount(update: { currentPassword: string; username?: string; newPassword?: string }) {
+export async function updateAccount(update: { username?: string; password?: string }) {
   const result = await requestJson<AdminSession>("/account", {
     method: "PATCH",
     body: JSON.stringify(update),

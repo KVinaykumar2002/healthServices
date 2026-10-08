@@ -34,7 +34,7 @@ import {
   type ServiceResult,
 } from "../services";
 import { getSiteSettings, saveSiteSettings } from "../siteSettings";
-import { updateAccount } from "../users";
+import { findUser, updateAccount } from "../users";
 import { asyncHandler } from "./asyncHandler";
 
 export const adminRouter = Router();
@@ -65,6 +65,18 @@ adminRouter.use("/services", express.json({ limit: "256kb" }));
 adminRouter.get("/me", (_req, res) => {
   res.json({ ok: true, username: res.locals.admin });
 });
+
+adminRouter.get(
+  "/account",
+  asyncHandler(async (_req, res) => {
+    const user = await findUser(res.locals.admin as string);
+    if (!user) {
+      res.status(404).json({ ok: false, error: "Your account no longer exists" });
+      return;
+    }
+    res.json({ ok: true, account: { username: user.username, password: user.password, updatedAt: user.updatedAt } });
+  }),
+);
 
 adminRouter.patch(
   "/account",

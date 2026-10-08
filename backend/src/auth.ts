@@ -20,8 +20,9 @@ function safeEqual(a: string, b: string) {
   return timingSafeEqual(digestA, digestB);
 }
 
-function passwordFingerprint(passwordHash: string) {
-  return createHash("sha256").update(passwordHash).digest("base64url").slice(0, 16);
+// Keyed so the token, which the browser can read, reveals nothing about the password itself.
+function passwordFingerprint(password: string) {
+  return createHmac("sha256", sessionSecret()).update(`pwd:${password}`).digest("base64url").slice(0, 16);
 }
 
 export async function verifyCredentials(username: string, password: string) {
@@ -41,12 +42,12 @@ function sign(data: string) {
   return createHmac("sha256", sessionSecret()).update(data).digest("base64url");
 }
 
-export function createSessionToken(user: { _id: string; passwordHash: string }) {
+export function createSessionToken(user: { _id: string; password: string }) {
   const expiresAt = Date.now() + SESSION_TTL_MS;
   const payload = Buffer.from(
     JSON.stringify({
       sub: user._id,
-      pwd: passwordFingerprint(user.passwordHash),
+      pwd: passwordFingerprint(user.password),
       exp: expiresAt,
     } satisfies SessionPayload),
   ).toString("base64url");
@@ -68,7 +69,7 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
   if (typeof session.sub !== "string" || typeof session.pwd !== "string") return null;
 
   const user = await findUser(session.sub);
-  if (!user || !safeEqual(session.pwd, passwordFingerprint(user.passwordHash))) return null;
+  if (!user || !safeEqual(session.pwd, passwordFingerprint(user.password))) return null;
   return session;
 }
 

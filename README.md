@@ -55,8 +55,8 @@ WhatsApp route keeps working even if the backend is unreachable.
 ## Admin dashboard
 
 Open `/admin` (e.g. http://localhost:3000/admin) and sign in with a user from the MongoDB `users` collection
-(passwords are stored as scrypt hashes). Add a user or reset a password with
-`npm --prefix backend run create-admin -- <username> <password>`. The dashboard shows enquiry stats and a 30-day chart, and lets the team search and filter
+(passwords are stored as plain text so admins can look theirs up on the dashboard's Account page, where they
+can also change them). Add a user or reset a password with `npm --prefix backend run create-admin -- <username> <password>`. The dashboard shows enquiry stats and a 30-day chart, and lets the team search and filter
 leads, call or WhatsApp them, track status (New → Contacted → In progress → Closed / Spam), keep internal
 notes, delete leads and export CSV. It is hidden from search engines and loaded only on `/admin`.
 
