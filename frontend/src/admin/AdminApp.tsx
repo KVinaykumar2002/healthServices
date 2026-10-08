@@ -51,7 +51,7 @@ export default function AdminApp() {
   return (
     <div className="min-h-screen bg-[var(--color-surface-page)] text-[var(--bhsk-ink)]">
       {session ? (
-        <Dashboard username={session.username} onSignOut={() => signOut()} />
+        <Dashboard username={session.username} onSignOut={() => signOut()} onSessionChange={setSession} />
       ) : (
         <LoginPage
           notice={notice}

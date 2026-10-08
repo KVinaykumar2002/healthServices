@@ -65,6 +65,27 @@ export const loginSchema = z.object({
   password: z.string().min(1).max(200),
 });
 
+export const ADMIN_USERNAME_PATTERN = /^[a-z0-9._-]+$/;
+
+export const accountUpdateSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Enter your current password").max(200),
+    username: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .min(3, "Use at least 3 characters")
+      .max(40, "Use at most 40 characters")
+      .regex(ADMIN_USERNAME_PATTERN, "Use letters, numbers, dots, dashes or underscores only")
+      .optional(),
+    newPassword: z.string().min(8, "Use at least 8 characters").max(200, "Use at most 200 characters").optional(),
+  })
+  .refine((value) => value.username !== undefined || value.newPassword !== undefined, {
+    message: "Nothing to update",
+  });
+
+export type AccountUpdate = z.infer<typeof accountUpdateSchema>;
+
 const phoneNumber = z
   .string()
   .trim()

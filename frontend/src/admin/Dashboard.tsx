@@ -13,9 +13,11 @@ import {
   RefreshCw,
   Search,
   Settings,
+  UserCog,
   X,
   type LucideIcon,
 } from "lucide-react";
+import { AccountPage } from "./AccountPage";
 import {
   ENQUIRY_STATUSES,
   downloadEnquiriesCsv,
@@ -27,6 +29,7 @@ import {
   type EnquiryStats,
   type EnquiryStatus,
   type EnquiryTypeFilter,
+  type AdminSession,
 } from "./api";
 import { EnquiryPanel } from "./EnquiryPanel";
 import { HeroSettingsPage } from "./HeroSettingsPage";
@@ -59,7 +62,7 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Something went wrong";
 }
 
-type AdminView = "overview" | "enquiries" | "services" | "hero" | "settings";
+type AdminView = "overview" | "enquiries" | "services" | "hero" | "settings" | "account";
 
 const VIEW_HASHES: Record<AdminView, string> = {
   overview: "#overview",
@@ -67,6 +70,7 @@ const VIEW_HASHES: Record<AdminView, string> = {
   services: "#services",
   hero: "#hero",
   settings: "#settings",
+  account: "#account",
 };
 
 const VIEW_HEADINGS: Record<AdminView, { title: string; description: string }> =
@@ -95,6 +99,10 @@ const VIEW_HEADINGS: Record<AdminView, { title: string; description: string }> =
       title: "Site settings",
       description:
         "Contact details, office address and social media links shown on the public website.",
+    },
+    account: {
+      title: "Account",
+      description: "Change the username and password you sign in with.",
     },
   };
 
@@ -222,9 +230,11 @@ function BottomNavItem({
 export function Dashboard({
   username,
   onSignOut,
+  onSessionChange,
 }: {
   username: string;
   onSignOut: () => void;
+  onSessionChange: (session: AdminSession) => void;
 }) {
   const [stats, setStats] = useState<EnquiryStats | null>(null);
   const [page, setPage] = useState<EnquiryPage | null>(null);
@@ -446,6 +456,18 @@ export function Dashboard({
             </a>
             <button
               type="button"
+              onClick={() => navigate("account")}
+              aria-current={view === "account" ? "page" : undefined}
+              className={`inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border-0 px-2.5 text-sm font-semibold hover:bg-slate-100 lg:hidden ${
+                view === "account" ? "bg-slate-100 text-[var(--bhsk-blue-text)]" : "bg-transparent text-[var(--bhsk-ink)]"
+              }`}
+              aria-label="Account"
+            >
+              <UserCog className="size-4" />
+              <span className="hidden sm:inline">Account</span>
+            </button>
+            <button
+              type="button"
               onClick={onSignOut}
               className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-[var(--color-border)] bg-white px-3 text-sm font-semibold text-[var(--bhsk-ink)] hover:bg-slate-50"
             >
@@ -476,6 +498,15 @@ export function Dashboard({
                 onClick={() => navigate(item.view)}
               />
             ))}
+            <p className="m-0 mt-4 mb-2 px-3 text-xs font-bold tracking-wide text-[var(--color-text-tertiary)] uppercase">
+              You
+            </p>
+            <SideNavItem
+              icon={UserCog}
+              label="Account"
+              active={view === "account"}
+              onClick={() => navigate("account")}
+            />
           </nav>
         </aside>
 
@@ -555,6 +586,8 @@ export function Dashboard({
               <HeroSettingsPage />
             ) : view === "settings" ? (
               <SiteSettingsPage />
+            ) : view === "account" ? (
+              <AccountPage username={username} onSessionChange={onSessionChange} />
             ) : (
               <section className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-1)]">
                 <div className="space-y-4 border-b border-[var(--color-border)] p-4 sm:p-5">

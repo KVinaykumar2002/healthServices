@@ -54,8 +54,9 @@ WhatsApp route keeps working even if the backend is unreachable.
 
 ## Admin dashboard
 
-Open `/admin` (e.g. http://localhost:3000/admin) and sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD` from
-`backend/.env`. The dashboard shows enquiry stats and a 30-day chart, and lets the team search and filter
+Open `/admin` (e.g. http://localhost:3000/admin) and sign in with a user from the MongoDB `users` collection
+(passwords are stored as scrypt hashes). Add a user or reset a password with
+`npm --prefix backend run create-admin -- <username> <password>`. The dashboard shows enquiry stats and a 30-day chart, and lets the team search and filter
 leads, call or WhatsApp them, track status (New → Contacted → In progress → Closed / Spam), keep internal
 notes, delete leads and export CSV. It is hidden from search engines and loaded only on `/admin`.
 
@@ -78,8 +79,7 @@ Admin API (all except login require `Authorization: Bearer <token>` from the log
 
 - Build command: `npm install && npm run build`
 - Start command: `npm start`
-- Set backend env vars on the host (see `backend/.env.example`) — at minimum `MONGODB_URI`, `ADMIN_USERNAME`,
-  `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET`. `backend/.env` is not committed, so the host needs its own copy
+- Set backend env vars on the host (see `backend/.env.example`) — at minimum `MONGODB_URI` and `ADMIN_SESSION_SECRET`. `backend/.env` is not committed, so the host needs its own copy
   of these values.
 - In MongoDB Atlas → Network Access, allow the host's outbound IP addresses (or `0.0.0.0/0`).
 

@@ -14,6 +14,7 @@ import { MAX_UPLOAD_BYTES, detectImageType, saveMedia } from "../media";
 import { cleanupUnusedMedia } from "../mediaCleanup";
 import { rateLimit } from "../rateLimit";
 import {
+  accountUpdateSchema,
   enquiryListQuerySchema,
   enquiryUpdateSchema,
   homeHeroSchema,
@@ -33,24 +34,30 @@ import {
   type ServiceResult,
 } from "../services";
 import { getSiteSettings, saveSiteSettings } from "../siteSettings";
+import { updateAccount } from "../users";
 import { asyncHandler } from "./asyncHandler";
 
 export const adminRouter = Router();
 
-adminRouter.post("/login", rateLimit({ windowMs: 15 * 60 * 1000, max: 10 }), (req, res) => {
-  if (!isAdminConfigured()) {
-    res.status(503).json({ ok: false, error: "Admin login is not configured on the server" });
-    return;
-  }
+adminRouter.post(
+  "/login",
+  rateLimit({ windowMs: 15 * 60 * 1000, max: 10 }),
+  asyncHandler(async (req, res) => {
+    if (!isAdminConfigured()) {
+      res.status(503).json({ ok: false, error: "Admin login is not configured on the server" });
+      return;
+    }
 
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success || !verifyCredentials(parsed.data.username, parsed.data.password)) {
-    res.status(401).json({ ok: false, error: "Incorrect username or password" });
-    return;
-  }
+    const parsed = loginSchema.safeParse(req.body);
+    const user = parsed.success ? await verifyCredentials(parsed.data.username, parsed.data.password) : null;
+    if (!user) {
+      res.status(401).json({ ok: false, error: "Incorrect username or password" });
+      return;
+    }
 
-  res.json({ ok: true, username: parsed.data.username, ...createSessionToken(parsed.data.username) });
-});
+    res.json({ ok: true, username: user.username, ...createSessionToken(user) });
+  }),
+);
 
 adminRouter.use(requireAdmin);
 adminRouter.use("/services", express.json({ limit: "256kb" }));
@@ -58,6 +65,29 @@ adminRouter.use("/services", express.json({ limit: "256kb" }));
 adminRouter.get("/me", (_req, res) => {
   res.json({ ok: true, username: res.locals.admin });
 });
+
+adminRouter.patch(
+  "/account",
+  rateLimit({ windowMs: 15 * 60 * 1000, max: 10 }),
+  asyncHandler(async (req, res) => {
+    const parsed = accountUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ ok: false, error: "Please fix the highlighted fields", details: parsed.error.flatten() });
+      return;
+    }
+    const result = await updateAccount(res.locals.admin as string, parsed.data);
+    if (!result.ok) {
+      res.status(result.status).json({
+        ok: false,
+        error: result.error,
+        ...(result.fieldErrors ? { details: { fieldErrors: result.fieldErrors } } : {}),
+      });
+      return;
+    }
+    // The old token no longer matches (new username or password), so hand back a fresh one.
+    res.json({ ok: true, username: result.user.username, ...createSessionToken(result.user) });
+  }),
+);
 
 adminRouter.get(
   "/stats",

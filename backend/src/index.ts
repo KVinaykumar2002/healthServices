@@ -4,7 +4,6 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createApp } from "./app";
-import { isAdminConfigured } from "./auth";
 import { closeDatabase, isDatabaseConfigured, pingDatabase } from "./db";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,10 +49,7 @@ async function startServer() {
         : console.error("[db] MongoDB unreachable — check MONGODB_URI and the Atlas network access list"),
     );
   } else {
-    console.error("[db] MONGODB_URI is not set — enquiries cannot be saved");
-  }
-  if (!isAdminConfigured()) {
-    console.warn("[admin] ADMIN_USERNAME / ADMIN_PASSWORD not set — the admin dashboard is disabled");
+    console.error("[db] MONGODB_URI is not set — enquiries cannot be saved and admin login is disabled");
   }
 
   const shutdown = () => {

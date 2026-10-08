@@ -26,6 +26,7 @@ async function ensureIndexes(db: Db) {
     enquiries.createIndex({ status: 1, createdAt: -1 }),
     db.collection("services").createIndex({ slug: 1 }, { unique: true }),
     db.collection("services").createIndex({ position: 1 }),
+    db.collection("users").createIndex({ username: 1 }, { unique: true }),
   ]);
 }
 
